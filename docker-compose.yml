@@ -1,0 +1,142 @@
+services:
+
+  # 1. Database (PostgreSQL)
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: enr-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: postgres
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - ./infra/postgres/init:/docker-entrypoint-initdb.d
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - enr-network
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # 2. Message Broker (RabbitMQ)
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: enr-rabbitmq
+    restart: always
+    ports:
+      - "${RABBITMQ_PORT:-5672}:5672"
+      - "${RABBITMQ_MGMT_PORT:-15672}:15672"
+    volumes:
+      - ./infra/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./infra/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - rabbitmq_data:/var/lib/rabbitmq
+    networks:
+      - enr-network
+    healthcheck:
+      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # 3. In-Memory Cache (Redis)
+
+  redis:
+    image: redis:7-alpine
+    container_name: enr-redis
+    restart: always
+    command: >
+      sh -c 'if [ -z "${REDIS_PASSWORD}" ]; then
+              redis-server;
+            else
+              redis-server --requirepass "${REDIS_PASSWORD}";
+            fi'
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - enr-network
+    healthcheck:
+      test: >
+        sh -c 'if [ -z "${REDIS_PASSWORD}" ]; then
+                redis-cli ping;
+              else
+                redis-cli -a "${REDIS_PASSWORD}" ping;
+              fi'
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  # 4. Identity Service (gRPC + Events)
+
+  identity:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_NAME: identity
+    container_name: enr-identity
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: 50051
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASS: ${POSTGRES_PASSWORD:-postgres}
+      DB_NAME: ${IDENTITY_DB_NAME:-identity_db}
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY:-secret}
+    ports:
+      - "50051:50051"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - enr-network
+
+  # 5. API Gateway (REST Edge)
+  gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_NAME: gateway
+    container_name: enr-gateway
+    restart: always
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT_GATEWAY:-3000}
+      IDENTITY_GRPC_URL: identity:50051
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+    ports:
+      - "${PORT_GATEWAY:-3000}:${PORT_GATEWAY:-3000}"
+    depends_on:
+      - identity
+    networks:
+      - enr-network
+
+# Persistent Volumes & Network
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+  redis_data:
+
+networks:
+  enr-network:
+    driver: bridge

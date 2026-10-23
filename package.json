@@ -9,7 +9,13 @@
     "start:dev:identity": "nest start identity --watch",
     "test": "jest",
     "test:integration": "RUN_INTEGRATION=1 jest --runInBand",
-    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js"
+    "typeorm": "ts-node -r tsconfig-paths/register ./node_modules/typeorm/cli.js",
+    "migration:generate:identity": "npm run typeorm -- migration:generate -d apps/identity/src/database/data-source.ts",
+    "migration:run:identity": "npm run typeorm -- migration:run -d apps/identity/src/database/data-source.ts",
+    "migration:revert:identity": "npm run typeorm -- migration:revert -d apps/identity/src/database/data-source.ts",
+    "migration:show:identity": "npm run typeorm -- migration:show -d apps/identity/src/database/data-source.ts",
+    "migration:run:all": "npm run migration:run:identity",
+    "migration:run": "npm run migration:run:all"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.12.2",

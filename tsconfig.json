@@ -14,21 +14,13 @@
     "incremental": true,
     "skipLibCheck": true,
     "strictNullChecks": true,
-    "noImplicitAny": false,
+    "noImplicitAny": true,
     "forceConsistentCasingInFileNames": true,
     "paths": {
-      "@app/contracts": [
-        "libs/contracts/src"
-      ],
-      "@app/common": [
-        "libs/common/src"
-      ],
-      "@app/observability": [
-        "libs/observability/src"
-      ],
-      "@app/messaging": [
-        "libs/messaging/src"
-      ]
+      "@app/contracts": ["libs/contracts/src"],
+      "@app/common": ["libs/common/src"],
+      "@app/observability": ["libs/observability/src"],
+      "@app/messaging": ["libs/messaging/src"]
     }
   }
 }

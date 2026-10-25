@@ -3,6 +3,7 @@ import { TypeOrmModule } from "@nestjs/typeorm";
 import { ConfigService } from "@nestjs/config";
 import { migrations } from "./migrations/index";
 import { UserOrmEntity } from "../modules/users/infastracture/entities/user.typeorm.entity";
+import { SessionOrmEntity } from "../modules/auth/sessions/infastructure/entities/session.typeorm.entity";
 
 @Module({
   imports: [
@@ -15,7 +16,7 @@ import { UserOrmEntity } from "../modules/users/infastracture/entities/user.type
         username: config.get<string>("identity.database.username"),
         password: config.get<string>("identity.database.password"),
         database: config.get<string>("identity.database.name"),
-        entities: [UserOrmEntity],
+        entities: [UserOrmEntity, SessionOrmEntity],
         migrations: migrations,
         synchronize: false,
         migrationsRun: true,

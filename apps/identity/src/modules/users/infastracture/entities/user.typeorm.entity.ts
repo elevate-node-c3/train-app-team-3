@@ -4,7 +4,6 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  Index,
 } from "typeorm";
 
 @Entity("users")
@@ -16,16 +15,7 @@ export class UserOrmEntity {
   email!: string;
 
   @Column()
-  password!: string;
-
-  @Column()
-  confirmPassword!: string;
-
-  @Column({ default: true })
-  isActive!: boolean;
-
-  @Column({ default: false })
-  isVerified!: boolean;
+  passwordHash!: string;
 
   @CreateDateColumn()
   createdAt!: Date;

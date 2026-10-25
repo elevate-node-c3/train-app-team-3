@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { RpcException } from "@nestjs/microservices";
 import { status } from "@grpc/grpc-js";
-import { UsersService } from "../../../apps/identity/src/modules/users/users.service";
-import { RegisterDto } from "../dtos/register.dto";
+import { UsersService } from "../../users/users.service";
+import { RegisterDto } from "../../users/applicatoin/dtos/register.dto";
+import { CreateSessionUseCase } from "./create-session.use-case";
 
 @Injectable()
 export class RegisterUseCase {
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
+    private readonly createSessionUseCase: CreateSessionUseCase,
   ) {}
 
   async execute(dto: RegisterDto) {
@@ -30,15 +30,16 @@ export class RegisterUseCase {
       passwordHash,
     });
 
-    const accessToken = this.jwtService.sign({
-      sub: user.id,
+    const session = await this.createSessionUseCase.execute({
+      userId: user.id,
       email: user.email,
+      deviceInfo: null,
     });
 
     return {
       id: user.id,
       email: user.email,
-      accessToken,
+      accessToken: session.accessToken,
     };
   }
 }

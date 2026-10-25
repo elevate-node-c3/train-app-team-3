@@ -1,16 +1,16 @@
 import { Injectable } from "@nestjs/common";
-import { JwtService } from "@nestjs/jwt";
 import * as bcrypt from "bcrypt";
 import { RpcException } from "@nestjs/microservices";
 import { status } from "@grpc/grpc-js";
-import { UsersService } from "../../../apps/identity/src/modules/users/users.service";
-import { LoginDto } from "../dtos/login.dto";
+import { UsersService } from "../../users/users.service";
+import { LoginDto } from "../../users/applicatoin/dtos/login.dto";
+import { CreateSessionUseCase } from "./create-session.use-case";
 
 @Injectable()
 export class LoginUseCase {
   constructor(
     private readonly usersService: UsersService,
-    private readonly jwtService: JwtService,
+    private readonly createSessionUseCase: CreateSessionUseCase,
   ) {}
 
   async execute(dto: LoginDto) {
@@ -22,23 +22,22 @@ export class LoginUseCase {
       });
     }
 
-    const isMatch = await bcrypt.compare(dto.password, user.passwordHash);
+    const isMatch = await bcrypt.compare(dto.password, user.getPasswordHash());
     if (!isMatch) {
       throw new RpcException({
         code: status.UNAUTHENTICATED,
         message: "Invalid email or password",
       });
     }
-
-    const accessToken = this.jwtService.sign({
-      sub: user.id,
+    const session = await this.createSessionUseCase.execute({
+      userId: user.id,
       email: user.email,
+      deviceInfo: dto.deviceInfo ?? null,
     });
-
     return {
       id: user.id,
       email: user.email,
-      accessToken,
+      accessToken: session.accessToken,
     };
   }
 }

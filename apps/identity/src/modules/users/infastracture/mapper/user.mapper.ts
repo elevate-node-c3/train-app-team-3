@@ -6,10 +6,9 @@ export class UserMapper {
     return new User(
       ormEntity.id,
       ormEntity.email,
-      ormEntity.password,
-      ormEntity.confirmPassword,
-      ormEntity.isActive,
-      ormEntity.isVerified,
+      ormEntity.passwordHash,
+      true,
+      false,
       ormEntity.createdAt,
       ormEntity.updatedAt,
     );
@@ -19,11 +18,7 @@ export class UserMapper {
     const ormEntity = new UserOrmEntity();
     ormEntity.id = domainUser.id;
     ormEntity.email = domainUser.email;
-    ormEntity.password = domainUser.getPasswordHash();
-    ormEntity.confirmPassword = domainUser.getConfirmPasswordHash();
-
-    ormEntity.isActive = domainUser.isActive;
-    ormEntity.isVerified = domainUser.isVerified;
+    ormEntity.passwordHash = domainUser.getPasswordHash();
     ormEntity.createdAt = domainUser.createdAt;
     ormEntity.updatedAt = domainUser.updatedAt;
     return ormEntity;

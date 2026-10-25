@@ -13,5 +13,7 @@ export default registerAs("identity", () => ({
   jwt: {
     privateKey: process.env.JWT_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
     publicKey: process.env.JWT_PUBLIC_KEY?.replace(/\\n/g, "\n") ?? "",
+    accessSecret: process.env.JWT_PRIVATE_KEY?.replace(/\\n/g, "\n") ?? "",
+    refreshSecret: process.env.JWT_PUBLIC_KEY?.replace(/\\n/g, "\n") ?? "",
   },
 }));

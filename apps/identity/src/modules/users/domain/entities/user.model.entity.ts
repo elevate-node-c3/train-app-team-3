@@ -5,7 +5,6 @@ export class User {
     public readonly id: string,
     public email: string,
     private password: string,
-    private confirmPassword: string,
     public isActive: boolean,
     public isVerified: boolean,
     public readonly createdAt: Date,
@@ -14,9 +13,6 @@ export class User {
 
   getPasswordHash(): string {
     return this.password;
-  }
-  getConfirmPasswordHash(): string {
-    return this.confirmPassword;
   }
   updatePassword(newPasswordHash: string): void {
     this.password = newPasswordHash;

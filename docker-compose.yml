@@ -97,6 +97,10 @@ services:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-}
       JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY:-secret}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_ACCESS_EXP: ${JWT_ACCESS_EXP:-15m}
+      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
+      JWT_REFRESH_EXP: ${JWT_REFRESH_EXP:-7d}
     ports:
       - "50051:50051"
     depends_on:
@@ -123,6 +127,7 @@ services:
       PORT: ${PORT_GATEWAY:-3000}
       IDENTITY_GRPC_URL: identity:50051
       JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
+      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
     ports:
       - "${PORT_GATEWAY:-3000}:${PORT_GATEWAY:-3000}"
     depends_on:

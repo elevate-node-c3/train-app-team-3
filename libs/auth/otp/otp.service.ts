@@ -1,84 +1,126 @@
-import { Injectable } from "@nestjs/common";
-import { generateOtp } from "./utils/generate.otp";
-import { CacheService } from "libs/cache/src";
-import { TooManyRequestsException } from "libs/excptions/too-many-requests.exception";
+import { Injectable, Inject } from "@nestjs/common";
+import { createHash, randomInt } from "crypto";
+import * as bcrypt from "bcrypt";
 
-const OTP_TTL_MS = 30 * 1000;
-const OTP_VERIFIED_TTL_MS = 10 * 60 * 1000;
-const OTP_BLOCK_TTL_MS = 7 * 1000;
-const OTP_RESEND_COOLDOWN_MS = 10 * 1000;
-const OTP_RESEND_WINDOW_MS = 60 * 60 * 1000;
-const MAX_RESENDS_PER_WINDOW = 5;
-const MAX_ATTEMPTS = 5;
+export interface RedisLike {
+  multi: (options?: { pipeline?: boolean }) => {
+    set: (key: string, value: string, mode: string, ttl: number) => unknown;
+    del: (key: string) => unknown;
+    exec: () => Promise<unknown[]>;
+  };
+  eval: (
+    script: string,
+    numberOfKeys: number,
+    ...args: unknown[]
+  ) => Promise<number>;
+  set: (key: string, value: string, mode?: string, ttl?: number) => Promise<unknown>;
+  get: (key: string) => Promise<string | null>;
+  del: (key: string) => Promise<number>;
+  ttl: (key: string) => Promise<number>;
+}
+
+const OTP_TTL_SECONDS = 300;
 
 @Injectable()
 export class OtpService {
-  constructor(private readonly cacheService: CacheService) {}
+  constructor(@Inject("REDIS_CLIENT") private readonly redis: RedisLike) {}
 
-  async create(
-    userId: string,
-    subject: string,
-    replaceCurrent = true,
-  ): Promise<string> {
-    // const blockTtl = await this.redisService.getTTL(
-    //   this.redisService.otpKeyBlock({ userId, subject }),
-    // );
+  generate(length = 6): string {
+    const min = 10 ** (length - 1);
+    const max = 10 ** length - 1;
+    return randomInt(min, max + 1).toString().padStart(length, "0");
+  }
 
-    // if (blockTtl > 0) {
-    //   throw new TooManyRequestsException(
-    //     `Too many requests. Please try again in ${Math.ceil(blockTtl / 1000 / 60)} minutes`,
-    //   );
-    // }
+  private emailKey(email: string): string {
+    return createHash("sha256").update(email.trim()).digest("hex");
+  }
 
-    const otpKey = `user:${userId}:OTP:${subject}`;
+  async issue(email: string): Promise<string> {
+    const code = this.generate(6);
+    const key = `otp:email-verification:${this.emailKey(email)}:code`;
+    const attemptsKey = `otp:email-verification:${this.emailKey(email)}:attempts`;
 
-    // const otpCache = await this.redisService.get(otpKey);
+    const tx = this.redis.multi();
+    tx.set(key, code, "EX", OTP_TTL_SECONDS);
+    tx.del(attemptsKey);
+    await tx.exec();
 
-    const currentOtpTtl = await this.cacheService.getTTL(otpKey);
+    return code;
+  }
 
-    if (currentOtpTtl > 0 && !replaceCurrent) {
-      throw new TooManyRequestsException(
-        `Please wait ${Math.ceil(currentOtpTtl / 1000 / 60)} minutes before requesting a new code`,
-      );
+  async verify(email: string, code: string): Promise<boolean> {
+    if (!/^\d{6}$/.test(code)) {
+      return false;
     }
 
-    // if (replaceCurrent) {
-    //   const cooldownKey = this.redisService.otpKeyCooldown({ userId, subject });
-    //   const cooldownTtl = await this.redisService.getTTL(cooldownKey);
-    //   if (cooldownTtl > 0)
-    //     throw new TooManyRequestsException(
-    //       `Please wait ${Math.ceil(cooldownTtl / 1000)} seconds before requesting a new code`,
-    //     );
+    const key = `otp:email-verification:${this.emailKey(email)}:code`;
+    const attemptsKey = `otp:email-verification:${this.emailKey(email)}:attempts`;
 
-    //   const penaltyKey = this.redisService.otpKeyPenalty({ userId, subject });
-    //   const sendRecord = (await this.redisService.get<OtpSendRecord>(
-    //     penaltyKey,
-    //   )) ?? { count: 0 };
-    //   if (sendRecord.count >= MAX_RESENDS_PER_WINDOW) {
-    //     throw new TooManyRequestsException(
-    //       "Too many verification code requests. Please try again later",
-    //     );
-    //   }
+    const result = await this.redis.eval(
+      `
+        local current = redis.call('GET', KEYS[1])
+        if not current then return 0 end
+        local attempts = tonumber(redis.call('GET', KEYS[2]) or '0')
+        if current == ARGV[1] then
+          redis.call('DEL', KEYS[1], KEYS[2])
+          return 1
+        end
+        redis.call('SET', KEYS[2], attempts + 1, 'EX', 300)
+        return 0
+      `,
+      2,
+      key,
+      attemptsKey,
+      code,
+      5,
+    );
 
-    //   await Promise.all([
-    //     this.redisService.del(otpKey),
-    //     this.redisService.set(cooldownKey, 1, OTP_RESEND_COOLDOWN_MS),
-    //     this.redisService.set(
-    //       penaltyKey,
-    //       { count: sendRecord.count + 1 },
-    //       OTP_RESEND_WINDOW_MS,
-    //     ),
-    //   ]);
-    // }
+    return result === 1;
+  }
 
-    const otp = generateOtp();
+  async create(userId: string, subject: string, replaceCurrent = true): Promise<string> {
+    const otp = this.generate(6);
+    const otpKey = `user:${userId}:OTP:${subject}`;
+    const currentOtpTtl = await this.redis.ttl(otpKey);
 
-    await this.cacheService.set(
+    if (currentOtpTtl > 0 && !replaceCurrent) {
+      throw new Error("Please wait before requesting a new code");
+    }
+
+    const hashedOtp = await bcrypt.hash(otp, 10);
+    await this.redis.set(
       otpKey,
-      { hashedOtp: await this.securityService.hash(otp), attempts: 0 },
-      OTP_TTL_MS,
+      JSON.stringify({ hashedOtp, attempts: 0 }),
+      "EX",
+      OTP_TTL_SECONDS,
     );
 
     return otp;
+  }
+
+  async verifyUserOtp(userId: string, subject: string, otp: string): Promise<boolean> {
+    const otpKey = `user:${userId}:OTP:${subject}`;
+    const stored = await this.redis.get(otpKey);
+
+    if (!stored) {
+      return false;
+    }
+
+    try {
+      const parsed = JSON.parse(stored) as { hashedOtp?: string };
+      if (!parsed.hashedOtp) {
+        return false;
+      }
+
+      const isValid = await bcrypt.compare(otp, parsed.hashedOtp);
+      if (isValid) {
+        await this.redis.del(otpKey);
+        return true;
+      }
+
+      return false;
+    } catch {
+      return false;
+    }
   }
 }

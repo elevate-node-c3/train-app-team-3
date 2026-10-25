@@ -4,6 +4,11 @@ package identity;
 
 service IdentityService {
   rpc Register (RegisterRequest) returns (RegisterResponse);
+  rpc Login (LoginRequest) returns (LoginResponse);
+  rpc Logout (LogoutRequest) returns (OperationResponse);
+  rpc ValidateSession (LogoutRequest) returns (SessionStatusResponse);
+  rpc ForgotPassword (ForgotPasswordRequest) returns (OperationResponse);
+  rpc VerifyOtp (VerifyOtpRequest) returns (OperationResponse);
 }
 
 message RegisterRequest {
@@ -15,4 +20,40 @@ message RegisterResponse {
   string id = 1;
   string email = 2;
   string accessToken = 3;
+}
+
+message LoginRequest {
+  string email = 1;
+  string password = 2;
+  string deviceInfo = 3;
+}
+
+message LoginResponse {
+  string id = 1;
+  string email = 2;
+  string accessToken = 3;
+}
+
+message LogoutRequest {
+  string userId = 1;
+  string sessionId = 2;
+}
+
+message ForgotPasswordRequest {
+  string email = 1;
+  string userId = 2;
+}
+
+message VerifyOtpRequest {
+  string email = 1;
+  string otp = 2;
+  string userId = 3;
+}
+
+message OperationResponse {
+  bool success = 1;
+}
+
+message SessionStatusResponse {
+  bool active = 1;
 }

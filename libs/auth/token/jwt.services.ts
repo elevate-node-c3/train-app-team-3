@@ -1,0 +1,63 @@
+import { randomUUID } from "crypto";
+
+import { Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+
+import type { StringValue } from "ms";
+import { IJwtUserPayload, TokenType } from "./token.interfaces";
+
+export interface SignedToken {
+  token: string;
+  jti: string;
+  expiresAt: Date;
+}
+
+@Injectable()
+export class TokenService {
+  private readonly ACCESS_EXP: StringValue;
+  private readonly ACCESS_SECRET: string;
+  private readonly REFRESH_EXP: StringValue;
+  private readonly REFRESH_SECRET: string;
+
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
+  ) {
+    this.ACCESS_EXP = process.env.JWT_ACCESS_EXP as StringValue;
+    this.ACCESS_SECRET = process.env.JWT_ACCESS_SECRET as string;
+    this.REFRESH_EXP = process.env.JWT_REFRESH_EXP as StringValue;
+    this.REFRESH_SECRET = process.env.JWT_REFRESH_SECRET as string;
+  }
+
+  private getSecret(type: TokenType): string {
+    return type === TokenType.ACCESS ? this.ACCESS_SECRET : this.REFRESH_SECRET;
+  }
+
+  private getExpiry(type: TokenType): StringValue {
+    return type === TokenType.ACCESS ? this.ACCESS_EXP : this.REFRESH_EXP;
+  }
+
+  async sign(
+    payload: IJwtUserPayload,
+    type: TokenType,
+    jti: string = randomUUID(),
+    expiresIn?: number,
+  ): Promise<SignedToken> {
+    const token = await this.jwtService.signAsync(payload, {
+      secret: this.getSecret(type),
+      expiresIn: expiresIn ?? this.getExpiry(type),
+      jwtid: jti,
+    });
+
+    const { exp } = this.jwtService.decode<{ exp: number }>(token);
+
+    return { token, jti, expiresAt: new Date(exp * 1000) };
+  }
+
+  verify(token: string, type: TokenType) {
+    return this.jwtService.verifyAsync(token, {
+      secret: this.getSecret(type),
+    });
+  }
+}

@@ -5,6 +5,8 @@ import { configValidationSchema } from './config/config.schema';
 import { DatabaseModule } from './database/database.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
+import { VerificationModule } from './modules/verification/verification.module';
+import { OutboxModule } from './modules/outbox/outbox.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { AuthModule } from './modules/auth/auth.module';
     DatabaseModule,
     UsersModule,
     AuthModule,
+    VerificationModule,
+    OutboxModule,
   ],
 })
 export class AppModule { }

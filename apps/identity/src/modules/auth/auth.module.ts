@@ -5,9 +5,11 @@ import { UsersModule } from '../users/users.module';
 import { AuthService } from './auth.service';
 import { AuthController } from './auth.controller';
 import { AUTH_USE_CASES } from './use-cases';
+import { VerificationModule } from '../verification/verification.module';
 
 @Module({
     imports: [
+      VerificationModule,
         UsersModule,
         JwtModule.registerAsync({
             inject: [ConfigService],

@@ -1,0 +1,130 @@
+syntax = "proto3";
+
+package booking;
+
+service BookingService {
+  rpc StartBooking (StartBookingRequest) returns (StartBookingResponse);
+  rpc ConfirmBooking (ConfirmBookingRequest) returns (ConfirmBookingResponse);
+  rpc ListTickets (ListTicketsRequest) returns (ListTicketsResponse);
+  rpc PreviewCancellation (TicketRequest) returns (CancellationPreviewResponse);
+  rpc CancelTicket (CancelTicketRequest) returns (TicketCancellationResponse);
+  rpc GetSharedTicket (GetSharedTicketRequest) returns (TicketResponse);
+  rpc DownloadTicket (DownloadTicketRequest) returns (DownloadTicketResponse);
+  rpc VerifyTicket (VerifyTicketRequest) returns (VerifyTicketResponse);
+}
+
+message BookingLeg {
+  string trip_id = 1;
+  string seat_class_id = 2;
+  string origin_station_id = 3;
+  string destination_station_id = 4;
+}
+
+message StartBookingRequest {
+  repeated string passenger_ids = 1;
+  repeated BookingLeg legs = 2;
+}
+
+message BookingSeat {
+  string passenger_id = 1;
+  string coach = 2;
+  string seat = 3;
+}
+
+message StartBookingResponse {
+  string hold_id = 1;
+  string expires_at = 2;
+  repeated BookingSeat seats = 3;
+  int64 fare_total_piastres = 4;
+  int64 booking_fee_piastres = 5;
+  int64 total_piastres = 6;
+}
+
+message ConfirmBookingRequest {
+  string hold_id = 1;
+  string payment_method_id = 2;
+  string idempotency_key = 3;
+}
+
+message ConfirmBookingResponse {
+  string booking_id = 1;
+  string booking_reference = 2;
+  repeated Ticket tickets = 3;
+}
+
+message ListTicketsRequest {
+  TicketListStatus status = 1;
+}
+
+enum TicketListStatus {
+  TICKET_LIST_STATUS_UNSPECIFIED = 0;
+  TICKET_LIST_STATUS_PAID = 1;
+  TICKET_LIST_STATUS_CANCELED = 2;
+}
+
+message Ticket {
+  string ticket_id = 1;
+  string booking_reference = 2;
+  string passenger_name = 3;
+  string train_number = 4;
+  string seat_class_name = 5;
+  string coach = 6;
+  string seat = 7;
+  string origin_station_name = 8;
+  string destination_station_name = 9;
+  string departure_at = 10;
+  string arrival_at = 11;
+  int64 fare_piastres = 12;
+  string status = 13;
+  string refund_status = 14;
+  string refund_date = 15;
+}
+
+message ListTicketsResponse {
+  repeated Ticket tickets = 1;
+}
+
+message TicketRequest {
+  string ticket_id = 1;
+}
+
+message CancellationPreviewResponse {
+  int64 refund_piastres = 1;
+  string outcome = 2;
+}
+
+message CancelTicketRequest {
+  string ticket_id = 1;
+  int64 previewed_refund_piastres = 2;
+}
+
+message TicketCancellationResponse {
+  Ticket ticket = 1;
+  int64 refund_piastres = 2;
+}
+
+message GetSharedTicketRequest {
+  string share_token = 1;
+}
+
+message TicketResponse {
+  Ticket ticket = 1;
+}
+
+message DownloadTicketRequest {
+  string ticket_id = 1;
+  string language = 2;
+}
+
+message DownloadTicketResponse {
+  bytes pdf = 1;
+}
+
+message VerifyTicketRequest {
+  string signed_qr_payload = 1;
+}
+
+message VerifyTicketResponse {
+  bool valid = 1;
+  string ticket_id = 2;
+}

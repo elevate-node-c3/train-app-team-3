@@ -9,29 +9,44 @@ service IdentityService {
   rpc ValidateSession (LogoutRequest) returns (SessionStatusResponse);
   rpc ForgotPassword (ForgotPasswordRequest) returns (OperationResponse);
   rpc VerifyOtp (VerifyOtpRequest) returns (OperationResponse);
+  rpc VerifyEmail (VerifyEmailRequest) returns (OperationResponse);
+  rpc ResendVerificationCode (ResendVerificationCodeRequest) returns (OperationResponse);
+  rpc RefreshSession (RefreshSessionRequest) returns (LoginResponse);
+  rpc ResetPassword (ResetPasswordRequest) returns (OperationResponse);
+  rpc SetPin (SetPinRequest) returns (OperationResponse);
+  rpc PinLogin (PinLoginRequest) returns (LoginResponse);
+  rpc GetProfile (GetProfileRequest) returns (ProfileResponse);
+  rpc CompleteProfile (CompleteProfileRequest) returns (ProfileResponse);
+  rpc ListPassengers (ListPassengersRequest) returns (ListPassengersResponse);
+  rpc SavePassenger (SavePassengerRequest) returns (PassengerResponse);
+  rpc DeletePassenger (DeletePassengerRequest) returns (OperationResponse);
 }
 
 message RegisterRequest {
   string email = 1;
   string password = 2;
+  string password_confirmation = 3;
 }
 
 message RegisterResponse {
   string id = 1;
   string email = 2;
   string accessToken = 3;
+  string refresh_token = 4;
 }
 
 message LoginRequest {
   string email = 1;
   string password = 2;
   string deviceInfo = 3;
+  string device_id = 4;
 }
 
 message LoginResponse {
   string id = 1;
   string email = 2;
   string accessToken = 3;
+  string refresh_token = 4;
 }
 
 message LogoutRequest {
@@ -48,6 +63,7 @@ message VerifyOtpRequest {
   string email = 1;
   string otp = 2;
   string userId = 3;
+  OtpPurpose purpose = 4;
 }
 
 message OperationResponse {
@@ -56,4 +72,87 @@ message OperationResponse {
 
 message SessionStatusResponse {
   bool active = 1;
+}
+
+enum OtpPurpose {
+  OTP_PURPOSE_UNSPECIFIED = 0;
+  OTP_PURPOSE_EMAIL_VERIFICATION = 1;
+  OTP_PURPOSE_PASSWORD_RESET = 2;
+}
+
+message VerifyEmailRequest {
+  string email = 1;
+  string code = 2;
+}
+
+message ResendVerificationCodeRequest {
+  string email = 1;
+}
+
+message RefreshSessionRequest {
+  string refresh_token = 1;
+}
+
+message ResetPasswordRequest {
+  string email = 1;
+  string code = 2;
+  string new_password = 3;
+}
+
+message SetPinRequest {
+  string device_id = 1;
+  string pin = 2;
+}
+
+message PinLoginRequest {
+  string device_id = 1;
+  string pin = 2;
+}
+
+message GetProfileRequest {
+}
+
+message CompleteProfileRequest {
+  string full_name = 1;
+  string egyptian_mobile_number = 2;
+  string national_id = 3;
+}
+
+message ProfileResponse {
+  string user_id = 1;
+  string full_name = 2;
+  string egyptian_mobile_number = 3;
+  string national_id = 4;
+  bool complete = 5;
+}
+
+message ListPassengersRequest {
+}
+
+message SavePassengerRequest {
+  string passenger_id = 1;
+  string full_name = 2;
+  string national_id = 3;
+  PassengerType type = 4;
+}
+
+message PassengerResponse {
+  string passenger_id = 1;
+  string full_name = 2;
+  string national_id = 3;
+  PassengerType type = 4;
+  bool is_self = 5;
+}
+
+message ListPassengersResponse {
+  repeated PassengerResponse passengers = 1;
+}
+
+message DeletePassengerRequest {
+  string passenger_id = 1;
+}
+
+enum PassengerType {
+  PASSENGER_TYPE_UNSPECIFIED = 0;
+  PASSENGER_TYPE_REGULAR = 1;
 }

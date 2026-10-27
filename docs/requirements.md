@@ -13,14 +13,14 @@
 
 You have **four sources of truth**, and you are expected to cross-read all of them:
 
-| Source | What it gives you |
-|---|---|
-| **This document** | The business: who the users are, what the product must do, the rules it must never break, the edge cases that will bite you, and the architecture you are required to use |
-| **The user stories** (`sprint-1-…` to `sprint-5-…`) | The backend work, story by story: the service flow (what a client sends, which services act, what the response or event carries), with rules and acceptance criteria per story |
-| **The Figma design** | Context, not a deliverable: no client UI is built in this project. The screens, states and copy show what your API must make possible. The **Presentation** page is the UX research behind it — read it, it explains *why* the product behaves the way it does |
-| **[`microservices-nestjs-guide.md`](../microservices-nestjs-guide.md)** | *How* to build microservices with NestJS, and the `MS-###` rules your code is reviewed against |
+| Source                                                                  | What it gives you                                                                                                                                                                                                                                              |
+| ----------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **This document**                                                       | The business: who the users are, what the product must do, the rules it must never break, the edge cases that will bite you, and the architecture you are required to use                                                                                      |
+| **The user stories** (`sprint-1-…` to `sprint-5-…`)                     | The backend work, story by story: the service flow (what a client sends, which services act, what the response or event carries), with rules and acceptance criteria per story                                                                                 |
+| **The Figma design**                                                    | Context, not a deliverable: no client UI is built in this project. The screens, states and copy show what your API must make possible. The **Presentation** page is the UX research behind it — read it, it explains _why_ the product behaves the way it does |
+| **[`microservices-nestjs-guide.md`](../microservices-nestjs-guide.md)** | _How_ to build microservices with NestJS, and the `MS-###` rules your code is reviewed against                                                                                                                                                                 |
 
-**What this document deliberately does NOT give you:** database tables, endpoints, `.proto` files, queue names or an event catalogue. **Those are your deliverables.** You are now designing a *system of services*, which means one more question on top of "what fields does a ticket have?" — **"which service owns a ticket, and who else needs to know about it?"**
+**What this document deliberately does NOT give you:** database tables, endpoints, `.proto` files, queue names or an event catalogue. **Those are your deliverables.** You are now delogining a _system of services_, which means one more question on top of "what fields does a ticket have?" — **"which service owns a ticket, and who else needs to know about it?"**
 
 > 💡 **The skill being trained:** splitting a product into services that can be built, deployed and broken independently — and keeping the data correct when the network between them is not.
 
@@ -30,20 +30,20 @@ You have **four sources of truth**, and you are expected to cross-read all of th
 
 **ENR** is the mobile app of the Egyptian National Railways: search train schedules between any two stations, book seats for up to four people, pay by card, carry the ticket as a QR code, and cancel with a clear refund.
 
-The design you are building is a **redesign**. A UX team studied the existing app, ran usability tests with real users, and rebuilt the flows. Their findings are in the Figma *Presentation* page, and they are your requirements just as much as the screens are.
+The design you are building is a **redesign**. A UX team studied the existing app, ran usability tests with real users, and rebuilt the flows. Their findings are in the Figma _Presentation_ page, and they are your requirements just as much as the screens are.
 
 ### 1.1 What the research found
 
-| Finding | What users said or did |
-|---|---|
-| The verification code was lost | *"Where is the OTP?!"* — 3 of 4 users could not find the code. The redesign's target: **the code arrives within 30 seconds, every time** |
-| Group seats were scattered | *"Seats weren't next to each other."* — a user restarted the whole booking twice to sit next to their companion |
-| The "Auto" button | Every participant was confused by an action that silently assigned seats |
-| Cards had to be re-entered | *"Saving card would make this easier"* — frequent travellers type their card every trip |
-| Errors did not help | *"The error is too generic — I don't know what to change: station, date, or round-trip option."* |
-| No way to narrow results | Users wanted to filter by time and price |
-| Mixed languages | Arabic and English appeared on the same screen; terms like "AC 2" meant nothing to occasional travellers |
-| National ID up front | *"Not all users want to provide their full 14-digit National ID just to create an account."* |
+| Finding                        | What users said or did                                                                                                                   |
+| ------------------------------ | ---------------------------------------------------------------------------------------------------------------------------------------- |
+| The verification code was lost | _"Where is the OTP?!"_ — 3 of 4 users could not find the code. The redesign's target: **the code arrives within 30 seconds, every time** |
+| Group seats were scattered     | _"Seats weren't next to each other."_ — a user restarted the whole booking twice to sit next to their companion                          |
+| The "Auto" button              | Every participant was confused by an action that silently assigned seats                                                                 |
+| Cards had to be re-entered     | _"Saving card would make this easier"_ — frequent travellers type their card every trip                                                  |
+| Errors did not help            | _"The error is too generic — I don't know what to change: station, date, or round-trip option."_                                         |
+| No way to narrow results       | Users wanted to filter by time and price                                                                                                 |
+| Mixed languages                | Arabic and English appeared on the same screen; terms like "AC 2" meant nothing to occasional travellers                                 |
+| National ID up front           | _"Not all users want to provide their full 14-digit National ID just to create an account."_                                             |
 
 ### 1.2 What that means for the backend
 
@@ -68,34 +68,34 @@ These are **not optional** and are the main grading criteria.
 
 ### 2.1 Stack
 
-| Requirement | Detail |
-|---|---|
-| **NestJS monorepo** | One repository per team, Nest monorepo mode: `apps/<service>` and `libs/<shared>`. Shared libraries hold cross-cutting code only (logging, config, envelope, outbox, contracts) — **never domain logic** |
-| **PostgreSQL, database per service** | One Postgres container is fine, but every service has **its own database and its own credentials**. No service ever connects to another service's database. ORM is your choice — justify it |
-| **Redis** | Mandatory. See §2.3 |
-| **RabbitMQ** | All asynchronous communication between services (domain events) |
-| **gRPC** | All synchronous service-to-service calls, with `.proto` contracts versioned in `libs/contracts` |
-| **API gateway** | The **only** service the mobile app talks to. REST under `/api/v1`, one response envelope |
-| **Stripe (test mode)** | Card payments, saved cards, refunds, webhooks. Each team uses its own free Stripe test account. Real card numbers never touch your servers |
-| **Docker Compose** | `docker compose up` brings up every service plus Postgres, Redis, RabbitMQ, Mailpit (email) and the Stripe CLI webhook forwarder. Health checks decide start order |
-| **TypeScript strict** | No `any` in domain code |
-| **Validation** | DTOs + global `ValidationPipe` with `whitelist` and `forbidNonWhitelisted` at the gateway; gRPC and event payloads validated at every service boundary |
-| **Configuration** | Every service validates its environment **at boot** and refuses to start on a missing or malformed variable |
-| **Testing** | Unit tests for every business rule, integration tests per service with real Postgres/Redis/RabbitMQ (Testcontainers), contract tests for `.proto` files and event schemas, end-to-end tests for the money flows |
+| Requirement                          | Detail                                                                                                                                                                                                          |
+| ------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **NestJS monorepo**                  | One repository per team, Nest monorepo mode: `apps/<service>` and `libs/<shared>`. Shared libraries hold cross-cutting code only (logging, config, envelope, outbox, contracts) — **never domain logic**        |
+| **PostgreSQL, database per service** | One Postgres container is fine, but every service has **its own database and its own credentials**. No service ever connects to another service's database. ORM is your choice — justify it                     |
+| **Redis**                            | Mandatory. See §2.3                                                                                                                                                                                             |
+| **RabbitMQ**                         | All asynchronous communication between services (domain events)                                                                                                                                                 |
+| **gRPC**                             | All synchronous service-to-service calls, with `.proto` contracts versioned in `libs/contracts`                                                                                                                 |
+| **API gateway**                      | The **only** service the mobile app talks to. REST under `/api/v1`, one response envelope                                                                                                                       |
+| **Stripe (test mode)**               | Card payments, saved cards, refunds, webhooks. Each team uses its own free Stripe test account. Real card numbers never touch your servers                                                                      |
+| **Docker Compose**                   | `docker compose up` brings up every service plus Postgres, Redis, RabbitMQ, Mailpit (email) and the Stripe CLI webhook forwarder. Health checks decide start order                                              |
+| **TypeScript strict**                | No `any` in domain code                                                                                                                                                                                         |
+| **Validation**                       | DTOs + global `ValidationPipe` with `whitelist` and `forbidNonWhitelisted` at the gateway; gRPC and event payloads validated at every service boundary                                                          |
+| **Configuration**                    | Every service validates its environment **at boot** and refuses to start on a missing or malformed variable                                                                                                     |
+| **Testing**                          | Unit tests for every business rule, integration tests per service with real Postgres/Redis/RabbitMQ (Testcontainers), contract tests for `.proto` files and event schemas, end-to-end tests for the money flows |
 
 ### 2.2 Microservice architecture — **the core learning goal**
 
 The system is split into the services below. **The split is given; the internals are yours.**
 
-| Service | Owns | Depends on |
-|---|---|---|
-| **gateway** | The public REST API, token verification, rate limiting, request routing and aggregation | calls every service (gRPC) |
-| **identity** | Accounts, email verification, sessions, PIN devices, the traveller's profile and saved passengers | listens to booking's issued tickets (to lock the self passenger's National ID, BR-12) |
-| **catalog** | Stations, trains, classes, coach layouts, timetables and dated trips, fares, search, recent searches, the **operations API** (timetables, fares, delays, cancellations) | listens to inventory's availability changes; needs to know whether a trip has sold seats before a timetable change (BR-50) |
-| **inventory** | Which seat is taken on which part of which trip, seat holds, seat allocation, availability counts | listens to catalog's trip publications, delays and cancellations |
-| **booking** | Bookings, the **booking saga**, tickets (QR, PDF, share), cancellation and refund policy | calls catalog, inventory, payment; needs identity's passengers (a call or a copy — your decision); listens to catalog's delays and cancellations |
-| **payment** | Stripe customers, saved cards, charges, refunds, Stripe webhooks | calls Stripe; receives Stripe's webhooks |
-| **notification** | Email, push and the in-app inbox behind the bell | listens to everyone's events |
+| Service          | Owns                                                                                                                                                                    | Depends on                                                                                                                                       |
+| ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **gateway**      | The public REST API, token verification, rate limiting, request routing and aggregation                                                                                 | calls every service (gRPC)                                                                                                                       |
+| **identity**     | Accounts, email verification, sessions, PIN devices, the traveller's profile and saved passengers                                                                       | listens to booking's issued tickets (to lock the self passenger's National ID, BR-12)                                                            |
+| **catalog**      | Stations, trains, classes, coach layouts, timetables and dated trips, fares, search, recent searches, the **operations API** (timetables, fares, delays, cancellations) | listens to inventory's availability changes; needs to know whether a trip has sold seats before a timetable change (BR-50)                       |
+| **inventory**    | Which seat is taken on which part of which trip, seat holds, seat allocation, availability counts                                                                       | listens to catalog's trip publications, delays and cancellations                                                                                 |
+| **booking**      | Bookings, the **booking saga**, tickets (QR, PDF, share), cancellation and refund policy                                                                                | calls catalog, inventory, payment; needs identity's passengers (a call or a copy — your decision); listens to catalog's delays and cancellations |
+| **payment**      | Stripe customers, saved cards, charges, refunds, Stripe webhooks                                                                                                        | calls Stripe; receives Stripe's webhooks                                                                                                         |
+| **notification** | Email, push and the in-app inbox behind the bell                                                                                                                        | listens to everyone's events                                                                                                                     |
 
 **What that means in practice:**
 
@@ -103,7 +103,7 @@ The system is split into the services below. **The split is given; the internals
 - Services never share tables, never import each other's domain code, and never call each other's databases. A service that needs a station name for a ticket **keeps its own copy**, fed by events.
 - When something business-meaningful happens, the owning service **publishes an event** through a **transactional outbox**. Every consumer is **idempotent**. Failed messages are retried with backoff and finally **dead-lettered**, never dropped.
 - Every synchronous call has a **deadline**. A slow service must not freeze the gateway.
-- One **correlation ID** follows a request through HTTP, gRPC and RabbitMQ, so you can answer: *"why did this user receive two refund emails?"*
+- One **correlation ID** follows a request through HTTP, gRPC and RabbitMQ, so you can answer: _"why did this user receive two refund emails?"_
 
 **You must decide and justify:**
 
@@ -111,9 +111,9 @@ The system is split into the services below. **The split is given; the internals
 2. **What crosses the wire.** For every sync call and every event: the payload, who validates it, and what happens when a field is added next sprint.
 3. **What each service copies from others** — and how stale that copy may be.
 4. **What happens when each service is down.** Walk through it for all seven: what still works, what degrades, what fails, and what message the user sees.
-5. **Where each cross-service invariant lives.** Example: *"the same National ID cannot hold two seats at the same time on the same train"* involves passengers (identity), seats (inventory) and bookings (booking). Exactly one service must enforce it. Which one, and with which data?
+5. **Where each cross-service invariant lives.** Example: _"the same National ID cannot hold two seats at the same time on the same train"_ involves passengers (identity), seats (inventory) and bookings (booking). Exactly one service must enforce it. Which one, and with which data?
 
-**Ownership.** Each student owns one or two services (suggested split: *gateway + identity* · *catalog* · *inventory* · *booking* · *payment + notification*). The owner is accountable for that service's design, its README, its contracts and its tests, and **reviews every pull request that touches it**. Sprint stories are split across the whole team — owning a service does not mean coding alone.
+**Ownership.** Each student owns one or two services (suggested split: _gateway + identity_ · _catalog_ · _inventory_ · _booking_ · _payment + notification_). The owner is accountable for that service's design, its README, its contracts and its tests, and **reviews every pull request that touches it**. Sprint stories are split across the whole team — owning a service does not mean coding alone.
 
 > 🎯 **Design deliverable (Sprint 1, day 2):** a **service map** (services, owned data, sync calls, events), the **event catalogue**, the **`.proto` contracts**, the **gateway endpoint table**, the **error catalogue**, an **ERD per service** (§7.3), a **sequence diagram of the booking saga** including its compensations, the **cache plan** (§2.3), the **five most dangerous edge cases** (§6) and **where each ruling lives** (§9). Mentor review **before** writing service code.
 
@@ -123,13 +123,13 @@ Every team uses Redis, and uses it deliberately. A cache that was added "because
 
 **Required uses:**
 
-| Where | What | Why |
-|---|---|---|
-| catalog | Station list, trip stops, search results | The most-read data in the system, changed rarely |
-| catalog | Availability counts on search results ("Available Seats: 170") | Read on every search; owned by inventory, so kept fresh by events |
-| gateway | Rate-limit counters, revoked-token list, idempotency-key responses | Must be shared by every gateway instance |
-| identity | Verification-code attempt and resend counters, failed sign-in counters | Must survive a restart and work across instances |
-| notification | Unread count behind the bell | Read on every screen |
+| Where        | What                                                                   | Why                                                               |
+| ------------ | ---------------------------------------------------------------------- | ----------------------------------------------------------------- |
+| catalog      | Station list, trip stops, search results                               | The most-read data in the system, changed rarely                  |
+| catalog      | Availability counts on search results ("Available Seats: 170")         | Read on every search; owned by inventory, so kept fresh by events |
+| gateway      | Rate-limit counters, revoked-token list, idempotency-key responses     | Must be shared by every gateway instance                          |
+| identity     | Verification-code attempt and resend counters, failed sign-in counters | Must survive a restart and work across instances                  |
+| notification | Unread count behind the bell                                           | Read on every screen                                              |
 
 **Rules the cache must follow:**
 
@@ -179,21 +179,21 @@ enr/
 └── README.md
 ```
 
-Each `apps/<service>` keeps its own vertical slices, migrations, seed and tests. If two services import the same *domain* class from `libs/`, they are one service pretending to be two.
+Each `apps/<service>` keeps its own vertical slices, migrations, seed and tests. If two services import the same _domain_ class from `libs/`, they are one service pretending to be two.
 
 ---
 
 ## 3. The Actors
 
-| Actor | Who they are | What they can do |
-|---|---|---|
-| **Visitor** | Has the app, no session | Choose a language, sign up, verify email, sign in, recover a password. **Nothing else** — there is no guest mode in this design |
-| **Traveller** | Signed-in account with a verified email | Search, filter, view stops, manage saved passengers and cards, read notifications |
-| **Bookable traveller** | A traveller whose profile is complete (§5.2) | Everything above, plus hold seats, pay, hold tickets, cancel |
-| **Passenger** | A person on a ticket. May or may not be the account holder | Nothing — passengers are data. The account holder books for them |
-| **Operator** | ENR staff, seeded account with an `operator` role | The operations API: publish timetables, change fares, delay or cancel a trip. **No UI** in this project |
-| **Conductor** | ENR staff on the train, seeded account with a `conductor` role | Scans a ticket QR. Needs a way to verify it — offline from the QR alone, and online when there is signal. **No UI** in this project |
-| **Stripe** | External payment provider | Charges cards, issues refunds, and calls your webhook |
+| Actor                  | Who they are                                                   | What they can do                                                                                                                    |
+| ---------------------- | -------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
+| **Visitor**            | Has the app, no session                                        | Choose a language, sign up, verify email, sign in, recover a password. **Nothing else** — there is no guest mode in this design     |
+| **Traveller**          | Signed-in account with a verified email                        | Search, filter, view stops, manage saved passengers and cards, read notifications                                                   |
+| **Bookable traveller** | A traveller whose profile is complete (§5.2)                   | Everything above, plus hold seats, pay, hold tickets, cancel                                                                        |
+| **Passenger**          | A person on a ticket. May or may not be the account holder     | Nothing — passengers are data. The account holder books for them                                                                    |
+| **Operator**           | ENR staff, seeded account with an `operator` role              | The operations API: publish timetables, change fares, delay or cancel a trip. **No UI** in this project                             |
+| **Conductor**          | ENR staff on the train, seeded account with a `conductor` role | Scans a ticket QR. Needs a way to verify it — offline from the QR alone, and online when there is signal. **No UI** in this project |
+| **Stripe**             | External payment provider                                      | Charges cards, issues refunds, and calls your webhook                                                                               |
 
 **Ownership rule:** bookings, tickets, saved passengers, saved cards and notifications belong to exactly one account. Asking for someone else's returns **404**.
 
@@ -230,13 +230,13 @@ Read them alongside the Figma screens. Every screen in Appendix C is in scope.
 - **Home** — One way / Round trip, From, To (with swap), Departure Date, Return Date, Seat Class, and an optional Train Number.
 - **Results** — header with route, date and class; a **5-day date strip**; one card per trip with stations, times, dates, duration, available seats, number of stops and the fare; an edit action that returns to the search form.
 - **Stops** — tapping "4 Stops" shows the timeline of stations and times for that trip.
-- **Empty state** — *"Sorry, no trains available on the selected date"* with **Select Another Date**.
+- **Empty state** — _"Sorry, no trains available on the selected date"_ with **Select Another Date**.
 - **Filters and sorting** — what the research asked for: departure time window, maximum price, train type; sort by departure time, duration or price.
 - **Recent searches** — on Home, per traveller.
 
 ### Module 5 — Seats and holds (`inventory`)
 
-- **Availability** per trip, class and *segment* (the part of the route between the passenger's two stations).
+- **Availability** per trip, class and _segment_ (the part of the route between the passenger's two stations).
 - **Allocation** — the server picks the seats, keeping groups together (BR-25).
 - **Holds** — seats reserved for 15 minutes while the traveller reviews and pays (BR-26).
 
@@ -245,8 +245,8 @@ Read them alongside the Figma screens. Every screen in Appendix C is in scope.
 - **Choose passengers** — from saved passengers, up to four, with "+ Add new passenger".
 - **Review tickets** — per passenger: coach and seat; the terms checkbox; the **reservation countdown**.
 - **Payment summary** — Price, Booking Fee (7.0%), Total.
-- **Confirmation** — *"Payment Success! Thank you! Your booking has been confirmed!"*
-- **Tickets tab** — Paid and Canceled. Each card: stations, times, dates, duration, train number, class, coach/seat, passenger name, fare. Actions: **Share, QR, Download, Cancel trip**. Cancelled cards show a refund badge: *In Progress* with "Refund date: Pending", or *Refunded* with the date.
+- **Confirmation** — _"Payment Success! Thank you! Your booking has been confirmed!"_
+- **Tickets tab** — Paid and Canceled. Each card: stations, times, dates, duration, train number, class, coach/seat, passenger name, fare. Actions: **Share, QR, Download, Cancel trip**. Cancelled cards show a refund badge: _In Progress_ with "Refund date: Pending", or _Refunded_ with the date.
 
 ### Module 7 — Payments (`payment`)
 
@@ -268,11 +268,11 @@ Read them alongside the Figma screens. Every screen in Appendix C is in scope.
 
 - **Email** — verification codes, booking confirmation with tickets, cancellation, refund completed, delay, trip cancelled, reminders.
 - **Push** — the same events, to registered devices (a simulated push provider is acceptable).
-- **In-app inbox** — behind the bell; unread badge; mark as read. *The inbox screen is not designed — you define its API.*
+- **In-app inbox** — behind the bell; unread badge; mark as read. _The inbox screen is not designed — you define its API._
 
 ### Module 11 — Settings
 
-- **Profile**, **Payment Methods**, **Logout**. Theme and language are device preferences, but the account's language is stored on the server so emails and push use it (BR-56). *Contact Us* and *FAQs* are not designed — out of scope.
+- **Profile**, **Payment Methods**, **Logout**. Theme and language are device preferences, but the account's language is stored on the server so emails and push use it (BR-56). _Contact Us_ and _FAQs_ are not designed — out of scope.
 
 ---
 
@@ -282,111 +282,111 @@ Breaking one of these is a functional bug.
 
 ### 5.1 Accounts and access
 
-| # | Rule |
-|---|---|
-| BR-01 | Every endpoint requires a signed-in traveller with a verified email, **except**: sign up, verify email, resend code, sign in, refresh, forgot password, reset password, PIN sign-in, opening a shared ticket link, the Stripe webhook (which must verify Stripe's signature instead), and health checks. Operator and conductor endpoints require their role. |
-| BR-02 | Sign up takes an **email, a password and its confirmation**. The email is unique, case-insensitive and trimmed. The password has **at least 8 characters including a letter, a digit and a symbol**. The confirmation must match. |
-| BR-03 | Email verification uses a **6-digit code, valid for 10 minutes**, single-use, valid only for the purpose it was issued for (verification vs password reset). Requesting a new code kills the previous one. The code is **never** in an API response. It is sent asynchronously and must reach the inbox **within 30 seconds** — measure it. |
+| #     | Rule                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ----- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BR-01 | Every endpoint requires a signed-in traveller with a verified email, **except**: sign up, verify email, resend code, sign in, refresh, forgot password, reset password, PIN sign-in, opening a shared ticket link, the Stripe webhook (which must verify Stripe's signature instead), and health checks. Operator and conductor endpoints require their role.                                                   |
+| BR-02 | Sign up takes an **email, a password and its confirmation**. The email is unique, case-insensitive and trimmed. The password has **at least 8 characters including a letter, a digit and a symbol**. The confirmation must match.                                                                                                                                                                               |
+| BR-03 | Email verification uses a **6-digit code, valid for 10 minutes**, single-use, valid only for the purpose it was issued for (verification vs password reset). Requesting a new code kills the previous one. The code is **never** in an API response. It is sent asynchronously and must reach the inbox **within 30 seconds** — measure it.                                                                     |
 | BR-04 | A code dies after **5 wrong attempts**. "Send Again" is allowed after **120 seconds** (the design's countdown), at most **5 codes per hour per email**. **10 failed sign-ins lock the account for 15 minutes** (failures are counted per normalized email, a success resets the count, and the count expires 15 minutes after the last failure). Counters live in Redis and work across instances and restarts. |
-| BR-05 | An unverified account can do nothing except verify. Signing in to it returns a *verification required* outcome so the app can show the Verify screen. |
-| BR-06 | A session is a **short-lived access token (≤ 15 minutes)** and a **rotating refresh token** whose lifetime you choose and justify (at most 30 days). Reusing an already-rotated refresh token revokes the whole session. Sign-out revokes the refresh token and the access token immediately (the gateway rejects it until it expires). A password reset signs the account out everywhere. |
-| BR-07 | A **4-digit PIN** unlocks **one registered device**. The PIN is stored hashed and is useless on any other device. It never replaces the password on a new device. **5 wrong PINs** revoke that device's credential and require the password. Touch ID / Face ID never reach the server — they unlock the same device credential the PIN does. |
-| BR-08 | "Forgot password" sends a reset code by email (same rules as BR-03/BR-04). The response is **identical whether or not the email exists**. The new password must differ from the current one. |
-| BR-09 | Someone else's booking, ticket, passenger, card or notification is a **404**. |
+| BR-05 | An unverified account can do nothing except verify. logining in to it returns a _verification required_ outcome so the app can show the Verify screen.                                                                                                                                                                                                                                                          |
+| BR-06 | A session is a **short-lived access token (≤ 15 minutes)** and a **rotating refresh token** whose lifetime you choose and justify (at most 30 days). Reusing an already-rotated refresh token revokes the whole session. Sign-out revokes the refresh token and the access token immediately (the gateway rejects it until it expires). A password reset signs the account out everywhere.                      |
+| BR-07 | A **4-digit PIN** unlocks **one registered device**. The PIN is stored hashed and is useless on any other device. It never replaces the password on a new device. **5 wrong PINs** revoke that device's credential and require the password. Touch ID / Face ID never reach the server — they unlock the same device credential the PIN does.                                                                   |
+| BR-08 | "Forgot password" sends a reset code by email (same rules as BR-03/BR-04). The response is **identical whether or not the email exists**. The new password must differ from the current one.                                                                                                                                                                                                                    |
+| BR-09 | Someone else's booking, ticket, passenger, card or notification is a **404**.                                                                                                                                                                                                                                                                                                                                   |
 
 ### 5.2 Profile and passengers
 
-| # | Rule |
-|---|---|
-| BR-10 | Before the **first seat hold**, the traveller must complete their profile: **full name, Egyptian mobile number, National ID**. Skipping is allowed; the hold is refused with a code that sends the app to *Complete your profile*. The mobile number is unique across accounts (normalized: `01001234567` and `+201001234567` are the same). The National ID is unique across **account holders**. Completing the profile creates the traveller's own **"self" passenger**. Ownership of the phone number and National ID is **not verified** in this project (there is no SMS channel); a value already claimed by another account is refused with a specific error, and resolving such disputes is out of scope (Appendix A). |
-| BR-11 | A National ID is **14 digits** whose structure is valid: century digit (`2` = 1900s, `3` = 2000s), a real birth date that is not in the future, and a known governorate code. Anything else is rejected with a specific error. |
-| BR-12 | A traveller saves **up to 10 passengers** besides their self passenger: full name, National ID, type. A National ID appears **at most once in one traveller's list** — but two travellers may both save the same person. Editing or deleting a passenger never changes a ticket already issued: tickets keep their own copy. The self passenger cannot be deleted, and its National ID cannot change once a ticket was issued for it. |
-| BR-13 | The only passenger type today is **Regular**, and the only nationality is **Egyptian**. Your model must allow discounted types (student, senior, military, child) later without a migration of existing data. |
+| #     | Rule                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BR-10 | Before the **first seat hold**, the traveller must complete their profile: **full name, Egyptian mobile number, National ID**. Skipping is allowed; the hold is refused with a code that sends the app to _Complete your profile_. The mobile number is unique across accounts (normalized: `01001234567` and `+201001234567` are the same). The National ID is unique across **account holders**. Completing the profile creates the traveller's own **"self" passenger**. Ownership of the phone number and National ID is **not verified** in this project (there is no SMS channel); a value already claimed by another account is refused with a specific error, and resolving such disputes is out of scope (Appendix A). |
+| BR-11 | A National ID is **14 digits** whose structure is valid: century digit (`2` = 1900s, `3` = 2000s), a real birth date that is not in the future, and a known governorate code. Anything else is rejected with a specific error.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  |
+| BR-12 | A traveller saves **up to 10 passengers** besides their self passenger: full name, National ID, type. A National ID appears **at most once in one traveller's list** — but two travellers may both save the same person. Editing or deleting a passenger never changes a ticket already issued: tickets keep their own copy. The self passenger cannot be deleted, and its National ID cannot change once a ticket was issued for it.                                                                                                                                                                                                                                                                                           |
+| BR-13 | The only passenger type today is **Regular**, and the only nationality is **Egyptian**. Your model must allow discounted types (student, senior, military, child) later without a migration of existing data.                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   |
 
 ### 5.3 Network, search and fares
 
-| # | Rule |
-|---|---|
-| BR-14 | A **trip** is one dated run of a train, with an ordered list of stops and an arrival and departure time at each. All times are **Africa/Cairo**. A trip may arrive the **next day**. |
-| BR-15 | A traveller may search between **any two stations a trip stops at, in travel order**. Banha → Tanta is a valid search on a Cairo → Alexandria train. The same station as From and To is rejected. |
+| #     | Rule                                                                                                                                                                                                                                                                                                                                                                                                                    |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BR-14 | A **trip** is one dated run of a train, with an ordered list of stops and an arrival and departure time at each. All times are **Africa/Cairo**. A trip may arrive the **next day**.                                                                                                                                                                                                                                    |
+| BR-15 | A traveller may search between **any two stations a trip stops at, in travel order**. Banha → Tanta is a valid search on a Cairo → Alexandria train. The same station as From and To is rejected.                                                                                                                                                                                                                       |
 | BR-16 | Search returns trips that **depart the origin station on the selected Cairo date**, have not departed yet, are within the **booking window — today plus the next 29 days, in Cairo calendar days** — are not cancelled, and whose sales are open. **Sales close 15 minutes before departure from the passenger's origin station.** A trip with **zero seats** in the chosen class is **shown as sold out**, not hidden. |
-| BR-17 | Each result carries: train number, train type, class, departure station, time and date, arrival station, time and date, duration, the number of stops **between** the passenger's stations, available seats for that class **on that segment**, and the fare. |
-| BR-18 | Optional Train Number narrows the search to that train. Filters: departure time window, maximum fare, train type. Sorting: **departure time (default)**, duration, fare. Filters apply to the fare **without** the booking fee. |
-| BR-19 | A fare depends on **train, class, and origin–destination pair**. The fare shown in results excludes the 7% booking fee; the payment summary shows both. |
-| BR-20 | **Round trip:** the return date is on or after the departure date; the return search is the reverse route; a return trip must **depart after** the chosen outbound trip **arrives**. |
-| BR-21 | **Recent searches:** the last **5** per traveller, newest first, without duplicates. |
-| BR-22 | Station search works in **Arabic and English**. Arabic matching ignores the differences users don't type consistently: `أ إ آ → ا`, `ة → ه`, `ى → ي`, diacritics, tatweel, and a leading `ال` — so "اسكندريه" finds "الإسكندرية". Class names are plain words ("First Class AC"), never codes like "AC 1" (research finding). |
+| BR-17 | Each result carries: train number, train type, class, departure station, time and date, arrival station, time and date, duration, the number of stops **between** the passenger's stations, available seats for that class **on that segment**, and the fare.                                                                                                                                                           |
+| BR-18 | Optional Train Number narrows the search to that train. Filters: departure time window, maximum fare, train type. Sorting: **departure time (default)**, duration, fare. Filters apply to the fare **without** the booking fee.                                                                                                                                                                                         |
+| BR-19 | A fare depends on **train, class, and origin–destination pair**. The fare shown in results excludes the 7% booking fee; the payment summary shows both.                                                                                                                                                                                                                                                                 |
+| BR-20 | **Round trip:** the return date is on or after the departure date; the return search is the reverse route; a return trip must **depart after** the chosen outbound trip **arrives**.                                                                                                                                                                                                                                    |
+| BR-21 | **Recent searches:** the last **5** per traveller, newest first, without duplicates.                                                                                                                                                                                                                                                                                                                                    |
+| BR-22 | Station search works in **Arabic and English**. Arabic matching ignores the differences users don't type consistently: `أ إ آ → ا`, `ة → ه`, `ى → ي`, diacritics, tatweel, and a leading `ال` — so "اسكندريه" finds "الإسكندرية". Class names are plain words ("First Class AC"), never codes like "AC 1" (research finding).                                                                                           |
 
 ### 5.4 Seats and holds
 
-| # | Rule |
-|---|---|
-| BR-23 | Seats are **segment-aware.** A seat sold from Cairo to Tanta is **free again from Tanta onward**. A seat is free for a segment only if **no active hold and no sold ticket overlaps** that segment. Touching segments do not overlap: Cairo→Tanta and Tanta→Alexandria can share a seat. |
-| BR-24 | The availability count for a result is the number of seats in that class that are free for the **whole** requested segment. |
-| BR-25 | **The server allocates seats.** For a group it tries, in order: **all side by side in one coach**, then **all in one coach**, then **split across coaches**. A split is **shown on Review Tickets before payment** — never silently. The traveller can accept the allocation or abandon the hold. |
-| BR-26 | A hold reserves the allocated seats for **15 minutes** (the design's *Reservation Time* countdown). It is extended **once by 5 minutes** when the bank's 3-D Secure step starts. An expired hold is **released automatically** and its seats return to the pool. A hold covers **all passengers and all legs, or nothing**. A hold — and its extension — never outlives the close of sales at the passenger's origin (BR-16). |
-| BR-27 | The same **National ID cannot occupy two seats on overlapping segments of the same trip** — across all bookings and all accounts. An active hold counts as occupying, so the duplicate is refused when the second hold is made, not at payment. |
-| BR-28 | A booking has **1 to 4 passengers**. A traveller has **at most one active hold**; starting a new one releases the previous one. |
-| BR-29 | A hold **never** uses a cached availability count. It is decided by inventory's database at the moment of the hold. |
+| #     | Rule                                                                                                                                                                                                                                                                                                                                                                                                                          |
+| ----- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BR-23 | Seats are **segment-aware.** A seat sold from Cairo to Tanta is **free again from Tanta onward**. A seat is free for a segment only if **no active hold and no sold ticket overlaps** that segment. Touching segments do not overlap: Cairo→Tanta and Tanta→Alexandria can share a seat.                                                                                                                                      |
+| BR-24 | The availability count for a result is the number of seats in that class that are free for the **whole** requested segment.                                                                                                                                                                                                                                                                                                   |
+| BR-25 | **The server allocates seats.** For a group it tries, in order: **all side by side in one coach**, then **all in one coach**, then **split across coaches**. A split is **shown on Review Tickets before payment** — never silently. The traveller can accept the allocation or abandon the hold.                                                                                                                             |
+| BR-26 | A hold reserves the allocated seats for **15 minutes** (the design's _Reservation Time_ countdown). It is extended **once by 5 minutes** when the bank's 3-D Secure step starts. An expired hold is **released automatically** and its seats return to the pool. A hold covers **all passengers and all legs, or nothing**. A hold — and its extension — never outlives the close of sales at the passenger's origin (BR-16). |
+| BR-27 | The same **National ID cannot occupy two seats on overlapping segments of the same trip** — across all bookings and all accounts. An active hold counts as occupying, so the duplicate is refused when the second hold is made, not at payment.                                                                                                                                                                               |
+| BR-28 | A booking has **1 to 4 passengers**. A traveller has **at most one active hold**; starting a new one releases the previous one.                                                                                                                                                                                                                                                                                               |
+| BR-29 | A hold **never** uses a cached availability count. It is decided by inventory's database at the moment of the hold.                                                                                                                                                                                                                                                                                                           |
 
 ### 5.5 Booking and payment
 
-| # | Rule |
-|---|---|
-| BR-30 | The fare shown when the hold was created is the fare charged. A fare change after that does not affect the held booking. |
-| BR-31 | **Booking fee = 7% of the total fare**, rounded **half-up to the nearest piastre**. **Total = fares + booking fee.** All amounts are integer piastres everywhere, including Stripe. |
-| BR-32 | Payment is by card through Stripe. Card number and CVV **never** reach your servers, logs or database. A card is saved only when the traveller saves it; a saved card is a Stripe payment method attached to the traveller's Stripe customer. |
-| BR-33 | A booking is **confirmed only when the payment service has verified the payment with Stripe** (signed webhook or a server-side check) — never because the app says the payment succeeded. |
-| BR-34 | A declined payment creates **no tickets**. The hold stays until it expires, so the traveller can retry with another card. |
-| BR-35 | **Never charged without tickets, never tickets without a charge.** A double tap, an app retry, a duplicate webhook or a crashed service never produces two charges, two bookings or missing tickets. |
+| #     | Rule                                                                                                                                                                                                                                                           |
+| ----- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BR-30 | The fare shown when the hold was created is the fare charged. A fare change after that does not affect the held booking.                                                                                                                                       |
+| BR-31 | **Booking fee = 7% of the total fare**, rounded **half-up to the nearest piastre**. **Total = fares + booking fee.** All amounts are integer piastres everywhere, including Stripe.                                                                            |
+| BR-32 | Payment is by card through Stripe. Card number and CVV **never** reach your servers, logs or database. A card is saved only when the traveller saves it; a saved card is a Stripe payment method attached to the traveller's Stripe customer.                  |
+| BR-33 | A booking is **confirmed only when the payment service has verified the payment with Stripe** (signed webhook or a server-side check) — never because the app says the payment succeeded.                                                                      |
+| BR-34 | A declined payment creates **no tickets**. The hold stays until it expires, so the traveller can retry with another card.                                                                                                                                      |
+| BR-35 | **Never charged without tickets, never tickets without a charge.** A double tap, an app retry, a duplicate webhook or a crashed service never produces two charges, two bookings or missing tickets.                                                           |
 | BR-36 | If a payment succeeds **after the hold expired**: re-acquire the same seats if they are still free; otherwise allocate new seats under BR-25 and tell the traveller; if no seats exist, **refund in full, including the booking fee**, and tell the traveller. |
 
 ### 5.6 Tickets
 
-| # | Rule |
-|---|---|
-| BR-37 | A confirmed booking produces **one ticket per passenger per leg**, under one **booking reference**. A ticket keeps its own copy of everything printed on it: passenger name and National ID, train, class, coach, seat, stations, times, fare. |
-| BR-38 | The ticket **QR is a signed payload** that a conductor can verify **offline**, from the QR alone. The online verification endpoint additionally rejects a **cancelled or voided** ticket. A forged or altered QR fails both. |
-| BR-39 | **Share** produces a signed link that opens the ticket without signing in and **expires when the trip arrives**. **Download** produces a PDF in the request's language; the PDF attached to the confirmation email uses the account's language (BR-56). A cancelled ticket can no longer be shared or downloaded. |
-| BR-40 | The Tickets tab has **Paid** (upcoming tickets first, soonest departure first; then past tickets, most recent first) and **Canceled** (cancelled or voided tickets with their refund status). |
+| #     | Rule                                                                                                                                                                                                                                                                                                               |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| BR-37 | A confirmed booking produces **one ticket per passenger per leg**, under one **booking reference**. A ticket keeps its own copy of everything printed on it: passenger name and National ID, train, class, coach, seat, stations, times, fare.                                                                     |
+| BR-38 | The ticket **QR is a signed payload** that a conductor can verify **offline**, from the QR alone. The online verification endpoint additionally rejects a **cancelled or voided** ticket. A forged or altered QR fails both.                                                                                       |
+| BR-39 | **Share** produces a signed link that opens the ticket without logining in and **expires when the trip arrives**. **Download** produces a PDF in the request's language; the PDF attached to the confirmation email uses the account's language (BR-56). A cancelled ticket can no longer be shared or downloaded. |
+| BR-40 | The Tickets tab has **Paid** (upcoming tickets first, soonest departure first; then past tickets, most recent first) and **Canceled** (cancelled or voided tickets with their refund status).                                                                                                                      |
 
 ### 5.7 Cancellation and refunds
 
-| # | Rule |
-|---|---|
-| BR-41 | Each ticket — one passenger, one leg — is cancelled **on its own**. Cancelling one passenger's ticket does not touch the others. |
+| #     | Rule                                                                                                                                                                                                                                                                                                                                                                      |
+| ----- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| BR-41 | Each ticket — one passenger, one leg — is cancelled **on its own**. Cancelling one passenger's ticket does not touch the others.                                                                                                                                                                                                                                          |
 | BR-42 | The refund depends on the time left until the **passenger's boarding time**: **24 hours or more → 100% of the fare** · **2 to 24 hours → 50% of the fare** · **less than 2 hours, or after departure → cancellation refused**. The boundaries favour the passenger: exactly 24h00m00s is 100%, exactly 2h00m00s is 50%. Half of an odd number of piastres rounds half-up. |
-| BR-43 | The traveller sees the refund amount **before** confirming. The server decides at the moment of confirmation; if the outcome changed since the preview (a boundary was crossed), the cancellation is **refused with an *outcome changed* code and the new preview** — never silently applied. |
-| BR-44 | Cancelling frees **exactly that ticket's seat on that ticket's segment**, immediately bookable by someone else. |
-| BR-45 | On a traveller's cancellation, the **booking fee is never refunded**. |
-| BR-46 | A refund has its own lifecycle: **Pending** (badge *In Progress*, "Refund date: Pending") → **Refunded** (badge *Refunded*, the date) when Stripe confirms it — or **Failed**, which operators must be able to see and retry. The sum of all refunds on a booking never exceeds what was charged. |
-| BR-47 | A ticket can be cancelled only once. Two cancellations of the same ticket at the same time produce **one** refund. |
+| BR-43 | The traveller sees the refund amount **before** confirming. The server decides at the moment of confirmation; if the outcome changed since the preview (a boundary was crossed), the cancellation is **refused with an _outcome changed_ code and the new preview** — never silently applied.                                                                             |
+| BR-44 | Cancelling frees **exactly that ticket's seat on that ticket's segment**, immediately bookable by someone else.                                                                                                                                                                                                                                                           |
+| BR-45 | On a traveller's cancellation, the **booking fee is never refunded**.                                                                                                                                                                                                                                                                                                     |
+| BR-46 | A refund has its own lifecycle: **Pending** (badge _In Progress_, "Refund date: Pending") → **Refunded** (badge _Refunded_, the date) when Stripe confirms it — or **Failed**, which operators must be able to see and retry. The sum of all refunds on a booking never exceeds what was charged.                                                                         |
+| BR-47 | A ticket can be cancelled only once. Two cancellations of the same ticket at the same time produce **one** refund.                                                                                                                                                                                                                                                        |
 
 ### 5.8 Operations and disruptions
 
-| # | Rule |
-|---|---|
-| BR-48 | When ENR **cancels a trip**, every ticket on it is **voided** and refunded **100% of the fare plus that ticket's share of the booking fee**. Each ticket's fee share is fixed once, when the booking is paid, and the shares of a booking **add up exactly to the fee charged** — so voiding every ticket returns exactly the fee, never a piastre more or less. Every affected traveller is notified. The trip disappears from search, and its seats can no longer be held. A trip can be cancelled only before it leaves its first stop. |
-| BR-49 | When ENR **delays a trip**, the delay is declared **from a stop**: that stop's departure and every later stop shift by N minutes, delays on the same trip **add up**, and every affected traveller is notified. If the total delay at the passenger's boarding station is **60 minutes or more**, that ticket may be cancelled for a **full fare refund** regardless of BR-42 — including inside the last 2 hours, until the delayed departure. |
-| BR-49a | After a delay, every rule that uses a boarding, departure or arrival time — sales close (BR-16), the refund tiers (BR-42), the share-link expiry (BR-39) and reminders (BR-53) — uses the **delayed** time. Search still lists the trip under its scheduled date. |
-| BR-50 | A published trip with sold tickets can't be silently rewritten. Time changes go through the *delay* operation. Removing a stop that tickets board or leave at is refused. |
-| BR-51 | A fare change applies to **new holds only** (BR-30). |
-| BR-52 | Every operations action is **audited**: who, when, what, and how many tickets it affected. |
+| #      | Rule                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| BR-48  | When ENR **cancels a trip**, every ticket on it is **voided** and refunded **100% of the fare plus that ticket's share of the booking fee**. Each ticket's fee share is fixed once, when the booking is paid, and the shares of a booking **add up exactly to the fee charged** — so voiding every ticket returns exactly the fee, never a piastre more or less. Every affected traveller is notified. The trip disappears from search, and its seats can no longer be held. A trip can be cancelled only before it leaves its first stop. |
+| BR-49  | When ENR **delays a trip**, the delay is declared **from a stop**: that stop's departure and every later stop shift by N minutes, delays on the same trip **add up**, and every affected traveller is notified. If the total delay at the passenger's boarding station is **60 minutes or more**, that ticket may be cancelled for a **full fare refund** regardless of BR-42 — including inside the last 2 hours, until the delayed departure.                                                                                            |
+| BR-49a | After a delay, every rule that uses a boarding, departure or arrival time — sales close (BR-16), the refund tiers (BR-42), the share-link expiry (BR-39) and reminders (BR-53) — uses the **delayed** time. Search still lists the trip under its scheduled date.                                                                                                                                                                                                                                                                          |
+| BR-50  | A published trip with sold tickets can't be silently rewritten. Time changes go through the _delay_ operation. Removing a stop that tickets board or leave at is refused.                                                                                                                                                                                                                                                                                                                                                                  |
+| BR-51  | A fare change applies to **new holds only** (BR-30).                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       |
+| BR-52  | Every operations action is **audited**: who, when, what, and how many tickets it affected.                                                                                                                                                                                                                                                                                                                                                                                                                                                 |
 
 ### 5.9 Notifications
 
-| # | Rule |
-|---|---|
+| #     | Rule                                                                                                                                                                                                                                                                                                                         |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | BR-53 | Notified events — each by **email, push and inbox**: **booking confirmed** (the email carries the tickets), **ticket cancelled**, **refund completed**, **trip delayed**, **trip cancelled**, **reminders** 24 hours and 2 hours before boarding. Verification and reset codes are email-only and never stored in the inbox. |
-| BR-54 | A notification failure **never** undoes a business action, and the same event never notifies twice. |
-| BR-55 | Reminders for a cancelled ticket or a cancelled trip are **never sent**. |
+| BR-54 | A notification failure **never** undoes a business action, and the same event never notifies twice.                                                                                                                                                                                                                          |
+| BR-55 | Reminders for a cancelled ticket or a cancelled trip are **never sent**.                                                                                                                                                                                                                                                     |
 
 ### 5.10 Language and errors
 
-| # | Rule |
-|---|---|
+| #     | Rule                                                                                                                                                                                                                                                                                                                                     |
+| ----- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | BR-56 | Every message shown to a user is identified by a **stable code** and rendered in the requested language (`Accept-Language`: `ar` or `en`; anything else falls back to Arabic). Emails and push use the **language stored on the account**, because there is no request to read it from. Station and class names exist in both languages. |
-| BR-57 | Every error tells the user **what to change**: which field, which value, and what to do next — never "Something went wrong". (Research finding: *"I don't know what to change: station, date, or round-trip option."*) |
+| BR-57 | Every error tells the user **what to change**: which field, which value, and what to do next — never "Something went wrong". (Research finding: _"I don't know what to change: station, date, or round-trip option."_)                                                                                                                   |
 
 ---
 
@@ -491,7 +491,7 @@ Group them by **owning service**:
 
 ### 7.2 Design decisions you must make and defend
 
-1. **How do you represent "seat 44 is taken from Banha to Tanta"?** One row per seat per segment? One row per seat with a range of stop indexes? A bitmask? *Hint: PostgreSQL has range types and exclusion constraints. Find out what `EXCLUDE USING gist` can guarantee that an `if` statement cannot.*
+1. **How do you represent "seat 44 is taken from Banha to Tanta"?** One row per seat per segment? One row per seat with a range of stop indexes? A bitmask? _Hint: PostgreSQL has range types and exclusion constraints. Find out what `EXCLUDE USING gist` can guarantee that an `if` statement cannot._
 2. **How is "two travellers, one seat, same instant" made impossible?** Where exactly does the guarantee live, and what error does the loser get?
 3. **Timetable vs dated trip.** Do you store trips ahead of time or compute them? How far ahead? What generates them, and what happens on a DST night?
 4. **Where does the fare live** so that it depends on train, class and origin–destination — without a table with a million rows?
@@ -521,7 +521,7 @@ You are not given endpoints, `.proto` files or events. Derive them from the Figm
 2. **Gateway endpoint table** — method, path, purpose, access (public / traveller / bookable traveller / operator / conductor), and which services it calls, for every screen in Appendix C.
 3. **`.proto` contracts** for every synchronous call, with deadlines and the errors each method can return.
 4. **Event catalogue** — name (past tense), producer, when it is published, payload, version, every consumer and what each consumer does with it.
-5. **Error catalogue** — stable codes for every failure the app must react to differently (e.g. *email taken*, *code expired*, *profile incomplete*, *seat taken*, *hold expired*, *payment declined*, *outcome changed*, *cancellation window closed*), with the HTTP status and the Arabic and English message.
+5. **Error catalogue** — stable codes for every failure the app must react to differently (e.g. _email taken_, _code expired_, _profile incomplete_, _seat taken_, _hold expired_, _payment declined_, _outcome changed_, _cancellation window closed_), with the HTTP status and the Arabic and English message.
 6. **Booking saga sequence diagram** — happy path, decline, hold expiry, late payment, crash in the middle.
 7. **Cache plan** (§2.3).
 
@@ -533,22 +533,22 @@ You are not given endpoints, `.proto` files or events. Derive them from the Figm
 
 The design does not answer everything. The product team ruled on the questions below. **These are requirements.** The right-hand column is still your work.
 
-| # | The question | The ruling | What you must design |
-|---|---|---|---|
-| D1 | Does a seat belong to the whole train run, or to a part of it? | **To a segment.** A seat freed at Tanta is sold again from Tanta (BR-23). | A representation of "taken from stop *i* to stop *j*" that the database can protect against overlap |
-| D2 | Who picks the seats? | **The server**, keeping the group side by side, then in one coach, then split — and a split is shown before payment (BR-25). | An allocation algorithm over a coach layout, and a definition of "adjacent" for that layout |
-| D3 | How long can seats be held? | **15 minutes**, plus **5** once for 3-D Secure (BR-26). | What releases abandoned holds — reliably, at volume — and what the traveller sees after expiry |
-| D4 | Must users give a National ID at sign-up? | **No.** Sign-up is email + password. The profile, including the National ID, is required before the **first hold** (BR-10). | How the system expresses "signed in, but not bookable" — enforced once, not in every handler |
-| D5 | How many passengers per booking? | **1 to 4**, from saved passengers (BR-28). | — |
-| D6 | Can one person be on two seats? | **No** — not on overlapping segments of the same trip, across all accounts (BR-27). | Which service owns this invariant and with which data |
-| D7 | What is a round trip? | **One booking, two legs, one payment**, held together or not at all (BR-20, BR-26, BR-37). | How a two-leg hold is all-or-nothing when each leg is a different trip |
-| D8 | How is the booking fee calculated? | **7% of the total fare, half-up to the piastre** (BR-31). Never refunded on a traveller's cancellation (BR-45); refunded on ENR's (BR-48). | Where the calculation lives so that payment, booking and refunds can never disagree |
-| D9 | What are the refund tiers? | **≥24h → 100%** · **2–24h → 50%** · **<2h → refused**; boundaries favour the passenger (BR-42). | A pure, tested policy and a guard for the outcome changing between preview and confirm |
-| D10 | What happens when ENR cancels or delays? | **Cancel → full refund including fee share, tickets voided.** **Delay ≥ 60 min → free cancellation** (BR-48, BR-49). | The fan-out across services, and how you know it finished for all 400 tickets |
-| D11 | How is a ticket checked on the train? | A **signed QR** verifiable **offline**; an online check also rejects cancelled tickets (BR-38). | Which signature scheme lets a conductor verify without holding a secret that could forge tickets |
-| D12 | What does a PIN protect? | **One device.** Never a password substitute on another device (BR-07). | The device credential, and how the PIN unlocks it without the server ever storing the PIN in clear |
-| D13 | Payments in which provider and currency? | **Stripe test mode, EGP, integer piastres** (BR-31, BR-32). | Idempotency keys, webhook verification and deduplication, reconciliation |
-| D14 | Which language does the server speak? | **Both.** Codes in the API, `ar`/`en` rendering, account language for emails and push (BR-56). | How messages stay translatable without touching business code |
+| #   | The question                                                   | The ruling                                                                                                                                 | What you must design                                                                                |
+| --- | -------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------- |
+| D1  | Does a seat belong to the whole train run, or to a part of it? | **To a segment.** A seat freed at Tanta is sold again from Tanta (BR-23).                                                                  | A representation of "taken from stop _i_ to stop _j_" that the database can protect against overlap |
+| D2  | Who picks the seats?                                           | **The server**, keeping the group side by side, then in one coach, then split — and a split is shown before payment (BR-25).               | An allocation algorithm over a coach layout, and a definition of "adjacent" for that layout         |
+| D3  | How long can seats be held?                                    | **15 minutes**, plus **5** once for 3-D Secure (BR-26).                                                                                    | What releases abandoned holds — reliably, at volume — and what the traveller sees after expiry      |
+| D4  | Must users give a National ID at sign-up?                      | **No.** Sign-up is email + password. The profile, including the National ID, is required before the **first hold** (BR-10).                | How the system expresses "signed in, but not bookable" — enforced once, not in every handler        |
+| D5  | How many passengers per booking?                               | **1 to 4**, from saved passengers (BR-28).                                                                                                 | —                                                                                                   |
+| D6  | Can one person be on two seats?                                | **No** — not on overlapping segments of the same trip, across all accounts (BR-27).                                                        | Which service owns this invariant and with which data                                               |
+| D7  | What is a round trip?                                          | **One booking, two legs, one payment**, held together or not at all (BR-20, BR-26, BR-37).                                                 | How a two-leg hold is all-or-nothing when each leg is a different trip                              |
+| D8  | How is the booking fee calculated?                             | **7% of the total fare, half-up to the piastre** (BR-31). Never refunded on a traveller's cancellation (BR-45); refunded on ENR's (BR-48). | Where the calculation lives so that payment, booking and refunds can never disagree                 |
+| D9  | What are the refund tiers?                                     | **≥24h → 100%** · **2–24h → 50%** · **<2h → refused**; boundaries favour the passenger (BR-42).                                            | A pure, tested policy and a guard for the outcome changing between preview and confirm              |
+| D10 | What happens when ENR cancels or delays?                       | **Cancel → full refund including fee share, tickets voided.** **Delay ≥ 60 min → free cancellation** (BR-48, BR-49).                       | The fan-out across services, and how you know it finished for all 400 tickets                       |
+| D11 | How is a ticket checked on the train?                          | A **signed QR** verifiable **offline**; an online check also rejects cancelled tickets (BR-38).                                            | Which signature scheme lets a conductor verify without holding a secret that could forge tickets    |
+| D12 | What does a PIN protect?                                       | **One device.** Never a password substitute on another device (BR-07).                                                                     | The device credential, and how the PIN unlocks it without the server ever storing the PIN in clear  |
+| D13 | Payments in which provider and currency?                       | **Stripe test mode, EGP, integer piastres** (BR-31, BR-32).                                                                                | Idempotency keys, webhook verification and deduplication, reconciliation                            |
+| D14 | Which language does the server speak?                          | **Both.** Codes in the API, `ar`/`en` rendering, account language for emails and push (BR-56).                                             | How messages stay translatable without touching business code                                       |
 
 > 🎯 **Deliverable:** for each ruling, show your mentor **where** it is enforced — the service, the module, the constraint or the scheduled job. A ruling with no visible home is a ruling you have not implemented.
 
@@ -606,7 +606,7 @@ Resource-oriented plural paths · correct verbs and status codes · one envelope
 **End-to-end tests** through Docker Compose for the flows that move money:
 
 - search → hold → pay (Stripe test card) → tickets issued → confirmation email in Mailpit;
-- cancel → refund decision → seat released → refund webhook → *Refunded*;
+- cancel → refund decision → seat released → refund webhook → _Refunded_;
 - payment succeeds after the hold expired;
 - trip cancelled → every ticket voided and refunded exactly once.
 
@@ -614,13 +614,13 @@ Resource-oriented plural paths · correct verbs and status codes · one envelope
 
 ## 12. Execution Roadmap
 
-| Sprint | Theme | Stories |
-|---|---|---|
-| **1** | Foundations & Identity — **design gate on days 1–2** | [`sprint-1-foundations-identity-stories.md`](./sprint-1-foundations-identity-stories.md) |
-| **2** | Network, Search & Cache | [`sprint-2-network-search-stories.md`](./sprint-2-network-search-stories.md) |
-| **3** | Seats, Holds & Booking | [`sprint-3-seats-holds-stories.md`](./sprint-3-seats-holds-stories.md) |
-| **4** | Payment, Tickets & Cancellation | [`sprint-4-payment-tickets-stories.md`](./sprint-4-payment-tickets-stories.md) |
-| **5** | Disruptions, Notifications & Go-live | [`sprint-5-disruptions-golive-stories.md`](./sprint-5-disruptions-golive-stories.md) |
+| Sprint | Theme                                                | Stories                                                                                  |
+| ------ | ---------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| **1**  | Foundations & Identity — **design gate on days 1–2** | [`sprint-1-foundations-identity-stories.md`](./sprint-1-foundations-identity-stories.md) |
+| **2**  | Network, Search & Cache                              | [`sprint-2-network-search-stories.md`](./sprint-2-network-search-stories.md)             |
+| **3**  | Seats, Holds & Booking                               | [`sprint-3-seats-holds-stories.md`](./sprint-3-seats-holds-stories.md)                   |
+| **4**  | Payment, Tickets & Cancellation                      | [`sprint-4-payment-tickets-stories.md`](./sprint-4-payment-tickets-stories.md)           |
+| **5**  | Disruptions, Notifications & Go-live                 | [`sprint-5-disruptions-golive-stories.md`](./sprint-5-disruptions-golive-stories.md)     |
 
 Each sprint is one week. Every sprint ends with a **demo against the running Compose stack**, not against a single service with mocks.
 
@@ -640,28 +640,28 @@ Visual seat map (the research's top "what's next") · verifying ownership of a p
 
 Every screen below is in the Figma file (in English and Arabic) and is in scope.
 
-| Area | Screens |
-|---|---|
-| **Start** | Splash · Choose Language · Onboarding 1–3 |
-| **Access** | Sign up · Password doesn't match · Verify your e-mail (counting down, and at 00:00) · Sign in · "Forgot your password ?" (a link only — the recovery steps reuse the Verify pattern) · Create PIN · Confirm PIN · Enter your PIN · Touch ID prompt |
-| **Profile** | Complete your profile |
-| **Search** | Home (One way, Round trip, with Train Number) · Station picker · Calendar · Results with date strip · Stops timeline · No results |
-| **Booking** | Choose Passengers · Add passenger · Review Tickets (wireframe) · Payment · Add card · Payment Success |
-| **Tickets** | Paid · Canceled (*In Progress* and *Refunded*) · Share · QR · Download · Cancel trip |
-| **Passengers** | List · Add · Edit · Delete |
-| **Settings** | Profile · Payment Methods · Logout |
-| **No design — you define the API** | Notifications inbox · Operations API · Conductor ticket verification |
+| Area                               | Screens                                                                                                                                                                                                                                            |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Start**                          | Splash · Choose Language · Onboarding 1–3                                                                                                                                                                                                          |
+| **Access**                         | Sign up · Password doesn't match · Verify your e-mail (counting down, and at 00:00) · Sign in · "Forgot your password ?" (a link only — the recovery steps reuse the Verify pattern) · Create PIN · Confirm PIN · Enter your PIN · Touch ID prompt |
+| **Profile**                        | Complete your profile                                                                                                                                                                                                                              |
+| **Search**                         | Home (One way, Round trip, with Train Number) · Station picker · Calendar · Results with date strip · Stops timeline · No results                                                                                                                  |
+| **Booking**                        | Choose Passengers · Add passenger · Review Tickets (wireframe) · Payment · Add card · Payment Success                                                                                                                                              |
+| **Tickets**                        | Paid · Canceled (_In Progress_ and _Refunded_) · Share · QR · Download · Cancel trip                                                                                                                                                               |
+| **Passengers**                     | List · Add · Edit · Delete                                                                                                                                                                                                                         |
+| **Settings**                       | Profile · Payment Methods · Logout                                                                                                                                                                                                                 |
+| **No design — you define the API** | Notifications inbox · Operations API · Conductor ticket verification                                                                                                                                                                               |
 
 ## Appendix D — Known Inconsistencies in the Design
 
 The Figma is a UX redesign, not a specification. Where it disagrees with this document, **this document wins**:
 
-| In the design | The rule |
-|---|---|
+| In the design                                                          | The rule                                                                                          |
+| ---------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------- |
 | Class labels "1st Class" (results header) and "AC 3 (4)" (ticket card) | Plain class names in both languages (BR-22) — the research itself asked to drop codes like "AC 3" |
-| The sample National ID `26582264865` has 11 digits | 14 digits with a valid structure (BR-11) |
-| Sample dates disagree (header "Wed, 24 Oct", card "27 Oct, 2025") | Results show the dates of the selected day's trips (BR-16, BR-17) |
-| "Damnhour" in the stops timeline | Station names come from your seeded data, spelled correctly in both languages |
-| The Verify screen shows the email in full ("olivia@untitledui.com") | The response carries a **masked** email |
-| The ticket card shows no coach or seat | A ticket shows its coach and seat (BR-37) — the app needs them to find the seat |
-| Review Tickets exists only as a wireframe, without the fee and total | The fee and total are computed when the hold is made and shown on the Payment screen (BR-31) |
+| The sample National ID `26582264865` has 11 digits                     | 14 digits with a valid structure (BR-11)                                                          |
+| Sample dates disagree (header "Wed, 24 Oct", card "27 Oct, 2025")      | Results show the dates of the selected day's trips (BR-16, BR-17)                                 |
+| "Damnhour" in the stops timeline                                       | Station names come from your seeded data, spelled correctly in both languages                     |
+| The Verify screen shows the email in full ("olivia@untitledui.com")    | The response carries a **masked** email                                                           |
+| The ticket card shows no coach or seat                                 | A ticket shows its coach and seat (BR-37) — the app needs them to find the seat                   |
+| Review Tickets exists only as a wireframe, without the fee and total   | The fee and total are computed when the hold is made and shown on the Payment screen (BR-31)      |

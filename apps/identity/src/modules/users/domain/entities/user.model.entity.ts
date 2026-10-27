@@ -4,7 +4,7 @@ export class User {
   constructor(
     public readonly id: string,
     public email: string,
-    private password: string,
+    private passwordHash: string,
     public isActive: boolean,
     public isVerified: boolean,
     public readonly createdAt: Date,
@@ -12,13 +12,9 @@ export class User {
   ) {}
 
   getPasswordHash(): string {
-    return this.password;
+    return this.passwordHash;
   }
   updatePassword(newPasswordHash: string): void {
-    this.password = newPasswordHash;
-  }
-
-  get accessLevel(): AccessLevel {
-    return this.isVerified ? AccessLevel.VERIFIED : AccessLevel.UNVERIFIED;
+    this.passwordHash = newPasswordHash;
   }
 }

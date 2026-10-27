@@ -3,17 +3,13 @@ import { createHash, randomInt } from "crypto";
 import * as bcrypt from "bcrypt";
 
 export interface RedisLike {
-  multi: (options?: { pipeline?: boolean }) => {
-    set: (key: string, value: string, mode: string, ttl: number) => unknown;
-    del: (key: string) => unknown;
-    exec: () => Promise<unknown[]>;
-  };
+  multi: (...args: any[]) => any;
   eval: (
     script: string,
     numberOfKeys: number,
     ...args: unknown[]
-  ) => Promise<number>;
-  set: (key: string, value: string, mode?: string, ttl?: number) => Promise<unknown>;
+  ) => Promise<unknown>;
+  set: (...args: any[]) => Promise<unknown>;
   get: (key: string) => Promise<string | null>;
   del: (key: string) => Promise<number>;
   ttl: (key: string) => Promise<number>;

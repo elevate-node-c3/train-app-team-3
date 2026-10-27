@@ -22,23 +22,23 @@ in review, written in the same format as the [standards catalogs](./standards/RE
 
 **Contents**
 
-| Part | Topic | Rules |
-| --- | --- | --- |
-| [1](#part-1--when-microservices-are-worth-their-cost) | When microservices are worth their cost — and why ENR uses them | `MS-00x` |
-| [2](#part-2--finding-boundaries) | Finding boundaries: bounded contexts, data ownership, the ENR service map | `MS-10x` |
-| [3](#part-3--nestjs-building-blocks) | NestJS building blocks: monorepo, hybrid apps, clients, patterns | `MS-05x` |
-| [4](#part-4--the-api-gateway) | The API gateway: auth at the edge, routing, identity downstream | `MS-20x` |
-| [5](#part-5--synchronous-calls-with-grpc) | Synchronous calls with gRPC: contracts, deadlines, errors, retries | `MS-25x` |
-| [6](#part-6--asynchronous-events-with-rabbitmq) | Asynchronous events with RabbitMQ: topology, acks, the envelope | `MS-30x` |
-| [7](#part-7--reliability-outbox-inbox-and-poison-messages) | Reliability: outbox, inbox, ordering, poison messages | `MS-35x` |
-| [8](#part-8--sagas) | Sagas: the ENR booking saga, compensation, timeouts | `MS-40x` |
-| [9](#part-9--data-across-services) | Data across services: ownership, replication, read models, joins | `MS-15x` |
-| [10](#part-10--caching-with-redis) | Caching with Redis: patterns, invalidation, stampedes, degradation | `MS-50x` |
-| [11](#part-11--observability) | Observability: correlation IDs, logs, traces, health | `MS-60x` |
-| [12](#part-12--resilience) | Resilience: timeouts, retries, circuit breakers, shutdown | `MS-65x` |
-| [13](#part-13--testing-microservices) | Testing: unit, Testcontainers, contract tests, a few end-to-end flows | `MS-70x` |
-| [14](#part-14--the-local-stack) | The local stack: Compose, databases, config, seeding | `MS-80x` |
-| [15](#part-15--review-checklist-and-rule-catalogue) | Review checklist and the full rule catalogue | all |
+| Part                                                       | Topic                                                                     | Rules    |
+| ---------------------------------------------------------- | ------------------------------------------------------------------------- | -------- |
+| [1](#part-1--when-microservices-are-worth-their-cost)      | When microservices are worth their cost — and why ENR uses them           | `MS-00x` |
+| [2](#part-2--finding-boundaries)                           | Finding boundaries: bounded contexts, data ownership, the ENR service map | `MS-10x` |
+| [3](#part-3--nestjs-building-blocks)                       | NestJS building blocks: monorepo, hybrid apps, clients, patterns          | `MS-05x` |
+| [4](#part-4--the-api-gateway)                              | The API gateway: auth at the edge, routing, identity downstream           | `MS-20x` |
+| [5](#part-5--synchronous-calls-with-grpc)                  | Synchronous calls with gRPC: contracts, deadlines, errors, retries        | `MS-25x` |
+| [6](#part-6--asynchronous-events-with-rabbitmq)            | Asynchronous events with RabbitMQ: topology, acks, the envelope           | `MS-30x` |
+| [7](#part-7--reliability-outbox-inbox-and-poison-messages) | Reliability: outbox, inbox, ordering, poison messages                     | `MS-35x` |
+| [8](#part-8--sagas)                                        | Sagas: the ENR booking saga, compensation, timeouts                       | `MS-40x` |
+| [9](#part-9--data-across-services)                         | Data across services: ownership, replication, read models, joins          | `MS-15x` |
+| [10](#part-10--caching-with-redis)                         | Caching with Redis: patterns, invalidation, stampedes, degradation        | `MS-50x` |
+| [11](#part-11--observability)                              | Observability: correlation IDs, logs, traces, health                      | `MS-60x` |
+| [12](#part-12--resilience)                                 | Resilience: timeouts, retries, circuit breakers, shutdown                 | `MS-65x` |
+| [13](#part-13--testing-microservices)                      | Testing: unit, Testcontainers, contract tests, a few end-to-end flows     | `MS-70x` |
+| [14](#part-14--the-local-stack)                            | The local stack: Compose, databases, config, seeding                      | `MS-80x` |
+| [15](#part-15--review-checklist-and-rule-catalogue)        | Review checklist and the full rule catalogue                              | all      |
 
 ## How the `MS` rules work
 
@@ -59,16 +59,16 @@ Fix: insert the event into the outbox inside the same transaction; let the relay
 
 ## Versions this handbook was checked against
 
-| Package | Version | Note |
-| --- | --- | --- |
-| `@nestjs/core`, `@nestjs/common`, `@nestjs/microservices` | 11.2.x | NestJS 12 shipped in August 2026 (ESM-only, new gRPC exception classes). **Stay on 11 for ENR**; every API below is v11's. |
-| `@nestjs/terminus` · `@nestjs/config` · `@nestjs/schedule` | 11.1.x · 4.0.x · 6.1.x | The versions that pair with Nest 11 |
-| `@grpc/grpc-js` · `@grpc/proto-loader` | 1.14.x · 0.8.x | |
-| `amqplib` · `amqp-connection-manager` | latest | Both are required by Nest's RabbitMQ transport |
-| `ioredis` | 5.x or 6.x | 6.x defaults to RESP3; the commands used here are unchanged |
-| `stripe` (Node SDK) | 23.x | Requires Node 20+ |
-| `testcontainers` modules | 12.x | Requires Node 22.22+ and an explicit image in every constructor |
-| Node.js | 22 LTS or 24 | The floor set by Testcontainers 12 and `nestjs-pino` |
+| Package                                                    | Version                | Note                                                                                                                       |
+| ---------------------------------------------------------- | ---------------------- | -------------------------------------------------------------------------------------------------------------------------- |
+| `@nestjs/core`, `@nestjs/common`, `@nestjs/microservices`  | 11.2.x                 | NestJS 12 shipped in August 2026 (ESM-only, new gRPC exception classes). **Stay on 11 for ENR**; every API below is v11's. |
+| `@nestjs/terminus` · `@nestjs/config` · `@nestjs/schedule` | 11.1.x · 4.0.x · 6.1.x | The versions that pair with Nest 11                                                                                        |
+| `@grpc/grpc-js` · `@grpc/proto-loader`                     | 1.14.x · 0.8.x         |                                                                                                                            |
+| `amqplib` · `amqp-connection-manager`                      | latest                 | Both are required by Nest's RabbitMQ transport                                                                             |
+| `ioredis`                                                  | 5.x or 6.x             | 6.x defaults to RESP3; the commands used here are unchanged                                                                |
+| `stripe` (Node SDK)                                        | 23.x                   | Requires Node 20+                                                                                                          |
+| `testcontainers` modules                                   | 12.x                   | Requires Node 22.22+ and an explicit image in every constructor                                                            |
+| Node.js                                                    | 22 LTS or 24           | The floor set by Testcontainers 12 and `nestjs-pino`                                                                       |
 
 ---
 
@@ -79,24 +79,24 @@ Fix: insert the event into the outbox inside the same transaction; let the relay
 Microservices are a trade. You buy independence and pay for it in network failures and lost
 transactions. The bill arrives in every feature, not once.
 
-| You buy | You pay |
-| --- | --- |
-| **Independent deployment.** Payment ships a webhook fix without redeploying search. | **Partial failure.** Every call can be slow, time out, or fail halfway. "Did it happen?" becomes a real question. |
-| **Independent scaling.** Six catalog instances during Eid, one notification instance. | **No cross-service transaction.** Consistency becomes eventual; you write compensations by hand. |
-| **Fault isolation.** Notification crashing does not stop people buying tickets. | **Distributed debugging.** A stack trace becomes a trace across five processes and a broker. |
-| **Ownership.** The owner of a service decides its schema and release cadence. | **Contract discipline.** A rename across a boundary is a migration, not an IDE refactor. |
-| **Smaller codebases.** One service fits in one head. | **Operational weight.** N databases, N configs, N health checks, N sets of credentials. |
+| You buy                                                                               | You pay                                                                                                           |
+| ------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| **Independent deployment.** Payment ships a webhook fix without redeploying search.   | **Partial failure.** Every call can be slow, time out, or fail halfway. "Did it happen?" becomes a real question. |
+| **Independent scaling.** Six catalog instances during Eid, one notification instance. | **No cross-service transaction.** Consistency becomes eventual; you write compensations by hand.                  |
+| **Fault isolation.** Notification crashing does not stop people buying tickets.       | **Distributed debugging.** A stack trace becomes a trace across five processes and a broker.                      |
+| **Ownership.** The owner of a service decides its schema and release cadence.         | **Contract discipline.** A rename across a boundary is a migration, not an IDE refactor.                          |
+| **Smaller codebases.** One service fits in one head.                                  | **Operational weight.** N databases, N configs, N health checks, N sets of credentials.                           |
 
 ## 1.2 The same feature in both architectures
 
-| Operation | Modular monolith (DOCURA) | Microservices (ENR) |
-| --- | --- | --- |
-| Call another module | Function call; cannot time out | gRPC call; needs a deadline, an error mapping and a retry policy |
-| Keep two writes consistent | One `BEGIN … COMMIT` | Saga + outbox + idempotent consumers |
-| Show station names on a ticket | `JOIN stations` | A local copy kept fresh by events, or a batch RPC |
-| Rename a field | Refactor, compile, done | Add the new field, migrate both sides, remove the old one later |
-| "Why did Ahmed get two emails?" | One log file | Correlation ID across four services and a broker |
-| Run it locally | One process, one database | Compose with seven apps and six infrastructure containers |
+| Operation                       | Modular monolith (DOCURA)      | Microservices (ENR)                                              |
+| ------------------------------- | ------------------------------ | ---------------------------------------------------------------- |
+| Call another module             | Function call; cannot time out | gRPC call; needs a deadline, an error mapping and a retry policy |
+| Keep two writes consistent      | One `BEGIN … COMMIT`           | Saga + outbox + idempotent consumers                             |
+| Show station names on a ticket  | `JOIN stations`                | A local copy kept fresh by events, or a batch RPC                |
+| Rename a field                  | Refactor, compile, done        | Add the new field, migrate both sides, remove the old one later  |
+| "Why did Ahmed get two emails?" | One log file                   | Correlation ID across four services and a broker                 |
+| Run it locally                  | One process, one database      | Compose with seven apps and six infrastructure containers        |
 
 Read the right-hand column as a list of things that will go wrong in your sprint demo if you skip
 the corresponding part of this handbook.
@@ -124,7 +124,7 @@ Be honest about this: ENR at bootcamp scale would run perfectly well as a modula
 duplicate delivery, eventual consistency, sagas and contract evolution in a place where a mistake
 costs a grade rather than a customer's money.
 
-There are real ENR pressures that *could* justify the split in production, and they are worth
+There are real ENR pressures that _could_ justify the split in production, and they are worth
 keeping in mind because they explain where the lines are drawn:
 
 - **Inventory** takes the burst of seat contention when a popular trip opens; it must stay correct
@@ -136,18 +136,18 @@ keeping in mind because they explain where the lines are drawn:
 
 You are not starting from zero. Most of DOCURA maps across:
 
-| You built in DOCURA | You build in ENR |
-| --- | --- |
-| A `modules/booking` folder | An `apps/booking` deployable with its own database |
+| You built in DOCURA                 | You build in ENR                                                |
+| ----------------------------------- | --------------------------------------------------------------- |
+| A `modules/booking` folder          | An `apps/booking` deployable with its own database              |
 | Outbox table + `SKIP LOCKED` worker | The same, in `libs/messaging`, one outbox per producing service |
-| In-process events or BullMQ | A RabbitMQ topic exchange, one queue per consuming service |
-| `availabilityService.holdSlot()` | `inventory.HoldSeats` over gRPC, with a deadline |
-| One transaction across modules | A saga with compensations (Part 8) |
-| `@nestjs/config` schema, fail fast | The same, per service (Part 14) |
+| In-process events or BullMQ         | A RabbitMQ topic exchange, one queue per consuming service      |
+| `availabilityService.holdSlot()`    | `inventory.HoldSeats` over gRPC, with a deadline                |
+| One transaction across modules      | A saga with compensations (Part 8)                              |
+| `@nestjs/config` schema, fail fast  | The same, per service (Part 14)                                 |
 
 ## 1.5 The network is not your friend
 
-The classic *fallacies of distributed computing* — the network is reliable, latency is zero, topology
+The classic _fallacies of distributed computing_ — the network is reliable, latency is zero, topology
 does not change, there is one administrator — all hold inside one process and all fail in ENR.
 `HoldSeats` succeeds in inventory but the response is lost; booking calls catalog 40 times for one
 list; a service restarts mid-saga and RabbitMQ redelivers its messages; Stripe, Mailpit and RabbitMQ
@@ -156,6 +156,7 @@ each fail on their own schedule. Everything from Part 5 onwards is a defence aga
 ## Rules — architecture decision
 
 ### MS-001 — Service boundary without a written decision
+
 **Severity:** major · **Applies to:** `docs/adr/`, the service map
 **Detect:** A service, or a split or merge of services, with no architecture decision record (ADR)
 stating the capability it owns, the data it is the single writer of, why it is a separate
@@ -166,6 +167,7 @@ table read here, a shared entity there — until the system is a distributed mon
 design-gate document.
 
 ### MS-002 — Contract written after the code that uses it
+
 **Severity:** major · **Applies to:** `libs/contracts/**`
 **Detect:** A new `.proto` service or event type that first appears in the same pull request as the
 producer and consumer code, with no prior design-gate review; a consumer merged before the event's
@@ -185,13 +187,13 @@ A **bounded context** is a part of the system where every word has exactly one m
 boundaries around contexts, not around nouns. The same word means different things on each side
 of a line:
 
-| Word | In catalog | In inventory | In booking |
-| --- | --- | --- | --- |
-| **Trip** | Train 916 on 24 Oct: ordered stops, times, fares | A grid of coaches × seats × segments that can be occupied | One leg of what a customer bought, with a locked fare |
-| **Seat** | Coach 5 layout: seats 1–80 in 2+2 rows | Seat 44 is free Banha→Tanta, held Cairo→Banha | "Coach 5 · Seat 44" printed on a ticket |
-| **Passenger** | — | — | A snapshot copied into the ticket at booking time |
+| Word          | In catalog                                       | In inventory                                              | In booking                                            |
+| ------------- | ------------------------------------------------ | --------------------------------------------------------- | ----------------------------------------------------- |
+| **Trip**      | Train 916 on 24 Oct: ordered stops, times, fares | A grid of coaches × seats × segments that can be occupied | One leg of what a customer bought, with a locked fare |
+| **Seat**      | Coach 5 layout: seats 1–80 in 2+2 rows           | Seat 44 is free Banha→Tanta, held Cairo→Banha             | "Coach 5 · Seat 44" printed on a ticket               |
+| **Passenger** | —                                                | —                                                         | A snapshot copied into the ticket at booking time     |
 
-Identity owns *saved passengers* (the Passengers tab). Booking owns *the passenger on a ticket*. If
+Identity owns _saved passengers_ (the Passengers tab). Booking owns _the passenger on a ticket_. If
 Ahmed edits a saved passenger's name after travelling, his old ticket must not change — they are
 different concepts that happen to share a word.
 
@@ -200,14 +202,14 @@ different concepts that happen to share a word.
 For every fact in the system, exactly one service is allowed to write it. Everyone else either asks
 the owner, or keeps a read-only copy that the owner's events keep fresh.
 
-| Question | Owner | Everyone else |
-| --- | --- | --- |
-| Is this email registered? Is this PIN right? | identity | Never sees passwords or PINs |
-| Which stops does train 916 make? What does Alex→Cairo 1st class cost? | catalog | Booking locks the fare into the booking when the hold is created (R6) |
-| Is seat 44 in coach 5 free from Banha to Tanta? | inventory | Catalog *displays* counts; it never decides |
-| What did Ahmed book? Can ticket T be cancelled, and for how much? | booking | Gateway shows what booking returns |
-| Did the money move? | Stripe, mirrored by payment | Booking reacts to payment's events |
-| How many unread notifications does Ahmed have? | notification | Gateway shows the count |
+| Question                                                              | Owner                       | Everyone else                                                         |
+| --------------------------------------------------------------------- | --------------------------- | --------------------------------------------------------------------- |
+| Is this email registered? Is this PIN right?                          | identity                    | Never sees passwords or PINs                                          |
+| Which stops does train 916 make? What does Alex→Cairo 1st class cost? | catalog                     | Booking locks the fare into the booking when the hold is created (R6) |
+| Is seat 44 in coach 5 free from Banha to Tanta?                       | inventory                   | Catalog _displays_ counts; it never decides                           |
+| What did Ahmed book? Can ticket T be cancelled, and for how much?     | booking                     | Gateway shows what booking returns                                    |
+| Did the money move?                                                   | Stripe, mirrored by payment | Booking reacts to payment's events                                    |
+| How many unread notifications does Ahmed have?                        | notification                | Gateway shows the count                                               |
 
 "Who decides" and "who displays" are different questions. Catalog shows "Available Seats: 170" on
 the results screen; inventory decides whether the seat is actually free when the hold is created.
@@ -255,12 +257,12 @@ Seven deployables, five owners. Synchronous calls go over gRPC; everything else 
 
 ## 2.5 Anti-patterns
 
-| Anti-pattern | What it looks like in ENR | Fix |
-| --- | --- | --- |
+| Anti-pattern             | What it looks like in ENR                                                                                                                                      | Fix                                                                                              |
+| ------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
 | **Distributed monolith** | Services must be deployed together; a shared `libs/domain` holds entities; one HTTP request triggers a chain gateway → booking → catalog → inventory → payment | Own your data; replace chains with events or local copies; keep `libs/` cross-cutting (Part 3.6) |
-| **Shared database** | Booking runs `SELECT … FROM inventory.seat_segment`; catalog reads booking tables to show "your trips" | Ask the owner, or keep a copy fed by events (Part 9) |
-| **Entity services** | A `SeatService` exposing `GetSeat`/`UpdateSeat`, while booking runs the allocation logic and writes the result back | Expose the capability (`HoldSeats`) so the rule and its concurrency guard live with the data |
-| **Chatty services** | Booking calls `catalog.GetStation` once per ticket on a 40-ticket list | Batch RPC (`GetStations` with 40 ids) or a local copy |
+| **Shared database**      | Booking runs `SELECT … FROM inventory.seat_segment`; catalog reads booking tables to show "your trips"                                                         | Ask the owner, or keep a copy fed by events (Part 9)                                             |
+| **Entity services**      | A `SeatService` exposing `GetSeat`/`UpdateSeat`, while booking runs the allocation logic and writes the result back                                            | Expose the capability (`HoldSeats`) so the rule and its concurrency guard live with the data     |
+| **Chatty services**      | Booking calls `catalog.GetStation` once per ticket on a 40-ticket list                                                                                         | Batch RPC (`GetStations` with 40 ids) or a local copy                                            |
 
 The entity-service anti-pattern deserves a second look. If booking reads a seat, decides it is free,
 and writes it back over the network, you have rebuilt `CC-507` (unprotected read-modify-write) with
@@ -269,15 +271,17 @@ a network round trip in the middle. Two customers will get seat 44.
 ## Rules — boundaries
 
 ### MS-101 — Two services write the same table
+
 **Severity:** critical · **Applies to:** entities, migrations, repositories in `apps/**`
 **Detect:** The same table name in the migrations or entities of two apps; an entity class imported
 by two apps; a migration in one app altering a table created by another.
 **Why:** With two writers, no single place enforces the invariants, and a schema change in one
 service silently breaks the other.
-**Not a violation when:** Two services have *different* tables that happen to share a name inside
+**Not a violation when:** Two services have _different_ tables that happen to share a name inside
 their own databases (for example both have an `inbox` table).
 
 ### MS-102 — A service reads another service's database
+
 **Severity:** critical · **Applies to:** `apps/*/src/**`, `apps/*/.env*`, Compose files
 **Detect:** A connection string for another service's database in an app's env; a second TypeORM
 data source; SQL that names another service's schema or database.
@@ -287,6 +291,7 @@ makes "deploy independently" a lie.
 replicas for reporting is out of scope for this project.
 
 ### MS-103 — Entity service instead of a capability
+
 **Severity:** major · **Applies to:** `.proto` services, gRPC controllers
 **Detect:** RPCs named `Get<Noun>`/`Update<Noun>`/`Create<Noun>` whose caller then applies the business
 rule; a service whose only logic is mapping rows to messages.
@@ -294,6 +299,7 @@ rule; a service whose only logic is mapping rows to messages.
 **Not a violation when:** The RPC is a genuine read the caller only displays (`GetTrip`, `ListStations`).
 
 ### MS-104 — Atomic invariant split across services
+
 **Severity:** critical · **Applies to:** service design, sagas
 **Detect:** A saga or a sequence of RPCs used to enforce something that must never be observed
 half-done: holding the two legs of a round trip (R7), the same National ID on overlapping segments
@@ -304,6 +310,7 @@ after the damage. A local transaction with a constraint has no such window.
 acceptable (payment taken, then seats confirmed — Part 8).
 
 ### MS-105 — Chatty call: an RPC per item
+
 **Severity:** major · **Applies to:** `apps/*/src/**`
 **Detect:** A gRPC call inside a `for`/`map`/`Promise.all` over a collection; more than two
 sequential synchronous hops to answer one user request.
@@ -364,7 +371,10 @@ choose `@enr`), which it registers in the root `tsconfig.json` `paths`.
   "monorepo": true,
   "root": "apps/gateway",
   "sourceRoot": "apps/gateway/src",
-  "compilerOptions": { "webpack": true, "tsConfigPath": "apps/gateway/tsconfig.app.json" },
+  "compilerOptions": {
+    "webpack": true,
+    "tsConfigPath": "apps/gateway/tsconfig.app.json"
+  },
   "projects": {
     "booking": {
       "type": "application",
@@ -391,10 +401,10 @@ from the repository root at runtime and copy `libs/contracts/proto` into every i
 
 ```ts
 // libs/contracts/src/proto-file.ts
-import { join } from 'node:path';
+import { join } from "node:path";
 
 export function protoFile(relativePath: string): string {
-  return join(process.cwd(), 'libs/contracts/proto', relativePath);
+  return join(process.cwd(), "libs/contracts/proto", relativePath);
 }
 ```
 
@@ -407,13 +417,13 @@ one process: create an HTTP application, then attach microservice servers with
 
 ```ts
 // apps/inventory/src/main.ts
-import './tracing'; // must stay the first import — Part 11.4
-import { NestFactory } from '@nestjs/core';
-import { ConfigService } from '@nestjs/config';
-import { Logger } from 'nestjs-pino';
-import { AppModule } from './app.module';
-import { configureApp } from './configure-app';
-import { InventoryEnv } from './config/env.schema';
+import "./tracing"; // must stay the first import — Part 11.4
+import { NestFactory } from "@nestjs/core";
+import { ConfigService } from "@nestjs/config";
+import { Logger } from "nestjs-pino";
+import { AppModule } from "./app.module";
+import { configureApp } from "./configure-app";
+import { InventoryEnv } from "./config/env.schema";
 
 async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule, { bufferLogs: true });
@@ -421,7 +431,7 @@ async function bootstrap(): Promise<void> {
   configureApp(app);
   await app.startAllMicroservices();
   const config = app.get<ConfigService<InventoryEnv, true>>(ConfigService);
-  await app.listen(config.get('HTTP_PORT', { infer: true }));
+  await app.listen(config.get("HTTP_PORT", { infer: true }));
 }
 void bootstrap();
 ```
@@ -435,9 +445,9 @@ export function configureApp(app: INestApplication): void {
     {
       transport: Transport.GRPC,
       options: {
-        package: 'enr.inventory.v1',
-        protoPath: protoFile('enr/inventory/v1/inventory.proto'),
-        url: config.get('GRPC_BIND_URL', { infer: true }),
+        package: "enr.inventory.v1",
+        protoPath: protoFile("enr/inventory/v1/inventory.proto"),
+        url: config.get("GRPC_BIND_URL", { infer: true }),
         loader: { longs: Number, enums: String, defaults: true },
         gracefulShutdown: true, // let in-flight calls finish on close (Part 12.6)
       },
@@ -446,9 +456,9 @@ export function configureApp(app: INestApplication): void {
   );
   app.connectMicroservice<MicroserviceOptions>(
     eventConsumerOptions(
-      'inventory.events',
-      config.get('RABBITMQ_URL', { infer: true }),
-      config.get('RABBITMQ_PREFETCH', { infer: true }),
+      "inventory.events",
+      config.get("RABBITMQ_URL", { infer: true }),
+      config.get("RABBITMQ_PREFETCH", { infer: true }),
     ),
     { inheritAppConfig: true },
   );
@@ -457,10 +467,10 @@ export function configureApp(app: INestApplication): void {
 
 Three details carry most of the weight:
 
-- **`inheritAppConfig: true`.** Connected microservices do *not* inherit global pipes, guards,
+- **`inheritAppConfig: true`.** Connected microservices do _not_ inherit global pipes, guards,
   interceptors and filters unless you ask. Without it, your correlation-ID interceptor and your
   error filter silently skip every gRPC and RabbitMQ handler.
-- **Filters must handle both contexts.** A global filter now receives HTTP *and* RPC exceptions.
+- **Filters must handle both contexts.** A global filter now receives HTTP _and_ RPC exceptions.
   Branch on `host.getType()`, or register RPC-specific filters on gRPC controllers. Nest 11's default
   RPC filter turns any non-`RpcException` into gRPC `UNKNOWN` with "Internal server error"; your
   `libs/errors` filter must map domain errors to real status codes (Part 5.5).
@@ -510,10 +520,15 @@ The use case never sees any of this. It depends on a **port** — `SeatHolds`, a
 // apps/booking/src/infrastructure/grpc/grpc-seat-holds.adapter.ts
 @Injectable()
 export class GrpcSeatHolds implements SeatHolds {
-  constructor(@Inject(INVENTORY_SERVICE) private readonly inventory: InventoryServiceClient) {}
+  constructor(
+    @Inject(INVENTORY_SERVICE)
+    private readonly inventory: InventoryServiceClient,
+  ) {}
 
   async hold(request: SeatHoldRequest): Promise<SeatHold> {
-    const response = await lastValueFrom(this.inventory.holdSeats(toHoldSeatsRequest(request)));
+    const response = await lastValueFrom(
+      this.inventory.holdSeats(toHoldSeatsRequest(request)),
+    );
     return toSeatHold(response); // map the generated type to the application's own model
   }
   // confirm(holdId) follows the same shape
@@ -530,17 +545,17 @@ until you subscribe), and both return Observables — convert them with `lastVal
 
 ## 3.5 `@MessagePattern` vs `@EventPattern`
 
-| | `@MessagePattern` | `@EventPattern` |
-| --- | --- | --- |
-| Shape | Request → response | Fire and forget |
-| Caller | Waits for an answer | Does not know who listens |
-| ENR transport | gRPC (`@GrpcMethod` is a `@MessagePattern` bound to `Transport.GRPC`) | RabbitMQ |
-| Use for | "Hold these seats and tell me which ones" | "Trip 916 on 24 Oct was cancelled" |
+|               | `@MessagePattern`                                                     | `@EventPattern`                    |
+| ------------- | --------------------------------------------------------------------- | ---------------------------------- |
+| Shape         | Request → response                                                    | Fire and forget                    |
+| Caller        | Waits for an answer                                                   | Does not know who listens          |
+| ENR transport | gRPC (`@GrpcMethod` is a `@MessagePattern` bound to `Transport.GRPC`) | RabbitMQ                           |
+| Use for       | "Hold these seats and tell me which ones"                             | "Trip 916 on 24 Oct was cancelled" |
 
 ENR uses RabbitMQ for **events only**. Request/response over a broker gives you the latency of a
 call with the debugging cost of a queue; when you need an answer, use gRPC.
 
-In a hybrid app an unscoped handler is registered on *every* connected server. Scope event handlers
+In a hybrid app an unscoped handler is registered on _every_ connected server. Scope event handlers
 to the transport they belong to:
 
 ```ts
@@ -548,7 +563,7 @@ to the transport they belong to:
 export class TripEventsController {
   constructor(private readonly closeTripInventory: CloseTripInventory) {}
 
-  @EventPattern('trip.cancelled', Transport.RMQ)
+  @EventPattern("trip.cancelled", Transport.RMQ)
   async onTripCancelled(
     @Payload() event: EventEnvelope<TripCancelledV1>,
     @Ctx() context: RmqContext,
@@ -560,17 +575,17 @@ export class TripEventsController {
 
 ## 3.6 What belongs in `libs/`
 
-`libs/` is for code every service needs *the same way*. The moment a library knows what a booking
+`libs/` is for code every service needs _the same way_. The moment a library knows what a booking
 is, every service that imports it is coupled to booking's model and release cycle.
 
-| Belongs in `libs/` | Never in `libs/` |
-| --- | --- |
-| `.proto` files and generated types; event payload schemas | TypeORM entities, repositories, migrations |
-| Event envelope, outbox relay, inbox, retry topology | Refund tiers, fare and fee calculation, seat allocation |
-| Logger setup, correlation context, gRPC interceptors | National ID validation (identity's rule) |
-| Error-code base types, envelope, gRPC ↔ HTTP mapping | A `BookingStatus` enum shared "for convenience" |
-| Config helpers (not the schemas — each app has its own) | Anything with `if (booking...)` in it |
-| Testcontainers helpers, builders for envelopes and tokens | Fixtures of another service's data |
+| Belongs in `libs/`                                        | Never in `libs/`                                        |
+| --------------------------------------------------------- | ------------------------------------------------------- |
+| `.proto` files and generated types; event payload schemas | TypeORM entities, repositories, migrations              |
+| Event envelope, outbox relay, inbox, retry topology       | Refund tiers, fare and fee calculation, seat allocation |
+| Logger setup, correlation context, gRPC interceptors      | National ID validation (identity's rule)                |
+| Error-code base types, envelope, gRPC ↔ HTTP mapping      | A `BookingStatus` enum shared "for convenience"         |
+| Config helpers (not the schemas — each app has its own)   | Anything with `if (booking...)` in it                   |
+| Testcontainers helpers, builders for envelopes and tokens | Fixtures of another service's data                      |
 
 Contracts are shared by definition — they are the published language between services. They contain
 shapes, never behaviour.
@@ -578,6 +593,7 @@ shapes, never behaviour.
 ## Rules — codebase layout
 
 ### MS-051 — Domain code in `libs/`
+
 **Severity:** major · **Applies to:** `libs/**`
 **Detect:** Entities, repositories, migrations, domain services or business constants under `libs/`;
 a library importing `typeorm` entities; names like `libs/common/booking-*`. Escalate to **critical**
@@ -588,6 +604,7 @@ distributed monolith.
 genuinely cross-cutting (logging, envelope, outbox mechanics).
 
 ### MS-052 — One app imports another app's source
+
 **Severity:** critical · **Applies to:** `apps/**`
 **Detect:** An import path containing `apps/` from inside a different app, or a relative path that
 climbs out of the app (`../../../inventory/src/...`). Grep hint: `from ['"].*apps/`
@@ -596,6 +613,7 @@ app breaks the build of the other.
 **Not a violation when:** Never. Share through `libs/contracts`.
 
 ### MS-053 — Request/response over RabbitMQ, or an unscoped event handler
+
 **Severity:** major · **Applies to:** controllers in `apps/**`
 **Detect:** `@MessagePattern` used for RabbitMQ; `ClientProxy.send()` to an RMQ client; an
 `@EventPattern` without `Transport.RMQ` in a hybrid app.
@@ -604,6 +622,7 @@ every transport and surprise you later.
 **Not a violation when:** The app has exactly one transport connected.
 
 ### MS-054 — Transport types leak into the application layer
+
 **Severity:** major · **Applies to:** `apps/*/src/domain/**`, `apps/*/src/application/**`
 **Detect:** `ClientGrpc`, `ClientProxy`, `Observable`, `RmqContext`, `Metadata`, generated proto types
 or `Stripe` types imported in domain or application code.
@@ -612,6 +631,7 @@ without a network (`CC-205`).
 **Not a violation when:** The file is an adapter in `infrastructure/` or a handler in `interface/`.
 
 ### MS-055 — Connected microservice without the app's pipes, filters and interceptors
+
 **Severity:** major · **Applies to:** `main.ts`, `configure-app.ts`, global filters
 **Detect:** `connectMicroservice(...)` without `{ inheritAppConfig: true }` and without its own
 filters/interceptors; a global exception filter that calls `switchToHttp()` unconditionally.
@@ -628,15 +648,15 @@ handlers — exactly the handlers that need them most.
 The mobile app talks to exactly one host. The gateway is that host: it terminates the public REST
 API and translates it into gRPC calls to the services behind it.
 
-| The gateway does | The gateway does not |
-| --- | --- |
-| Verify the access token on every request | Call identity to ask "is this token valid?" |
-| Deny by default; enforce coarse roles (`ops` routes) | Decide whether a ticket is refundable |
-| Rate-limit per user and per IP, in Redis | Keep per-instance counters in memory |
-| Route `/api/v1/...` to the owning service | Join data from two services' databases |
-| Aggregate a screen from a few parallel calls | Orchestrate a booking (that is booking's saga) |
-| Render one envelope; localize error codes (EN/AR, R13) | Leak gRPC details, stack traces or SQL errors |
-| Store `Idempotency-Key` responses for money routes | Replace idempotency inside the services |
+| The gateway does                                       | The gateway does not                           |
+| ------------------------------------------------------ | ---------------------------------------------- |
+| Verify the access token on every request               | Call identity to ask "is this token valid?"    |
+| Deny by default; enforce coarse roles (`ops` routes)   | Decide whether a ticket is refundable          |
+| Rate-limit per user and per IP, in Redis               | Keep per-instance counters in memory           |
+| Route `/api/v1/...` to the owning service              | Join data from two services' databases         |
+| Aggregate a screen from a few parallel calls           | Orchestrate a booking (that is booking's saga) |
+| Render one envelope; localize error codes (EN/AR, R13) | Leak gRPC details, stack traces or SQL errors  |
+| Store `Idempotency-Key` responses for money routes     | Replace idempotency inside the services        |
 
 A gateway that starts making business decisions becomes a second monolith in front of your
 microservices. Keep it thin.
@@ -670,26 +690,35 @@ export class AccessTokenGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const targets = [context.getHandler(), context.getClass()];
-    if (this.reflector.getAllAndOverride<boolean>(IS_PUBLIC, targets)) return true;
+    if (this.reflector.getAllAndOverride<boolean>(IS_PUBLIC, targets))
+      return true;
     const request = context.switchToHttp().getRequest<GatewayRequest>();
     const token = bearerTokenOf(request); // throws AUTH_TOKEN_MISSING
     const claims = await this.verify(token);
-    if (await this.denylist.isRevoked(claims.jti)) throw new UnauthorizedException('AUTH_TOKEN_REVOKED');
-    request.caller = { userId: claims.sub, roles: claims.roles, accessToken: token };
+    if (await this.denylist.isRevoked(claims.jti))
+      throw new UnauthorizedException("AUTH_TOKEN_REVOKED");
+    request.caller = {
+      userId: claims.sub,
+      roles: claims.roles,
+      accessToken: token,
+    };
     return true;
   }
 
   private async verify(token: string): Promise<AccessTokenClaims> {
     try {
-      const decoded = await this.jwt.verifyAsync<Record<string, unknown>>(token, {
-        publicKey: this.config.get('JWT_PUBLIC_KEY', { infer: true }),
-        algorithms: ['RS256'],
-        issuer: 'enr-identity',
-        audience: 'enr-api',
-      });
+      const decoded = await this.jwt.verifyAsync<Record<string, unknown>>(
+        token,
+        {
+          publicKey: this.config.get("JWT_PUBLIC_KEY", { infer: true }),
+          algorithms: ["RS256"],
+          issuer: "enr-identity",
+          audience: "enr-api",
+        },
+      );
       return accessTokenClaimsSchema.parse(decoded); // validate, then type (TS-104)
     } catch {
-      throw new UnauthorizedException('AUTH_TOKEN_INVALID');
+      throw new UnauthorizedException("AUTH_TOKEN_INVALID");
     }
   }
 }
@@ -791,8 +820,14 @@ Every response leaves the gateway in the envelope your standards already require
 `RS-402`), with the message rendered in the caller's language:
 
 ```json
-{ "success": false,
-  "error": { "code": "SEATS_UNAVAILABLE", "message": "المقاعد المختارة لم تعد متاحة", "correlationId": "4f1c…" } }
+{
+  "success": false,
+  "error": {
+    "code": "SEATS_UNAVAILABLE",
+    "message": "المقاعد المختارة لم تعد متاحة",
+    "correlationId": "4f1c…"
+  }
+}
 ```
 
 Services return **stable error codes**, not sentences. The gateway maps each code to an HTTP status
@@ -807,6 +842,7 @@ mobile client's retries; the services below still make their own operations idem
 ## Rules — the gateway
 
 ### MS-201 — Access token verified remotely or loosely
+
 **Severity:** critical · **Applies to:** `apps/gateway/src/auth/**`, `libs/auth/**`
 **Detect:** A gRPC/HTTP call to identity per request to validate a token; `verify` without
 `algorithms: ['RS256']`; no `issuer`/`audience`; a symmetric secret for access tokens; no `jti`
@@ -816,6 +852,7 @@ accepts tokens it should not.
 **Not a violation when:** The call is the refresh-token flow, which identity owns by design.
 
 ### MS-202 — Route reachable without an explicit access decision
+
 **Severity:** critical · **Applies to:** gateway controllers, global guards
 **Detect:** No `APP_GUARD` for authentication; per-controller `@UseGuards(...)` as the only protection;
 an `ops` route without a role check. Pairs with `RS-501`.
@@ -824,6 +861,7 @@ an `ops` route without a role check. Pairs with `RS-501`.
 of public routes.
 
 ### MS-203 — Caller identity trusted from a header or the body
+
 **Severity:** critical · **Applies to:** gateway, gRPC controllers in every service
 **Detect:** A service reading `x-user-id` (or similar) from metadata without verifying a token; a
 `userId` field in a user-facing request message that the handler trusts; a gateway that forwards
@@ -833,6 +871,7 @@ inbound client headers unfiltered. Pairs with `RS-303`.
 was taken from an event or a verified token upstream, such as a saga step acting for a booking's owner.
 
 ### MS-204 — Business rule in the gateway
+
 **Severity:** major · **Applies to:** `apps/gateway/src/**`
 **Detect:** Domain conditions (fares, refund tiers, seat counts, booking states) in gateway code; the
 gateway calling two services in sequence to complete a business operation.
@@ -841,6 +880,7 @@ gateway calling two services in sequence to complete a business operation.
 optional badge when its service is down.
 
 ### MS-205 — Upstream error shape or detail leaks through the edge
+
 **Severity:** major · **Applies to:** gateway exception filter, aggregation code
 **Detect:** gRPC `details`, `metadata` or a service's message returned to the client; more than one
 error shape; an upstream failure surfacing as `500` with the raw error. Pairs with `RS-403`.
@@ -848,6 +888,7 @@ error shape; an upstream failure surfacing as `500` with the raw error. Pairs wi
 **Not a violation when:** Never.
 
 ### MS-206 — Rate limit kept per instance or keyed too broadly
+
 **Severity:** major · **Applies to:** gateway rate limiting
 **Detect:** `ThrottlerModule` with the default in-memory storage; one global limit for every route;
 OTP and sign-in routes on the same limit as search. Pairs with `RS-505`.
@@ -864,18 +905,18 @@ search-happy user lock themselves out of sign-in, or an attacker brute-force OTP
 A synchronous call couples the caller's availability to the callee's. Use one only when the caller
 **cannot continue without the answer**.
 
-| Situation | Choice | ENR example |
-| --- | --- | --- |
-| I need a value to make my decision now | gRPC | Booking needs the fare before it can create the hold |
-| I need another service to do something and tell me the result now | gRPC | Booking asks inventory to hold seats; the user is waiting |
-| Something happened; others may care | Event | Catalog cancelled trip 916; booking, inventory and notification react |
-| I need another service's data often | Local copy fed by events | Booking keeps station names (Part 9.3) |
+| Situation                                                         | Choice                   | ENR example                                                           |
+| ----------------------------------------------------------------- | ------------------------ | --------------------------------------------------------------------- |
+| I need a value to make my decision now                            | gRPC                     | Booking needs the fare before it can create the hold                  |
+| I need another service to do something and tell me the result now | gRPC                     | Booking asks inventory to hold seats; the user is waiting             |
+| Something happened; others may care                               | Event                    | Catalog cancelled trip 916; booking, inventory and notification react |
+| I need another service's data often                               | Local copy fed by events | Booking keeps station names (Part 9.3)                                |
 
 gRPC over REST between services gives you typed contracts generated from one source, HTTP/2
 multiplexing, deadlines built into the protocol, and a fixed set of status codes. The price is a
 binary protocol (debug with `grpcurl`) and the discipline of `.proto` evolution.
 
-## 5.2 Designing a `.proto` contract
+## 5.2 Delogining a `.proto` contract
 
 Contracts live in `libs/contracts/proto/enr/<service>/v<N>/` and the package name carries the version.
 This is an **illustrative** fragment — your contracts are a design-gate deliverable:
@@ -942,15 +983,15 @@ plugins:
 Clients and servers are deployed at different times, so for a while old clients talk to new
 servers and the other way round. Every change must survive that.
 
-| Change | Safe within `v1`? |
-| --- | --- |
-| Add a new field with a new number | Yes — old readers ignore it, new readers see the default when absent |
-| Add a new RPC or a new enum value | Yes — but old clients must tolerate unknown enum values |
-| Remove a field | Only by `reserved`-ing its number **and** name |
-| Rename a field (same number, same type) | Wire-compatible, but breaks generated code and JSON; treat as breaking |
-| Change a field's type or number | **No** |
-| Reuse a number that used to mean something else | **Never** — old messages decode into the wrong field |
-| Change what a field *means* (piastres → pounds) | **No**, even though no tool will notice |
+| Change                                          | Safe within `v1`?                                                      |
+| ----------------------------------------------- | ---------------------------------------------------------------------- |
+| Add a new field with a new number               | Yes — old readers ignore it, new readers see the default when absent   |
+| Add a new RPC or a new enum value               | Yes — but old clients must tolerate unknown enum values                |
+| Remove a field                                  | Only by `reserved`-ing its number **and** name                         |
+| Rename a field (same number, same type)         | Wire-compatible, but breaks generated code and JSON; treat as breaking |
+| Change a field's type or number                 | **No**                                                                 |
+| Reuse a number that used to mean something else | **Never** — old messages decode into the wrong field                   |
+| Change what a field _means_ (piastres → pounds) | **No**, even though no tool will notice                                |
 
 A breaking change becomes a new package, `enr.catalog.v2`, served **next to** `v1` until every caller
 has moved. `buf lint` and `buf breaking --against '.git#branch=main'` catch most structural breaks
@@ -975,11 +1016,16 @@ Set a default per client where the client is registered, so no call can forget o
 
 ```ts
 // libs/observability/src/grpc/with-default-deadline.ts
-import { InterceptingCall, type Interceptor } from '@grpc/grpc-js';
+import { InterceptingCall, type Interceptor } from "@grpc/grpc-js";
 
 export function withDefaultDeadline(timeoutMs: number): Interceptor {
   return (options, nextCall) =>
-    new InterceptingCall(nextCall({ ...options, deadline: options.deadline ?? Date.now() + timeoutMs }));
+    new InterceptingCall(
+      nextCall({
+        ...options,
+        deadline: options.deadline ?? Date.now() + timeoutMs,
+      }),
+    );
 }
 ```
 
@@ -993,21 +1039,21 @@ time than it has left: read the remaining budget from `call.getDeadline()` on th
 gRPC has a fixed set of status codes. Use them deliberately, and carry your own **stable error code**
 in the status message so the gateway can map it to the right HTTP status and localized text.
 
-| gRPC status | Default HTTP | Use it in ENR for |
-| --- | --- | --- |
-| `INVALID_ARGUMENT` | 400 | Malformed request: unknown station id format, `SEAT_CLASS_UNSPECIFIED` |
-| `FAILED_PRECONDITION` | 400 | State does not allow it: cancelling a ticket < 2 h before boarding (R8) |
-| `OUT_OF_RANGE` | 400 | Date outside the published timetable |
-| `UNAUTHENTICATED` | 401 | Missing or invalid relayed token |
-| `PERMISSION_DENIED` | 403 | Authenticated, not allowed (non-ops calling an ops RPC) |
-| `NOT_FOUND` | 404 | Unknown trip; another user's booking (404, not 403) |
-| `ALREADY_EXISTS` | 409 | Duplicate create with a different payload |
-| `ABORTED` | 409 | Concurrency conflict: the seats were taken while you were deciding |
-| `RESOURCE_EXHAUSTED` | 429 | A per-user quota |
-| `UNAVAILABLE` | 503 | The service or its dependency is down — **the** retryable code |
-| `DEADLINE_EXCEEDED` | 504 | The deadline passed |
-| `UNIMPLEMENTED` | 501 | RPC not deployed yet (version skew) |
-| `INTERNAL` / `UNKNOWN` | 500 | Bugs. Never for an expected outcome |
+| gRPC status            | Default HTTP | Use it in ENR for                                                       |
+| ---------------------- | ------------ | ----------------------------------------------------------------------- |
+| `INVALID_ARGUMENT`     | 400          | Malformed request: unknown station id format, `SEAT_CLASS_UNSPECIFIED`  |
+| `FAILED_PRECONDITION`  | 400          | State does not allow it: cancelling a ticket < 2 h before boarding (R8) |
+| `OUT_OF_RANGE`         | 400          | Date outside the published timetable                                    |
+| `UNAUTHENTICATED`      | 401          | Missing or invalid relayed token                                        |
+| `PERMISSION_DENIED`    | 403          | Authenticated, not allowed (non-ops calling an ops RPC)                 |
+| `NOT_FOUND`            | 404          | Unknown trip; another user's booking (404, not 403)                     |
+| `ALREADY_EXISTS`       | 409          | Duplicate create with a different payload                               |
+| `ABORTED`              | 409          | Concurrency conflict: the seats were taken while you were deciding      |
+| `RESOURCE_EXHAUSTED`   | 429          | A per-user quota                                                        |
+| `UNAVAILABLE`          | 503          | The service or its dependency is down — **the** retryable code          |
+| `DEADLINE_EXCEEDED`    | 504          | The deadline passed                                                     |
+| `UNIMPLEMENTED`        | 501          | RPC not deployed yet (version skew)                                     |
+| `INTERNAL` / `UNKNOWN` | 500          | Bugs. Never for an expected outcome                                     |
 
 (The default HTTP column follows `google/rpc/code.proto`; the error catalogue may override it per code —
 `SEATS_UNAVAILABLE` is a `409` in ENR whatever its gRPC status.)
@@ -1020,7 +1066,10 @@ On the server, domain code throws a domain error; one filter on the gRPC control
 export class GrpcDomainErrorFilter implements RpcExceptionFilter<DomainError> {
   catch(error: DomainError): Observable<never> {
     // grpc-js reads `code` as the status and `message` as the status details
-    return throwError(() => ({ code: grpcStatusFor(error.code), message: error.code }));
+    return throwError(() => ({
+      code: grpcStatusFor(error.code),
+      message: error.code,
+    }));
   }
 }
 ```
@@ -1042,18 +1091,25 @@ idempotency.
   `hold_request_id = bookingId` — and have the server return the original result for a known key.
 - **Retry only codes that mean "try again"**: `UNAVAILABLE` always; `DEADLINE_EXCEEDED` only for
   reads (a write may have completed). Never `INVALID_ARGUMENT`, `FAILED_PRECONDITION` or `ABORTED`
-  at this level — `ABORTED` means the *caller* must re-decide, not resend.
+  at this level — `ABORTED` means the _caller_ must re-decide, not resend.
 - **Bounded, with backoff and jitter** (Part 12.3), and at one layer only.
 
 ```ts
 const quote = await lastValueFrom(
-  this.fares.quoteFare(toQuoteFareRequest(selection)).pipe(
-    retry({ count: 2, delay: (error: unknown, attempt: number) => retryUnavailable(error, attempt) }),
-  ),
+  this.fares
+    .quoteFare(toQuoteFareRequest(selection))
+    .pipe(
+      retry({
+        count: 2,
+        delay: (error: unknown, attempt: number) =>
+          retryUnavailable(error, attempt),
+      }),
+    ),
 );
 
 function retryUnavailable(error: unknown, attempt: number): Observable<number> {
-  if (!isServiceError(error) || error.code !== status.UNAVAILABLE) return throwError(() => error);
+  if (!isServiceError(error) || error.code !== status.UNAVAILABLE)
+    return throwError(() => error);
   return timer(backoffWithJitter(attempt)); // Part 12.3
 }
 ```
@@ -1064,6 +1120,7 @@ budget for that.
 ## Rules — gRPC
 
 ### MS-251 — gRPC call without a deadline
+
 **Severity:** critical · **Applies to:** gRPC client registrations and adapters
 **Detect:** A `ClientsModule` gRPC registration without a deadline interceptor; a call with a
 relative number as `deadline`; a handler calling downstream with more time than `call.getDeadline()`
@@ -1073,6 +1130,7 @@ leaves.
 is cancelled explicitly — ENR has none.
 
 ### MS-252 — Breaking change inside a published proto package
+
 **Severity:** critical · **Applies to:** `libs/contracts/proto/**`
 **Detect:** A field number reused or changed; a field removed without `reserved` number and name; a
 type change; a semantic change (units, meaning) under the same field; `buf breaking` failing.
@@ -1090,6 +1148,7 @@ during the window when old and new versions talk to each other.
 **Not a violation when:** The contract has never been merged to `main` or consumed by another service.
 
 ### MS-253 — Retry of a non-idempotent call, or an unbounded retry
+
 **Severity:** major · **Applies to:** gRPC adapters
 **Detect:** `retry()` on a write RPC whose request has no idempotency key; retry on any error rather
 than on `UNAVAILABLE`; `retry()` without a count or without backoff.
@@ -1099,6 +1158,7 @@ into a self-inflicted outage.
 deduplication is covered by a test.
 
 ### MS-254 — Expected failure returned as `UNKNOWN` or `INTERNAL`
+
 **Severity:** major · **Applies to:** gRPC controllers, `libs/errors`
 **Detect:** Domain errors or `HttpException`s thrown from gRPC handlers with no filter mapping them;
 `RpcException('some sentence')`; a status message that is free text instead of a catalogued code.
@@ -1107,6 +1167,7 @@ clients cannot localize text.
 **Not a violation when:** The failure really is unexpected (a bug); `INTERNAL` is correct then.
 
 ### MS-255 — Hand-written copy of a contract type
+
 **Severity:** major · **Applies to:** `apps/**`
 **Detect:** An `interface` mirroring a proto message or gRPC service by hand; client code typed with
 an inline literal instead of the generated `*Client` interface.
@@ -1149,14 +1210,14 @@ the train. Events flow from the service that knows the facts.
 
 ## 6.2 RabbitMQ in five minutes
 
-| Concept | What it is | In ENR |
-| --- | --- | --- |
-| **Exchange** | Receives every published message and routes it; stores nothing | `enr.events` (topic) for domain events; `enr.retry` (direct) for retries |
-| **Queue** | Stores messages until a consumer acknowledges them | One per consuming service: `notification.events`, `booking.events`, … |
-| **Binding** | "Send messages with routing key matching X to queue Y" | `notification.events` ← `booking.confirmed`, `ticket.*` |
-| **Routing key** | A dotted string on each message | The event type: `trip.cancelled` |
-| **Topic wildcards** | `*` matches exactly one word, `#` matches zero or more | `ticket.*` matches `ticket.voided`; `trip.#` matches `trip.delay.reported` |
-| **Competing consumers** | Several consumers on one queue share its messages | Three notification instances split the load |
+| Concept                 | What it is                                                     | In ENR                                                                     |
+| ----------------------- | -------------------------------------------------------------- | -------------------------------------------------------------------------- |
+| **Exchange**            | Receives every published message and routes it; stores nothing | `enr.events` (topic) for domain events; `enr.retry` (direct) for retries   |
+| **Queue**               | Stores messages until a consumer acknowledges them             | One per consuming service: `notification.events`, `booking.events`, …      |
+| **Binding**             | "Send messages with routing key matching X to queue Y"         | `notification.events` ← `booking.confirmed`, `ticket.*`                    |
+| **Routing key**         | A dotted string on each message                                | The event type: `trip.cancelled`                                           |
+| **Topic wildcards**     | `*` matches exactly one word, `#` matches zero or more         | `ticket.*` matches `ticket.voided`; `trip.#` matches `trip.delay.reported` |
+| **Competing consumers** | Several consumers on one queue share its messages              | Three notification instances split the load                                |
 
 Two rules fall out of that table. **Each consuming service gets its own queue**, so every service
 receives its own copy of each event. **Instances of the same service share that queue**, so each
@@ -1197,11 +1258,12 @@ the quorum queue's delivery limit (default 20 since RabbitMQ 4.0) is reached.
 
 ```ts
 // libs/messaging/src/topology.ts
-export const EVENTS_EXCHANGE = 'enr.events';
-export const RETRY_EXCHANGE = 'enr.retry';
+export const EVENTS_EXCHANGE = "enr.events";
+export const RETRY_EXCHANGE = "enr.retry";
 export const RETRY_DELAYS_MS = [5_000, 30_000, 120_000, 600_000] as const;
 
-export const retryQueue = (queue: string, tier: number): string => `${queue}.retry.${tier}`;
+export const retryQueue = (queue: string, tier: number): string =>
+  `${queue}.retry.${tier}`;
 export const parkingLot = (queue: string): string => `${queue}.parking-lot`;
 
 // Nest asserts the main queue with these exact options; declare them in one place only.
@@ -1210,20 +1272,26 @@ export function mainQueueOptions(queue: string): Options.AssertQueue {
     durable: true,
     deadLetterExchange: RETRY_EXCHANGE,
     deadLetterRoutingKey: parkingLot(queue),
-    arguments: { 'x-queue-type': 'quorum' },
+    arguments: { "x-queue-type": "quorum" },
   };
 }
 
 // Run once at boot, before app.startAllMicroservices()
-export async function declareTopology(channel: Channel, queue: string): Promise<void> {
-  await channel.assertExchange(EVENTS_EXCHANGE, 'topic', { durable: true });
-  await channel.assertExchange(RETRY_EXCHANGE, 'direct', { durable: true });
+export async function declareTopology(
+  channel: Channel,
+  queue: string,
+): Promise<void> {
+  await channel.assertExchange(EVENTS_EXCHANGE, "topic", { durable: true });
+  await channel.assertExchange(RETRY_EXCHANGE, "direct", { durable: true });
   await channel.assertQueue(queue, mainQueueOptions(queue));
   await channel.bindQueue(queue, RETRY_EXCHANGE, queue);
   for (const [tier, delayMs] of RETRY_DELAYS_MS.entries()) {
     const name = retryQueue(queue, tier);
     await channel.assertQueue(name, {
-      durable: true, messageTtl: delayMs, deadLetterExchange: RETRY_EXCHANGE, deadLetterRoutingKey: queue,
+      durable: true,
+      messageTtl: delayMs,
+      deadLetterExchange: RETRY_EXCHANGE,
+      deadLetterRoutingKey: queue,
     });
     await channel.bindQueue(name, RETRY_EXCHANGE, name);
   }
@@ -1244,7 +1312,11 @@ are wrong for ENR, so every option below is set on purpose:
 
 ```ts
 // libs/messaging/src/event-consumer-options.ts
-export function eventConsumerOptions(queue: string, url: string, prefetchCount: number): RmqOptions {
+export function eventConsumerOptions(
+  queue: string,
+  url: string,
+  prefetchCount: number,
+): RmqOptions {
   return {
     transport: Transport.RMQ,
     options: {
@@ -1252,10 +1324,10 @@ export function eventConsumerOptions(queue: string, url: string, prefetchCount: 
       queue,
       queueOptions: mainQueueOptions(queue),
       exchange: EVENTS_EXCHANGE,
-      exchangeType: 'topic',
-      wildcards: true,   // bind the queue once per @EventPattern of this app
-      noAck: false,      // Nest's default is true (auto-ack): a crash would lose the message
-      prefetchCount,     // Nest's default is 0, which means unlimited (6.6)
+      exchangeType: "topic",
+      wildcards: true, // bind the queue once per @EventPattern of this app
+      noAck: false, // Nest's default is true (auto-ack): a crash would lose the message
+      prefetchCount, // Nest's default is 0, which means unlimited (6.6)
     },
   };
 }
@@ -1308,18 +1380,24 @@ export class EventConsumer {
     }
     try {
       await withEventContext(envelope, () =>
-        this.inbox.processOnce(envelope.eventId, (tx) => work(parsed.data, tx)));
+        this.inbox.processOnce(envelope.eventId, (tx) => work(parsed.data, tx)),
+      );
       channel.ack(message);
     } catch (error) {
-      this.logger.warn({ err: error, eventId: envelope.eventId, type: envelope.type }, 'event failed');
+      this.logger.warn(
+        { err: error, eventId: envelope.eventId, type: envelope.type },
+        "event failed",
+      );
       await this.retries.retryOrPark(channel, message, this.queue);
     }
   }
 }
 
 // The one place Nest's loosely typed RmqContext is narrowed.
-export const channelOf = (context: RmqContext): ConfirmChannel => context.getChannelRef();
-export const messageOf = (context: RmqContext): ConsumeMessage => context.getMessage() as ConsumeMessage;
+export const channelOf = (context: RmqContext): ConfirmChannel =>
+  context.getChannelRef();
+export const messageOf = (context: RmqContext): ConsumeMessage =>
+  context.getMessage() as ConsumeMessage;
 ```
 
 ```ts
@@ -1362,12 +1440,12 @@ for handlers that call Stripe.
 
 A message survives a broker restart only when **all four** hold:
 
-| Requirement | Who sets it | Default in Nest 11 |
-| --- | --- | --- |
-| Durable exchange | Nest asserts `enr.events` as durable | Yes |
-| Durable queue | `queueOptions.durable` | Set it explicitly (`mainQueueOptions`) |
-| Persistent message | `persistent: true` on the client, or per record | **No** — `persistent` defaults to `false` |
-| Publisher confirm awaited | `amqp-connection-manager` uses confirm channels; the publish settles after the broker's ack | Yes, if you wait for it |
+| Requirement               | Who sets it                                                                                 | Default in Nest 11                        |
+| ------------------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------- |
+| Durable exchange          | Nest asserts `enr.events` as durable                                                        | Yes                                       |
+| Durable queue             | `queueOptions.durable`                                                                      | Set it explicitly (`mainQueueOptions`)    |
+| Persistent message        | `persistent: true` on the client, or per record                                             | **No** — `persistent` defaults to `false` |
+| Publisher confirm awaited | `amqp-connection-manager` uses confirm channels; the publish settles after the broker's ack | Yes, if you wait for it                   |
 
 ## 6.7 The event envelope
 
@@ -1377,13 +1455,13 @@ replay tooling all rely on it.
 ```ts
 // libs/messaging/src/event-envelope.ts
 export interface EventEnvelope<TPayload> {
-  readonly eventId: string;       // UUID; the inbox deduplicates on it
-  readonly type: string;          // 'trip.cancelled' — also the routing key
-  readonly version: number;       // payload schema version: 1, 2, …
-  readonly occurredAt: string;    // ISO-8601 UTC, when the fact happened (not when it was sent)
+  readonly eventId: string; // UUID; the inbox deduplicates on it
+  readonly type: string; // 'trip.cancelled' — also the routing key
+  readonly version: number; // payload schema version: 1, 2, …
+  readonly occurredAt: string; // ISO-8601 UTC, when the fact happened (not when it was sent)
   readonly correlationId: string; // the user request or job that started the whole chain
-  readonly causationId: string;   // the request or eventId that directly caused this event
-  readonly producer: string;      // 'catalog'
+  readonly causationId: string; // the request or eventId that directly caused this event
+  readonly producer: string; // 'catalog'
   readonly payload: TPayload;
 }
 ```
@@ -1396,12 +1474,12 @@ directly caused this?" Together they let you rebuild the chain: request → `tri
 
 **Name events as past-tense business facts**: `<aggregate>.<past participle>`.
 
-| Good | Bad | Why it is bad |
-| --- | --- | --- |
-| `booking.confirmed` | `confirmBooking` | A command; the sender expects a specific receiver to act |
-| `hold.expired` | `seat.updated` | "Updated" tells the consumer nothing; it must diff to find out |
-| `trip.delay.reported` | `sendDelayEmail` | Names one consumer's reaction, not the fact |
-| `refund.succeeded` | `stripe.webhook.received` | Leaks a provider detail into everyone's vocabulary |
+| Good                  | Bad                       | Why it is bad                                                  |
+| --------------------- | ------------------------- | -------------------------------------------------------------- |
+| `booking.confirmed`   | `confirmBooking`          | A command; the sender expects a specific receiver to act       |
+| `hold.expired`        | `seat.updated`            | "Updated" tells the consumer nothing; it must diff to find out |
+| `trip.delay.reported` | `sendDelayEmail`          | Names one consumer's reaction, not the fact                    |
+| `refund.succeeded`    | `stripe.webhook.received` | Leaks a provider detail into everyone's vocabulary             |
 
 **Version payloads, not envelopes.** Adding an optional field keeps `version: 1`. Removing or
 renaming a field, or changing its meaning, is `version: 2`: publish both versions side by side until
@@ -1417,6 +1495,7 @@ in headers), has a short expiry, and is redacted from every log (Part 11.3).
 ## Rules — RabbitMQ
 
 ### MS-301 — Message acknowledged before the work commits, or never
+
 **Severity:** critical · **Applies to:** RMQ consumer options, event handlers, `libs/messaging`
 **Detect:** `noAck` missing or `true`; `channel.ack(...)` before the transaction resolves; a handler
 path that returns or throws without ack, retry or park.
@@ -1425,6 +1504,7 @@ then redelivered to someone else on reconnect.
 **Not a violation when:** Never.
 
 ### MS-302 — Unbounded or untuned prefetch
+
 **Severity:** major · **Applies to:** RMQ consumer options
 **Detect:** `prefetchCount` absent (Nest default `0` = unlimited) or larger than the handler's
 database pool can serve.
@@ -1432,6 +1512,7 @@ database pool can serve.
 **Not a violation when:** Never in ENR; every consumer sets it.
 
 ### MS-303 — Message can be lost by the broker
+
 **Severity:** critical · **Applies to:** RMQ clients, topology, outbox relay
 **Detect:** A non-durable queue or exchange; a client without `persistent: true`; the outbox relay
 marking a row published without awaiting the publish (and so the broker confirm).
@@ -1440,6 +1521,7 @@ have arrived.
 **Not a violation when:** Never for domain events.
 
 ### MS-304 — Queue shared across services, or consumed by a non-owner
+
 **Severity:** major · **Applies to:** topology, consumer options
 **Detect:** Two different apps configured with the same `queue`; an app consuming a queue named after
 another service; one queue per event type shared by all consumers.
@@ -1448,6 +1530,7 @@ only some of them.
 **Not a violation when:** The consumers are instances of the same service.
 
 ### MS-305 — Message without the standard envelope
+
 **Severity:** major · **Applies to:** producers, outbox writes
 **Detect:** An event published as a bare payload; missing `eventId`, `version`, `occurredAt`,
 `correlationId`, `causationId` or `producer`; `occurredAt` set at publish time by the relay.
@@ -1456,6 +1539,7 @@ without `version` there is no evolution.
 **Not a violation when:** Never.
 
 ### MS-306 — Event named as a command or a CRUD operation
+
 **Severity:** minor · **Applies to:** event types in `libs/contracts`
 **Detect:** Imperative names (`sendEmail`, `releaseSeats`), `*.updated`/`*.changed` without a
 business meaning, provider names (`stripe.*`) in domain event types.
@@ -1465,6 +1549,7 @@ every consumer.
 (event-carried state transfer), such as `station.updated` carrying the full bilingual station record.
 
 ### MS-307 — Breaking event change under the same version
+
 **Severity:** major · **Applies to:** event schemas in `libs/contracts`
 **Detect:** A field removed, renamed, retyped or re-meant without bumping `version`; consumers that
 reject unknown fields; a `v2` producer deployed with no `v1` still published.
@@ -1473,6 +1558,7 @@ until they catch up.
 **Not a violation when:** No consumer of that event has been merged yet.
 
 ### MS-308 — Failed message requeued in a hot loop, or dropped
+
 **Severity:** critical · **Applies to:** event handlers, `libs/messaging`
 **Detect:** `channel.nack(message, false, true)`; `@golevelup` subscriptions with the default
 `REQUEUE` behaviour; a `catch` that acks and logs; no parking lot; schema-invalid messages retried.
@@ -1481,6 +1567,7 @@ event with no trace of what was lost.
 **Not a violation when:** Never.
 
 ### MS-309 — Secret or unnecessary personal data in an event
+
 **Severity:** critical · **Applies to:** event schemas, producers
 **Detect:** Tokens, passwords, PINs, card data or full National IDs in payloads or headers; whole
 user profiles where an id would do.
@@ -1496,7 +1583,7 @@ it lives only in the payload, and it is covered by log redaction.
 ## 7.1 The dual-write problem, again
 
 You met this in DOCURA, and the reviews showed how often it slipped: two of the four teams published
-without a working outbox. In ENR the cost is higher, because other *services* act on the event.
+without a working outbox. In ENR the cost is higher, because other _services_ act on the event.
 
 ```text
  booking:  BEGIN; confirm booking; issue tickets; COMMIT         — succeeds
@@ -1576,7 +1663,8 @@ export class OutboxRelay implements OnModuleDestroy {
     this.isDraining = true;
     try {
       const batch = await this.outbox.claimBatch(100); // sorted by id in code
-      for (const row of batch) {                       // sequential on purpose: keeps producer order
+      for (const row of batch) {
+        // sequential on purpose: keeps producer order
         await this.publish(row);
         await this.outbox.markPublished(row.id);
       }
@@ -1593,16 +1681,19 @@ export class OutboxRelay implements OnModuleDestroy {
     const record = new RmqRecordBuilder(row.envelope)
       .setOptions({
         messageId: row.envelope.eventId,
-        contentType: 'application/json',
+        contentType: "application/json",
         persistent: true,
-        headers: { 'x-correlation-id': row.envelope.correlationId },
+        headers: { "x-correlation-id": row.envelope.correlationId },
       })
       .build();
     const parentContext = propagation.extract(ROOT_CONTEXT, row.traceContext);
     await context.with(parentContext, () =>
-      lastValueFrom(this.events.emit(row.envelope.type, record).pipe(timeout(5_000)), {
-        defaultValue: undefined,
-      }),
+      lastValueFrom(
+        this.events.emit(row.envelope.type, record).pipe(timeout(5_000)),
+        {
+          defaultValue: undefined,
+        },
+      ),
     );
   }
 }
@@ -1647,27 +1738,27 @@ first one's row — exactly one wins.
 
 The inbox protects **database** effects. Effects outside your database need their own key:
 
-| Side effect | How to make it idempotent |
-| --- | --- |
-| Stripe refund for ticket T | Store the refund row first (`PENDING`); call Stripe with `idempotencyKey: 'refund:' + refundId`; never refund a row that already has a Stripe id |
-| PaymentIntent for booking B | `idempotencyKey: 'payment-intent:' + bookingId` |
-| Confirmation email | Record the delivery in the same transaction, send after commit, mark sent. A crash between send and mark sends one duplicate; document that you accept it |
+| Side effect                 | How to make it idempotent                                                                                                                                 |
+| --------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stripe refund for ticket T  | Store the refund row first (`PENDING`); call Stripe with `idempotencyKey: 'refund:' + refundId`; never refund a row that already has a Stripe id          |
+| PaymentIntent for booking B | `idempotencyKey: 'payment-intent:' + bookingId`                                                                                                           |
+| Confirmation email          | Record the delivery in the same transaction, send after commit, mark sent. A crash between send and mark sends one duplicate; document that you accept it |
 
 Stripe keeps idempotency keys for at least 24 hours, so your own `PENDING` row is the long-term
 guard; the key protects the minutes around a retry.
 
 ## 7.4 At-least-once is the contract
 
-| Guarantee | What it means | Who offers it |
-| --- | --- | --- |
-| At-most-once | Never duplicated, sometimes lost | Auto-ack consumers (Nest's default) |
-| At-least-once | Never lost, sometimes duplicated | Outbox + confirms + manual ack |
+| Guarantee        | What it means                        | Who offers it                                     |
+| ---------------- | ------------------------------------ | ------------------------------------------------- |
+| At-most-once     | Never duplicated, sometimes lost     | Auto-ack consumers (Nest's default)               |
+| At-least-once    | Never lost, sometimes duplicated     | Outbox + confirms + manual ack                    |
 | Effectively-once | Duplicates arrive but change nothing | At-least-once **plus** inbox and idempotency keys |
 
 End-to-end exactly-once delivery across a broker, two databases and Stripe is not on offer. Build
 effectively-once from the parts you control.
 
-## 7.5 Ordering, and designing so you do not need it
+## 7.5 Ordering, and delogining so you do not need it
 
 RabbitMQ keeps order only for one publisher on one channel to one queue with one consumer. ENR
 breaks every part of that: several relay instances, retries that come back thirty seconds later,
@@ -1690,11 +1781,11 @@ A **poison message** fails every time: a payload that does not parse, a bug in t
 the handler never expected. Without a limit it blocks or spins forever. In ENR it ends up in the
 parking lot by one of three roads:
 
-| Road | Mechanism |
-| --- | --- |
-| Payload fails schema validation | Parked immediately; retrying cannot help |
-| Handler keeps throwing | Retried through each delay tier, then parked |
-| Handler crashes the process | Redelivered on reconnect until the quorum queue's delivery limit dead-letters it |
+| Road                            | Mechanism                                                                        |
+| ------------------------------- | -------------------------------------------------------------------------------- |
+| Payload fails schema validation | Parked immediately; retrying cannot help                                         |
+| Handler keeps throwing          | Retried through each delay tier, then parked                                     |
+| Handler crashes the process     | Redelivered on reconnect until the quorum queue's delivery limit dead-letters it |
 
 Every parking lot needs an owner, an alert on its depth, and a **replay procedure**. Fix the cause,
 deploy, then move the messages back:
@@ -1709,7 +1800,7 @@ for (let replayed = 0; replayed < limit; replayed += 1) {
     persistent: true,
     messageId: message.properties.messageId,
     contentType: message.properties.contentType,
-    headers: { ...message.properties.headers, 'x-retry-attempt': 0 },
+    headers: { ...message.properties.headers, "x-retry-attempt": 0 },
   });
   await channel.waitForConfirms();
   channel.ack(message);
@@ -1721,6 +1812,7 @@ Replay is safe because of the inbox: anything that had in fact been processed is
 ## Rules — reliability
 
 ### MS-351 — State change published without the outbox
+
 **Severity:** critical · **Applies to:** every producing service
 **Detect:** `ClientProxy.emit(...)` or `channel.publish(...)` in a use case, controller or
 repository; an outbox insert outside the transaction that changes state; publishing inside the
@@ -1729,7 +1821,7 @@ transaction callback. Grep hint: `\.emit\(` outside `libs/messaging`.
 ```ts
 // Bad — a crash between the two lines loses the event
 await this.unitOfWork.run((tx) => this.bookings.markConfirmed(tx, booking));
-this.events.emit('booking.confirmed', payload);
+this.events.emit("booking.confirmed", payload);
 
 // Good — one transaction; the relay publishes
 await this.unitOfWork.run(async (tx) => {
@@ -1744,16 +1836,18 @@ in-process version).
 (retry copies, replay tooling).
 
 ### MS-352 — Outbox relay that holds a transaction across the publish, or cannot run twice
+
 **Severity:** major · **Applies to:** `libs/messaging` relay
 **Detect:** `emit`/`publish` awaited inside the claiming transaction; claims without
 `FOR UPDATE SKIP LOCKED`; rows marked published before the publish settles; no lease, so a crashed
 relay's rows are never retried.
 **Why:** Held locks starve the pool (`CC-506`); without `SKIP LOCKED` two instances publish the same
 rows in lockstep; without a lease, rows claimed by a dead relay are stuck forever.
-**Not a violation when:** The relay is single-instance by deployment *and* publishes outside the
+**Not a violation when:** The relay is single-instance by deployment _and_ publishes outside the
 transaction.
 
 ### MS-353 — Consumer without an inbox
+
 **Severity:** critical · **Applies to:** event handlers
 **Detect:** A handler that writes to the database without recording `eventId` in the same
 transaction; an inbox check in one transaction and the work in another. Pairs with `CC-808`, `JT-706`.
@@ -1763,6 +1857,7 @@ and double emails.
 upsert guarded by version (`MS-152`).
 
 ### MS-354 — Consumer depends on delivery order
+
 **Severity:** major · **Applies to:** event handlers, replicated data
 **Detect:** A handler that assumes a previous event was processed ("booking must exist"), overwrites
 replicated data without a version check, or decrements counters from events.
@@ -1771,6 +1866,7 @@ replicated data without a version check, or decrements counters from events.
 missing.
 
 ### MS-355 — External side effect without an idempotency key
+
 **Severity:** critical · **Applies to:** payment adapters, notification senders, saga steps
 **Detect:** `stripe.paymentIntents.create`, `stripe.refunds.create` without `{ idempotencyKey }`; a
 random key generated per attempt; refunds created without first persisting a refund record.
@@ -1779,6 +1875,7 @@ give the same key.
 **Not a violation when:** The call is a read (`retrieve`, `list`).
 
 ### MS-356 — Parking lot without an owner or a replay path
+
 **Severity:** major · **Applies to:** each consuming service's README and runbook
 **Detect:** No alert or dashboard on parking-lot depth; no replay script; replay done by publishing
 hand-edited JSON.
@@ -1802,19 +1899,19 @@ taken and then refunded. Design the user-facing story of each compensation, not 
 
 ## 8.2 Orchestration or choreography
 
-| | Orchestration | Choreography |
-| --- | --- | --- |
-| Shape | One service owns the process and tells others what to do | Each service reacts to events and emits its own |
-| Where the flow lives | One state machine you can read top to bottom | Spread across consumers |
-| "Where is booking B stuck?" | One row tells you | Correlate events across services |
-| Good for | Many steps, timeouts, compensations, nasty edge cases | Simple fan-out where each reaction is independent |
-| ENR | **The booking saga** — booking orchestrates | **`trip.cancelled`** — each service reacts (Part 6.1) |
+|                             | Orchestration                                            | Choreography                                          |
+| --------------------------- | -------------------------------------------------------- | ----------------------------------------------------- |
+| Shape                       | One service owns the process and tells others what to do | Each service reacts to events and emits its own       |
+| Where the flow lives        | One state machine you can read top to bottom             | Spread across consumers                               |
+| "Where is booking B stuck?" | One row tells you                                        | Correlate events across services                      |
+| Good for                    | Many steps, timeouts, compensations, nasty edge cases    | Simple fan-out where each reaction is independent     |
+| ENR                         | **The booking saga** — booking orchestrates              | **`trip.cancelled`** — each service reacts (Part 6.1) |
 
-A trip cancelled by ops *after* confirmation is not a compensation of the booking saga. It is a new
+A trip cancelled by ops _after_ confirmation is not a compensation of the booking saga. It is a new
 business process (R9), choreographed through `trip.cancelled`.
 
 Orchestration does not mean "booking calls everything synchronously". The orchestrator issues
-commands (gRPC) and waits for outcomes (gRPC responses *or* events such as `payment.succeeded`),
+commands (gRPC) and waits for outcomes (gRPC responses _or_ events such as `payment.succeeded`),
 persisting its state between each.
 
 ## 8.3 The ENR booking saga, step by step
@@ -1835,15 +1932,15 @@ persisting its state between each.
  app ◄── Payment Success; the tickets appear in the Tickets tab
 ```
 
-| Step | Owner | How | Idempotency key | If it fails |
-| --- | --- | --- | --- | --- |
-| 1. Quote | catalog | gRPC, read | — (retry safe) | Booking `FAILED`; nothing to undo |
-| 2. Hold | inventory | gRPC, write | `bookingId` | `SEATS_UNAVAILABLE` (409); nothing to undo |
-| 3. PaymentIntent | payment → Stripe | gRPC, write | `payment-intent:{bookingId}` | Keep the hold; the user may retry until the deadline |
-| 4. Customer pays | app ↔ Stripe | Stripe SDK, 3-D Secure | Stripe's | Card declined: stay in `AWAITING_PAYMENT`, user may retry |
-| 5. Payment outcome | payment | Webhook → outbox → `payment.succeeded` | Stripe `event.id` in payment's inbox | Stripe redelivers webhooks; payment dedupes |
-| 6. Confirm hold | inventory | gRPC, write | `holdId` | Transient: retry. `HOLD_EXPIRED`: late-payment path (8.7) |
-| 7. Issue tickets | booking | Local transaction + outbox | — | Same transaction as `CONFIRMED`; cannot half-happen |
+| Step               | Owner            | How                                    | Idempotency key                      | If it fails                                               |
+| ------------------ | ---------------- | -------------------------------------- | ------------------------------------ | --------------------------------------------------------- |
+| 1. Quote           | catalog          | gRPC, read                             | — (retry safe)                       | Booking `FAILED`; nothing to undo                         |
+| 2. Hold            | inventory        | gRPC, write                            | `bookingId`                          | `SEATS_UNAVAILABLE` (409); nothing to undo                |
+| 3. PaymentIntent   | payment → Stripe | gRPC, write                            | `payment-intent:{bookingId}`         | Keep the hold; the user may retry until the deadline      |
+| 4. Customer pays   | app ↔ Stripe     | Stripe SDK, 3-D Secure                 | Stripe's                             | Card declined: stay in `AWAITING_PAYMENT`, user may retry |
+| 5. Payment outcome | payment          | Webhook → outbox → `payment.succeeded` | Stripe `event.id` in payment's inbox | Stripe redelivers webhooks; payment dedupes               |
+| 6. Confirm hold    | inventory        | gRPC, write                            | `holdId`                             | Transient: retry. `HOLD_EXPIRED`: late-payment path (8.7) |
+| 7. Issue tickets   | booking          | Local transaction + outbox             | —                                    | Same transaction as `CONFIRMED`; cannot half-happen       |
 
 R3's 3-D Secure extension fits the same model: when payment reports that the PaymentIntent requires
 customer action, booking asks inventory to extend the hold once by five minutes and moves its own
@@ -1864,10 +1961,13 @@ The customer pays inside the app, with Stripe's SDK, so the backend learns the o
 
 ```ts
 // apps/payment/src/main.ts
-const app = await NestFactory.create(AppModule, { rawBody: true, bufferLogs: true });
+const app = await NestFactory.create(AppModule, {
+  rawBody: true,
+  bufferLogs: true,
+});
 
 // apps/payment/src/interface/http/stripe-webhook.controller.ts — reached directly, not via the gateway
-@Controller('webhooks/stripe')
+@Controller("webhooks/stripe")
 export class StripeWebhookController {
   constructor(
     @Inject(STRIPE_CLIENT) private readonly stripe: Stripe,
@@ -1879,19 +1979,23 @@ export class StripeWebhookController {
   @HttpCode(HttpStatus.OK)
   async receive(
     @Req() request: RawBodyRequest<Request>,
-    @Headers('stripe-signature') signature: string | undefined,
+    @Headers("stripe-signature") signature: string | undefined,
   ): Promise<void> {
     const event = this.verify(request.rawBody, signature);
     await this.recordStripeEvent.execute(event); // one transaction: dedupe on event.id + outbox write
   }
 
-  private verify(rawBody: Buffer | undefined, signature: string | undefined): Stripe.Event {
-    if (!rawBody || !signature) throw new BadRequestException('STRIPE_SIGNATURE_MISSING');
+  private verify(
+    rawBody: Buffer | undefined,
+    signature: string | undefined,
+  ): Stripe.Event {
+    if (!rawBody || !signature)
+      throw new BadRequestException("STRIPE_SIGNATURE_MISSING");
     try {
-      const secret = this.config.get('STRIPE_WEBHOOK_SECRET', { infer: true });
+      const secret = this.config.get("STRIPE_WEBHOOK_SECRET", { infer: true });
       return this.stripe.webhooks.constructEvent(rawBody, signature, secret); // default tolerance: 5 min
     } catch {
-      throw new BadRequestException('STRIPE_SIGNATURE_INVALID');
+      throw new BadRequestException("STRIPE_SIGNATURE_INVALID");
     }
   }
 }
@@ -1930,28 +2034,55 @@ Keep the transition logic a **pure function** — no I/O, no clock, no framework
 ```ts
 // apps/booking/src/domain/booking-saga.ts
 export type SagaState =
-  | 'CREATED' | 'QUOTED' | 'SEATS_HELD' | 'AWAITING_PAYMENT' | 'PAID' | 'CONFIRMED'
-  | 'FAILED' | 'EXPIRED' | 'LATE_PAYMENT' | 'REFUNDING' | 'REFUNDED';
+  | "CREATED"
+  | "QUOTED"
+  | "SEATS_HELD"
+  | "AWAITING_PAYMENT"
+  | "PAID"
+  | "CONFIRMED"
+  | "FAILED"
+  | "EXPIRED"
+  | "LATE_PAYMENT"
+  | "REFUNDING"
+  | "REFUNDED";
 
 export type SagaEvent =
-  | 'QUOTE_SUCCEEDED' | 'QUOTE_FAILED' | 'HOLD_PLACED' | 'HOLD_FAILED' | 'INTENT_CREATED'
-  | 'PAYMENT_SUCCEEDED' | 'HOLD_CONFIRMED' | 'HOLD_LOST' | 'DEADLINE_PASSED'
-  | 'SEATS_REACQUIRED' | 'REFUND_SUCCEEDED';
+  | "QUOTE_SUCCEEDED"
+  | "QUOTE_FAILED"
+  | "HOLD_PLACED"
+  | "HOLD_FAILED"
+  | "INTENT_CREATED"
+  | "PAYMENT_SUCCEEDED"
+  | "HOLD_CONFIRMED"
+  | "HOLD_LOST"
+  | "DEADLINE_PASSED"
+  | "SEATS_REACQUIRED"
+  | "REFUND_SUCCEEDED";
 
-const TRANSITIONS: Readonly<Record<SagaState, Partial<Record<SagaEvent, SagaState>>>> = {
-  CREATED:          { QUOTE_SUCCEEDED: 'QUOTED', QUOTE_FAILED: 'FAILED' },
-  QUOTED:           { HOLD_PLACED: 'SEATS_HELD', HOLD_FAILED: 'FAILED' },
-  SEATS_HELD:       { INTENT_CREATED: 'AWAITING_PAYMENT', DEADLINE_PASSED: 'EXPIRED' },
-  AWAITING_PAYMENT: { PAYMENT_SUCCEEDED: 'PAID', DEADLINE_PASSED: 'EXPIRED' },
-  PAID:             { HOLD_CONFIRMED: 'CONFIRMED', HOLD_LOST: 'LATE_PAYMENT' },
-  EXPIRED:          { PAYMENT_SUCCEEDED: 'LATE_PAYMENT' },
-  LATE_PAYMENT:     { SEATS_REACQUIRED: 'PAID', HOLD_FAILED: 'REFUNDING' },
-  REFUNDING:        { REFUND_SUCCEEDED: 'REFUNDED' },
-  CONFIRMED: {}, FAILED: {}, REFUNDED: {},
+const TRANSITIONS: Readonly<
+  Record<SagaState, Partial<Record<SagaEvent, SagaState>>>
+> = {
+  CREATED: { QUOTE_SUCCEEDED: "QUOTED", QUOTE_FAILED: "FAILED" },
+  QUOTED: { HOLD_PLACED: "SEATS_HELD", HOLD_FAILED: "FAILED" },
+  SEATS_HELD: {
+    INTENT_CREATED: "AWAITING_PAYMENT",
+    DEADLINE_PASSED: "EXPIRED",
+  },
+  AWAITING_PAYMENT: { PAYMENT_SUCCEEDED: "PAID", DEADLINE_PASSED: "EXPIRED" },
+  PAID: { HOLD_CONFIRMED: "CONFIRMED", HOLD_LOST: "LATE_PAYMENT" },
+  EXPIRED: { PAYMENT_SUCCEEDED: "LATE_PAYMENT" },
+  LATE_PAYMENT: { SEATS_REACQUIRED: "PAID", HOLD_FAILED: "REFUNDING" },
+  REFUNDING: { REFUND_SUCCEEDED: "REFUNDED" },
+  CONFIRMED: {},
+  FAILED: {},
+  REFUNDED: {},
 };
 
 /** Returns the next state, or undefined when the event does not apply in this state. */
-export function nextState(current: SagaState, event: SagaEvent): SagaState | undefined {
+export function nextState(
+  current: SagaState,
+  event: SagaEvent,
+): SagaState | undefined {
   return TRANSITIONS[current][event];
 }
 ```
@@ -1973,11 +2104,11 @@ That only works because every command is idempotent.
 
 Every state that waits for something must have a deadline, or the saga can wait forever.
 
-| Waiting in | For | Deadline | On deadline |
-| --- | --- | --- | --- |
-| `SEATS_HELD`, `AWAITING_PAYMENT` | The customer to pay | Hold expiry (15 min, +5 once for 3-D Secure) | Ask payment for the intent's real status (a webhook may be lost); if unpaid, cancel it; inventory releases the seats itself; `EXPIRED` |
-| `PAID` | Inventory to confirm the hold | Short, with retries | Keep retrying `ConfirmHold`; `HOLD_EXPIRED` → `LATE_PAYMENT` |
-| `REFUNDING` | Stripe's refund outcome | Hours | Alert ops; R10 says a failed refund must be visible |
+| Waiting in                       | For                           | Deadline                                     | On deadline                                                                                                                            |
+| -------------------------------- | ----------------------------- | -------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------- |
+| `SEATS_HELD`, `AWAITING_PAYMENT` | The customer to pay           | Hold expiry (15 min, +5 once for 3-D Secure) | Ask payment for the intent's real status (a webhook may be lost); if unpaid, cancel it; inventory releases the seats itself; `EXPIRED` |
+| `PAID`                           | Inventory to confirm the hold | Short, with retries                          | Keep retrying `ConfirmHold`; `HOLD_EXPIRED` → `LATE_PAYMENT`                                                                           |
+| `REFUNDING`                      | Stripe's refund outcome       | Hours                                        | Alert ops; R10 says a failed refund must be visible                                                                                    |
 
 A **sweeper** is a scheduled job that finds sagas whose `next_step_at` has passed and runs their
 next step. Claim rows with `FOR UPDATE SKIP LOCKED` exactly like the outbox relay, so several booking
@@ -2014,6 +2145,7 @@ moves to `LATE_PAYMENT`. One mechanism, two causes — fewer special cases to te
 ## Rules — sagas
 
 ### MS-401 — Cross-service process without a persisted state machine
+
 **Severity:** critical · **Applies to:** booking saga, any multi-step cross-service flow
 **Detect:** A use case that calls several services in sequence and keeps progress only in local
 variables; saga state not persisted between steps; no single row that answers "where is booking B?".
@@ -2022,6 +2154,7 @@ finish or undo the work.
 **Not a violation when:** The flow has one remote step and nothing to compensate.
 
 ### MS-402 — Saga step that is not idempotent
+
 **Severity:** critical · **Applies to:** saga commands and the services that receive them
 **Detect:** A command without a deterministic key (`bookingId`, `holdId`, `refundId`); a server that
 creates a second hold or intent for a repeated key; keys generated randomly per attempt.
@@ -2029,6 +2162,7 @@ creates a second hold or intent for a repeated key; keys generated randomly per 
 **Not a violation when:** The step is a pure read.
 
 ### MS-403 — Waiting state without a deadline
+
 **Severity:** critical · **Applies to:** saga state machine, sweeper
 **Detect:** A state with no `next_step_at`/deadline; no sweeper; a deadline kept in an in-memory
 `setTimeout`.
@@ -2037,6 +2171,7 @@ limbo.
 **Not a violation when:** The state is terminal (`CONFIRMED`, `FAILED`, `REFUNDED`).
 
 ### MS-404 — Step without a defined compensation
+
 **Severity:** critical · **Applies to:** saga design document and code
 **Detect:** A step after which a later failure is possible, with no compensation written down and
 implemented (for example: money taken, seats lost, no automatic refund).
@@ -2044,6 +2179,7 @@ implemented (for example: money taken, seats lost, no automatic refund).
 **Not a violation when:** Nothing before the step has a lasting effect.
 
 ### MS-405 — Late or out-of-order outcome not handled
+
 **Severity:** critical · **Applies to:** saga transitions
 **Detect:** No transition for `PAYMENT_SUCCEEDED` in `EXPIRED`; `HOLD_EXPIRED` from `ConfirmHold`
 treated as a generic error; duplicates of terminal events throwing instead of being ignored.
@@ -2051,6 +2187,7 @@ treated as a generic error; duplicates of terminal events throwing instead of be
 **Not a violation when:** Never.
 
 ### MS-406 — Transition logic tangled with I/O, or untested
+
 **Severity:** major · **Applies to:** `apps/booking/src/domain/**`
 **Detect:** State changes decided inside controllers, consumers or repositories; transitions without a
 table-driven unit test per (state, event) pair.
@@ -2075,12 +2212,12 @@ your code should need to change when that happens.
 
 What you give up, and what replaces it:
 
-| Monolith habit | Replacement |
-| --- | --- |
-| `JOIN` across modules | Local copy fed by events, or one batch call (9.5) |
-| Foreign key to another module's table | An id plus a validation call or event at write time |
-| One transaction across modules | A saga (Part 8) |
-| Ad-hoc SQL report across everything | A read model built from events, owned by one service |
+| Monolith habit                        | Replacement                                          |
+| ------------------------------------- | ---------------------------------------------------- |
+| `JOIN` across modules                 | Local copy fed by events, or one batch call (9.5)    |
+| Foreign key to another module's table | An id plus a validation call or event at write time  |
+| One transaction across modules        | A saga (Part 8)                                      |
+| Ad-hoc SQL report across everything   | A read model built from events, owned by one service |
 
 ## 9.2 Migrations per service
 
@@ -2140,8 +2277,8 @@ model**: it stores the counts inventory publishes, next to its own timetable, in
 needs — a table or a Redis hash.
 
 That read model is **eventually consistent**. Between a seat being held and catalog consuming the
-event, the count is off by one. That is fine for *display*, and it is exactly why the read model
-must never be used to *decide*:
+event, the count is off by one. That is fine for _display_, and it is exactly why the read model
+must never be used to _decide_:
 
 > **The cache displays, the database decides.** The results screen may say 170. When the customer
 > presses Continue, inventory checks its own tables, under its own locks, and may say the seats are
@@ -2156,12 +2293,12 @@ corollary: **never hold a database transaction open across a gRPC call, a publis
 
 When you need data from two services together:
 
-| Option | Use when | ENR example |
-| --- | --- | --- |
-| **Batch call** to the owner | You need fresh data, rarely, for a bounded set | Gateway asks catalog for 6 stations at once |
-| **Local copy** fed by events | You need it often, and slightly stale is acceptable | Booking's `station_copy` |
-| **Snapshot into your record** | The value must not change after the fact | The fare locked at hold time; the passenger name on a ticket |
-| **Compose at the edge** | Purely presentational, independent parts | Gateway's Home screen (Part 4.4) |
+| Option                        | Use when                                            | ENR example                                                  |
+| ----------------------------- | --------------------------------------------------- | ------------------------------------------------------------ |
+| **Batch call** to the owner   | You need fresh data, rarely, for a bounded set      | Gateway asks catalog for 6 stations at once                  |
+| **Local copy** fed by events  | You need it often, and slightly stale is acceptable | Booking's `station_copy`                                     |
+| **Snapshot into your record** | The value must not change after the fact            | The fare locked at hold time; the passenger name on a ticket |
+| **Compose at the edge**       | Purely presentational, independent parts            | Gateway's Home screen (Part 4.4)                             |
 
 The snapshot row deserves emphasis. A ticket is a historical record: it shows what was sold — the
 passenger's name and National ID as entered, the fare that was charged, the stations as named that
@@ -2171,14 +2308,14 @@ day. If you store only ids and look them up later, history silently rewrites its
 
 All money in ENR is **integer piastres** (R6), at every layer, with no exceptions:
 
-| Layer | Representation | Trap |
-| --- | --- | --- |
-| PostgreSQL | `integer` column | `numeric`/`decimal`, `bigint` and `SUM(...)` come back from `pg` as **strings** — the DOCURA bug (`CC-806`) |
-| TypeORM entity | `farePiastres: number` with `type: 'integer'` | Do not let a `bigint` sneak in without a transformer |
-| `.proto` | `int64 fare_piastres` | Load with `longs: Number`, or it arrives as a `Long` object or a string |
-| Event payload | `"farePiastres": 15500` | Never `155.00`, never `"155"` |
-| Stripe | `amount: 15500, currency: 'egp'` | EGP is a two-decimal currency: Stripe also counts piastres |
-| UI | Formatted at the edge only | — |
+| Layer          | Representation                                | Trap                                                                                                        |
+| -------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------- |
+| PostgreSQL     | `integer` column                              | `numeric`/`decimal`, `bigint` and `SUM(...)` come back from `pg` as **strings** — the DOCURA bug (`CC-806`) |
+| TypeORM entity | `farePiastres: number` with `type: 'integer'` | Do not let a `bigint` sneak in without a transformer                                                        |
+| `.proto`       | `int64 fare_piastres`                         | Load with `longs: Number`, or it arrives as a `Long` object or a string                                     |
+| Event payload  | `"farePiastres": 15500`                       | Never `155.00`, never `"155"`                                                                               |
+| Stripe         | `amount: 15500, currency: 'egp'`              | EGP is a two-decimal currency: Stripe also counts piastres                                                  |
+| UI             | Formatted at the edge only                    | —                                                                                                           |
 
 Rounding happens once, in the service that owns the rule, with integer arithmetic:
 
@@ -2194,6 +2331,7 @@ A 65 EGP fare is 6,500 piastres; the fee is 455 piastres — the "4.55 EGP" on t
 ## Rules — data
 
 ### MS-151 — Schema changed outside the owning service's migrations
+
 **Severity:** major · **Applies to:** `apps/*/src/**/migrations`, ORM config
 **Detect:** `synchronize: true`; migrations of one service touching another's database; a breaking
 schema change (drop, rename, `NOT NULL` without default) in the same release as the code change.
@@ -2201,6 +2339,7 @@ schema change (drop, rename, `NOT NULL` without default) in the same release as 
 **Not a violation when:** The table is brand new and nothing reads it yet.
 
 ### MS-152 — Replicated data written without an ordering guard
+
 **Severity:** major · **Applies to:** local copies and read models
 **Detect:** A copy updated with a plain `UPDATE`/`save()` from an event, with no version or timestamp
 comparison; application code other than the event handler writing to the copy.
@@ -2208,6 +2347,7 @@ comparison; application code other than the event handler writing to the copy.
 **Not a violation when:** The copy is rebuilt wholesale from a snapshot.
 
 ### MS-153 — Transaction held across a remote call
+
 **Severity:** critical · **Applies to:** use cases, repositories, saga steps
 **Detect:** `await` on a gRPC client, `ClientProxy`, Stripe or SMTP inside a `transaction(...)`
 callback; an attempt at two-phase commit across services. Pairs with `CC-506`.
@@ -2216,6 +2356,7 @@ requests fail.
 **Not a violation when:** The call is to the service's own Redis with a short command timeout.
 
 ### MS-154 — Money not in integer piastres end to end
+
 **Severity:** critical · **Applies to:** entities, migrations, `.proto`, event schemas, Stripe calls
 **Detect:** `float`, `double`, `decimal`, `numeric` money columns; `double`/`string` money fields in
 `.proto`; pounds with decimals in events; money fields without a unit in the name.
@@ -2225,6 +2366,7 @@ boundary are harder to find and touch real refunds.
 **Not a violation when:** The value is a ratio, not an amount (the 7% fee rate).
 
 ### MS-155 — Historical record references mutable data instead of a snapshot
+
 **Severity:** major · **Applies to:** tickets, bookings, refunds
 **Detect:** A ticket that stores only `passengerId`/`stationId` and renders names by looking them up;
 a booking that recomputes its fare from catalog after the hold.
@@ -2240,22 +2382,22 @@ the price at hold time for the same reason).
 
 ENR uses Redis for two jobs that look alike and behave very differently when Redis fails:
 
-| Job | Examples in ENR | If Redis loses the data |
-| --- | --- | --- |
-| **Cache** — a disposable copy of data whose truth lives in Postgres | Stations, trip stops, search results, availability counts, unread counts | Slower, then refilled from the source |
-| **Store** — Redis *is* the system of record, for short-lived data | Rate-limit counters, logout denylist, idempotency responses, OTP attempt counters | The data is gone; you must decide what that means |
+| Job                                                                 | Examples in ENR                                                                   | If Redis loses the data                           |
+| ------------------------------------------------------------------- | --------------------------------------------------------------------------------- | ------------------------------------------------- |
+| **Cache** — a disposable copy of data whose truth lives in Postgres | Stations, trip stops, search results, availability counts, unread counts          | Slower, then refilled from the source             |
+| **Store** — Redis _is_ the system of record, for short-lived data   | Rate-limit counters, logout denylist, idempotency responses, OTP attempt counters | The data is gone; you must decide what that means |
 
 Write down which job each key does. Everything in this part about invalidation and staleness applies
 to the cache job; the store job needs the failure decisions in 10.7.
 
 ## 10.2 Patterns
 
-| Pattern | How it works | Use in ENR |
-| --- | --- | --- |
-| **Cache-aside** | Read the cache; on a miss, load from the source and store with a TTL | The default for every cache in ENR |
-| Read-through | A cache library loads on a miss for you | Same idea; fine if you still control keys, TTLs and failures |
-| Write-through | Every write updates the source and the cache together | Rarely worth it: two writes, two failure modes |
-| Write-behind | Write to the cache; flush to the database later | **Never** for anything that matters — the cache becomes the source of truth |
+| Pattern         | How it works                                                         | Use in ENR                                                                  |
+| --------------- | -------------------------------------------------------------------- | --------------------------------------------------------------------------- |
+| **Cache-aside** | Read the cache; on a miss, load from the source and store with a TTL | The default for every cache in ENR                                          |
+| Read-through    | A cache library loads on a miss for you                              | Same idea; fine if you still control keys, TTLs and failures                |
+| Write-through   | Every write updates the source and the cache together                | Rarely worth it: two writes, two failure modes                              |
+| Write-behind    | Write to the cache; flush to the database later                      | **Never** for anything that matters — the cache becomes the source of truth |
 
 Cache-aside plus **event-driven invalidation** (10.6) plus a **TTL as a safety net** is the
 combination ENR uses.
@@ -2315,13 +2457,20 @@ export class CachedQuery<T> {
 
   constructor(
     private readonly redis: Redis,
-    private readonly options: { name: string; ttlSeconds: number; schema: ZodType<T> },
+    private readonly options: {
+      name: string;
+      ttlSeconds: number;
+      schema: ZodType<T>;
+    },
     private readonly metrics: CacheMetrics,
   ) {}
 
   async get(key: string, load: () => Promise<T>): Promise<T> {
     const cached = await this.readSoft(key);
-    this.metrics.record(this.options.name, cached === undefined ? 'miss' : 'hit');
+    this.metrics.record(
+      this.options.name,
+      cached === undefined ? "miss" : "hit",
+    );
     if (cached !== undefined) return cached;
 
     const pending = this.inFlight.get(key); // single-flight: share a load already in progress
@@ -2348,16 +2497,21 @@ export class CachedQuery<T> {
       const parsed = this.options.schema.safeParse(JSON.parse(raw)); // an old deploy may have written it
       return parsed.success ? parsed.data : undefined;
     } catch {
-      this.metrics.record(this.options.name, 'error'); // Redis down or slow: behave like a miss
+      this.metrics.record(this.options.name, "error"); // Redis down or slow: behave like a miss
       return undefined;
     }
   }
 
   private async writeSoft(key: string, value: T): Promise<void> {
     try {
-      await this.redis.set(key, JSON.stringify(value), 'EX', withJitter(this.options.ttlSeconds));
+      await this.redis.set(
+        key,
+        JSON.stringify(value),
+        "EX",
+        withJitter(this.options.ttlSeconds),
+      );
     } catch {
-      this.metrics.record(this.options.name, 'error');
+      this.metrics.record(this.options.name, "error");
     }
   }
 }
@@ -2371,10 +2525,11 @@ const RELEASE_IF_OWNER =
   "if redis.call('get', KEYS[1]) == ARGV[1] then return redis.call('del', KEYS[1]) else return 0 end";
 
 const token = randomUUID();
-const isLeader = (await this.redis.set(`${key}:lock`, token, 'PX', 5_000, 'NX')) === 'OK';
+const isLeader =
+  (await this.redis.set(`${key}:lock`, token, "PX", 5_000, "NX")) === "OK";
 if (!isLeader) {
-  await sleep(100);                                 // follower: give the leader a moment…
-  return (await this.readSoft(key)) ?? load();      // …then read its result, or load once yourself
+  await sleep(100); // follower: give the leader a moment…
+  return (await this.readSoft(key)) ?? load(); // …then read its result, or load once yourself
 }
 try {
   return await this.loadOnce(key, load);
@@ -2390,17 +2545,18 @@ so a slow leader cannot delete a lock that has already passed to someone else.
 
 The owner of a cache invalidates it, in response to events — including its own:
 
-| Event | Catalog does |
-| --- | --- |
-| `station.updated` | `DEL catalog:stations:v2:all` |
-| Timetable published or changed for a date; fare changed; trip cancelled | Bump that date's search generation |
-| Inventory's availability events | Update the counts in the availability read model |
+| Event                                                                   | Catalog does                                     |
+| ----------------------------------------------------------------------- | ------------------------------------------------ |
+| `station.updated`                                                       | `DEL catalog:stations:v2:all`                    |
+| Timetable published or changed for a date; fare changed; trip cancelled | Bump that date's search generation               |
+| Inventory's availability events                                         | Update the counts in the availability read model |
 
 Search results are keyed by date, stations and class, so "every search touching trip 916 on 24 Oct"
 is hard to enumerate. A **generation counter** per date avoids enumerating:
 
 ```ts
-const generation = (await this.redis.get(`catalog:search-gen:v1:${date}`)) ?? '0';
+const generation =
+  (await this.redis.get(`catalog:search-gen:v1:${date}`)) ?? "0";
 const key = `catalog:search:v3:${date}:g${generation}:${from}:${to}:${seatClass}`;
 
 // on any change affecting that date: every old key becomes unreachable and expires by TTL
@@ -2416,24 +2572,24 @@ where the process died between commit and invalidation: the event is in the outb
 commands behind a dead connection:
 
 ```ts
-new Redis(config.get('REDIS_URL', { infer: true }), {
-  maxRetriesPerRequest: 1,   // default 20: each command would stall while ioredis reconnects
+new Redis(config.get("REDIS_URL", { infer: true }), {
+  maxRetriesPerRequest: 1, // default 20: each command would stall while ioredis reconnects
   enableOfflineQueue: false, // fail immediately while disconnected instead of buffering
-  commandTimeout: 200,       // ms; there is no default
+  commandTimeout: 200, // ms; there is no default
   connectTimeout: 2_000,
 });
 ```
 
 Then decide, per use, what failure means — and write it in the service README:
 
-| Use | Redis down means | Reason |
-| --- | --- | --- |
-| Stations, stops, search results | Read from Postgres (cache-aside already does this) | Slower is acceptable |
-| Availability counts on results | Hide the count; still show the trains | A hint, not a decision |
-| Gateway rate limits | Fall back to a per-instance in-memory limiter | Better than no limit; temporary |
-| Logout denylist | Refuse money-moving routes; allow reads until the access token expires | Bounded risk: tokens are short-lived |
-| OTP attempt counters | Refuse OTP verification with a retry-later code | Fail closed: unlimited attempts would allow brute force |
-| Unread badge | Count from notification's database, or hide the badge | Display only |
+| Use                             | Redis down means                                                       | Reason                                                  |
+| ------------------------------- | ---------------------------------------------------------------------- | ------------------------------------------------------- |
+| Stations, stops, search results | Read from Postgres (cache-aside already does this)                     | Slower is acceptable                                    |
+| Availability counts on results  | Hide the count; still show the trains                                  | A hint, not a decision                                  |
+| Gateway rate limits             | Fall back to a per-instance in-memory limiter                          | Better than no limit; temporary                         |
+| Logout denylist                 | Refuse money-moving routes; allow reads until the access token expires | Bounded risk: tokens are short-lived                    |
+| OTP attempt counters            | Refuse OTP verification with a retry-later code                        | Fail closed: unlimited attempts would allow brute force |
+| Unread badge                    | Count from notification's database, or hide the badge                  | Display only                                            |
 
 ## 10.8 Measure it
 
@@ -2441,10 +2597,10 @@ A cache you cannot measure is a guess. Record every lookup as hit, miss or error
 cache's name, using the OpenTelemetry metrics API:
 
 ```ts
-const lookups = metrics.getMeter('enr-cache').createCounter('cache.lookups', {
-  description: 'Cache lookups by cache name and result',
+const lookups = metrics.getMeter("enr-cache").createCounter("cache.lookups", {
+  description: "Cache lookups by cache name and result",
 });
-lookups.add(1, { cache: 'search', result: 'hit' });
+lookups.add(1, { cache: "search", result: "hit" });
 ```
 
 A hit ratio near zero means the keys are too specific or the TTL too short; a sudden rise in `error`
@@ -2453,6 +2609,7 @@ means Redis is in trouble before anyone reports slowness.
 ## Rules — caching
 
 ### MS-501 — Decision taken from a cached value
+
 **Severity:** critical · **Applies to:** inventory, booking, any write path
 **Detect:** A hold, payment or refund path that reads a cached count, price or status to decide;
 `if (cachedAvailable >= passengers)` before calling inventory; a refund computed from a cached fare.
@@ -2460,7 +2617,7 @@ means Redis is in trouble before anyone reports slowness.
 ```ts
 // Bad — the cache decides
 const available = await this.availabilityCache.get(tripId, seatClass);
-if (available < passengers.length) throw new DomainError('SEATS_UNAVAILABLE');
+if (available < passengers.length) throw new DomainError("SEATS_UNAVAILABLE");
 
 // Good — the owner decides, under its own locks; the cache only ever displayed
 const hold = await this.seatHolds.hold({ bookingId, legs, passengers });
@@ -2471,6 +2628,7 @@ customers who could have booked.
 **Not a violation when:** The value is used only for display or ranking.
 
 ### MS-502 — Redis failure fails the request
+
 **Severity:** major · **Applies to:** cache helpers, Redis client config
 **Detect:** Unhandled Redis errors on cache reads/writes; default `maxRetriesPerRequest`,
 `enableOfflineQueue` and no `commandTimeout`; no documented decision for store-type keys.
@@ -2479,6 +2637,7 @@ decide on purpose whether to fail open or closed.
 **Not a violation when:** The key is a store-type key whose documented decision is to fail closed.
 
 ### MS-503 — Unversioned key, or a key outside the owner's namespace
+
 **Severity:** major · **Applies to:** every `redis.get/set/del` call
 **Detect:** Keys without a service prefix and a `v<N>` segment; a service touching another service's
 prefix; cached JSON read without schema validation.
@@ -2486,6 +2645,7 @@ prefix; cached JSON read without schema validation.
 **Not a violation when:** The key is a lock or counter that never stores a structured value.
 
 ### MS-504 — Per-user data under a shared key
+
 **Severity:** critical · **Applies to:** cache keys and the values stored under them
 **Detect:** Shared keys (no user id) whose value includes user-specific fields — saved passengers,
 prices with personal discounts, "your booking" flags; user-specific data cached under a route-only key.
@@ -2493,6 +2653,7 @@ prices with personal discounts, "your booking" flags; user-specific data cached 
 **Not a violation when:** Never.
 
 ### MS-505 — No TTL, no jitter, or no stampede protection on a hot key
+
 **Severity:** major · **Applies to:** cache writes
 **Detect:** `SET` without `EX`/`PX`; identical TTLs for keys written in bursts; expensive loads with
 neither single-flight nor a lock.
@@ -2501,6 +2662,7 @@ Postgres at the worst moment.
 **Not a violation when:** The entry is cheap to compute and rarely read.
 
 ### MS-506 — Cache invalidated by someone other than its owner, or not at all
+
 **Severity:** major · **Applies to:** event handlers, use cases
 **Detect:** Service A deleting service B's keys; a cached entity with no invalidation path except its
 TTL while the UI expects changes to show immediately.
@@ -2508,6 +2670,7 @@ TTL while the UI expects changes to show immediately.
 **Not a violation when:** The documented freshness requirement is satisfied by the TTL alone.
 
 ### MS-507 — Cache without hit/miss metrics
+
 **Severity:** minor · **Applies to:** cache helpers
 **Detect:** A cache with no hit, miss and error counters labelled by cache name.
 **Why:** Without numbers you cannot tell a useful cache from an expensive no-op.
@@ -2536,19 +2699,19 @@ tell you something is wrong before a user does.
 The gateway mints a correlation ID for each incoming request. Every hop after that carries it, and
 every log line includes it. Then "show me everything about this click" is one search.
 
-| Hop | Carrier |
-| --- | --- |
-| App → gateway | Generated at the gateway; returned in the `x-correlation-id` response header |
-| Gateway → service (gRPC) | `x-correlation-id` metadata, set by a client interceptor |
-| Service → outbox → RabbitMQ | `correlationId` in the envelope, plus an `x-correlation-id` message header |
-| Consumer | Restored from the envelope; `causationId` becomes the consumed `eventId` |
-| Every log line | Added by the logger's `mixin` |
+| Hop                         | Carrier                                                                      |
+| --------------------------- | ---------------------------------------------------------------------------- |
+| App → gateway               | Generated at the gateway; returned in the `x-correlation-id` response header |
+| Gateway → service (gRPC)    | `x-correlation-id` metadata, set by a client interceptor                     |
+| Service → outbox → RabbitMQ | `correlationId` in the envelope, plus an `x-correlation-id` message header   |
+| Consumer                    | Restored from the envelope; `causationId` becomes the consumed `eventId`     |
+| Every log line              | Added by the logger's `mixin`                                                |
 
 Inside a process, keep it in `AsyncLocalStorage`, so you never thread it through function arguments:
 
 ```ts
 // libs/observability/src/request-context.ts
-import { AsyncLocalStorage } from 'node:async_hooks';
+import { AsyncLocalStorage } from "node:async_hooks";
 
 export interface RequestContext {
   readonly correlationId: string;
@@ -2557,12 +2720,20 @@ export interface RequestContext {
 
 const storage = new AsyncLocalStorage<RequestContext>();
 
-export const runWithContext = <T>(context: RequestContext, work: () => T): T => storage.run(context, work);
-export const currentContext = (): RequestContext | undefined => storage.getStore();
+export const runWithContext = <T>(context: RequestContext, work: () => T): T =>
+  storage.run(context, work);
+export const currentContext = (): RequestContext | undefined =>
+  storage.getStore();
 
 // Takes the two envelope fields it needs, so this library does not depend on libs/messaging
-export const withEventContext = <T>(event: { correlationId: string; eventId: string }, work: () => T): T =>
-  runWithContext({ correlationId: event.correlationId, causationId: event.eventId }, work);
+export const withEventContext = <T>(
+  event: { correlationId: string; eventId: string },
+  work: () => T,
+): T =>
+  runWithContext(
+    { correlationId: event.correlationId, causationId: event.eventId },
+    work,
+  );
 ```
 
 Outgoing gRPC calls pick it up in `withCorrelationId()`, a client interceptor with the same shape as
@@ -2576,10 +2747,12 @@ their context from the envelope instead:
 @Injectable()
 export class GrpcContextInterceptor implements NestInterceptor {
   intercept(context: ExecutionContext, next: CallHandler): Observable<unknown> {
-    const rpcContext: unknown = context.getType() === 'rpc' ? context.switchToRpc().getContext() : null;
+    const rpcContext: unknown =
+      context.getType() === "rpc" ? context.switchToRpc().getContext() : null;
     if (!(rpcContext instanceof Metadata)) return next.handle(); // HTTP, or an RmqContext
-    const [incoming] = rpcContext.get('x-correlation-id');
-    const correlationId = typeof incoming === 'string' ? incoming : randomUUID();
+    const [incoming] = rpcContext.get("x-correlation-id");
+    const correlationId =
+      typeof incoming === "string" ? incoming : randomUUID();
     const requestContext = { correlationId, causationId: correlationId };
     return new Observable((subscriber) =>
       runWithContext(requestContext, () => next.handle().subscribe(subscriber)),
@@ -2614,12 +2787,12 @@ LoggerModule.forRoot({
 
 Redaction is the safety net, not the plan. The plan is to **log facts, not payloads**:
 
-| Log | Example fields |
-| --- | --- |
-| Each request (pino-http does it) | method, route, status, duration, correlationId |
-| Each event handled | `eventId`, `type`, outcome (`processed`, `duplicate`, `retried`, `parked`), duration |
-| Each saga transition | `bookingId`, from, to, event |
-| Each external call that fails | dependency, operation, gRPC/HTTP status, attempt |
+| Log                              | Example fields                                                                       |
+| -------------------------------- | ------------------------------------------------------------------------------------ |
+| Each request (pino-http does it) | method, route, status, duration, correlationId                                       |
+| Each event handled               | `eventId`, `type`, outcome (`processed`, `duplicate`, `retried`, `parked`), duration |
+| Each saga transition             | `bookingId`, from, to, event                                                         |
+| Each external call that fails    | dependency, operation, gRPC/HTTP status, attempt                                     |
 
 Never log request bodies, event payloads, tokens, OTP codes, PINs, National IDs, card data, Stripe
 client secrets, or full phone numbers (`CC-804`). Most of those are personal data, protected by
@@ -2637,9 +2810,9 @@ The SDK must start **before** any instrumented module is loaded — hence the fi
 
 ```ts
 // apps/booking/src/tracing.ts
-import { NodeSDK } from '@opentelemetry/sdk-node';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
-import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { NodeSDK } from "@opentelemetry/sdk-node";
+import { getNodeAutoInstrumentations } from "@opentelemetry/auto-instrumentations-node";
+import { OTLPTraceExporter } from "@opentelemetry/exporter-trace-otlp-http";
 
 // Service name and endpoint come from OTEL_SERVICE_NAME and OTEL_EXPORTER_OTLP_ENDPOINT (Part 14)
 export const tracing = new NodeSDK({
@@ -2659,8 +2832,10 @@ write the outbox row, and restore it around the publish (Part 7.2 shows the rest
 // libs/messaging/src/outbox-store.ts — inside add(), in the business transaction
 const traceContext: Record<string, string> = {};
 propagation.inject(context.active(), traceContext); // writes traceparent (and tracestate)
-await tx.query('INSERT INTO outbox (event_id, envelope, trace_context) VALUES ($1, $2, $3)',
-  [envelope.eventId, envelope, traceContext]);
+await tx.query(
+  "INSERT INTO outbox (event_id, envelope, trace_context) VALUES ($1, $2, $3)",
+  [envelope.eventId, envelope, traceContext],
+);
 ```
 
 Open Jaeger at <http://localhost:16686> after a booking and check that one trace contains the
@@ -2671,17 +2846,17 @@ starts a new trace instead, the context was lost on the way.
 
 Two different questions, two endpoints:
 
-| Probe | Question | Checks | If it fails |
-| --- | --- | --- | --- |
-| `GET /health/live` | Is the process able to run at all? | Nothing external | Restart the container |
+| Probe               | Question                           | Checks                            | If it fails                        |
+| ------------------- | ---------------------------------- | --------------------------------- | ---------------------------------- |
+| `GET /health/live`  | Is the process able to run at all? | Nothing external                  | Restart the container              |
 | `GET /health/ready` | Should this instance receive work? | Its **own** database and RabbitMQ | Stop routing to it; do not restart |
 
 Liveness that checks the database turns a database outage into a restart storm. Readiness that
-checks *other services* turns one service's outage into all of them being "unready". And Redis is not
+checks _other services_ turns one service's outage into all of them being "unready". And Redis is not
 in readiness at all: by design (Part 10.7) the service works without it.
 
 ```ts
-@Controller('health')
+@Controller("health")
 export class HealthController {
   constructor(
     private readonly health: HealthCheckService,
@@ -2690,20 +2865,21 @@ export class HealthController {
     private readonly config: ConfigService<BookingEnv, true>,
   ) {}
 
-  @Get('live')
-  live(): { status: 'ok' } {
-    return { status: 'ok' };
+  @Get("live")
+  live(): { status: "ok" } {
+    return { status: "ok" };
   }
 
-  @Get('ready')
+  @Get("ready")
   @HealthCheck()
   ready(): Promise<HealthCheckResult> {
     return this.health.check([
-      () => this.database.pingCheck('database', { timeout: 1_000 }),
-      () => this.microservice.pingCheck('rabbitmq', {
-        transport: Transport.RMQ,
-        options: { urls: [this.config.get('RABBITMQ_URL', { infer: true })] },
-      }),
+      () => this.database.pingCheck("database", { timeout: 1_000 }),
+      () =>
+        this.microservice.pingCheck("rabbitmq", {
+          transport: Transport.RMQ,
+          options: { urls: [this.config.get("RABBITMQ_URL", { infer: true })] },
+        }),
     ]);
   }
 }
@@ -2716,14 +2892,14 @@ with `HealthIndicatorService.check(key)` and its `up()` / `down()` results.
 
 You do not need a dashboard for everything. You need the numbers that answer "is anything stuck?":
 
-| Metric | Where it comes from | Worry when |
-| --- | --- | --- |
-| Request rate, error rate, latency per route and RPC | Traces / OpenTelemetry metrics | Errors or p95 latency jump |
-| Queue depth and unacked count per queue | RabbitMQ management UI (<http://localhost:15672>) | Depth grows for minutes |
-| Parking-lot depth per service | RabbitMQ management UI | Anything above zero |
-| Outbox backlog and age of the oldest unpublished row | `SELECT count(*), min(created_at) … WHERE published_at IS NULL` | Age above a minute |
-| Sagas past their deadline | `SELECT count(*) … WHERE next_step_at < now() - interval '5 minutes'` | Anything above zero |
-| Cache hit ratio and Redis errors | Part 10.8 counters | Ratio collapses; errors appear |
+| Metric                                               | Where it comes from                                                   | Worry when                     |
+| ---------------------------------------------------- | --------------------------------------------------------------------- | ------------------------------ |
+| Request rate, error rate, latency per route and RPC  | Traces / OpenTelemetry metrics                                        | Errors or p95 latency jump     |
+| Queue depth and unacked count per queue              | RabbitMQ management UI (<http://localhost:15672>)                     | Depth grows for minutes        |
+| Parking-lot depth per service                        | RabbitMQ management UI                                                | Anything above zero            |
+| Outbox backlog and age of the oldest unpublished row | `SELECT count(*), min(created_at) … WHERE published_at IS NULL`       | Age above a minute             |
+| Sagas past their deadline                            | `SELECT count(*) … WHERE next_step_at < now() - interval '5 minutes'` | Anything above zero            |
+| Cache hit ratio and Redis errors                     | Part 10.8 counters                                                    | Ratio collapses; errors appear |
 
 Jaeger shows traces only. To see OpenTelemetry metrics locally, add the
 `@opentelemetry/exporter-prometheus` exporter or log the values periodically; the stack does not
@@ -2732,6 +2908,7 @@ mandate a metrics backend, but it does mandate that these numbers exist.
 ## Rules — observability
 
 ### MS-601 — Correlation ID lost at a hop
+
 **Severity:** major · **Applies to:** gateway middleware, gRPC interceptors, outbox writes, consumers
 **Detect:** gRPC clients without the correlation interceptor; envelopes with a fresh `correlationId`
 instead of the current one; consumers that do not restore context; log lines without
@@ -2740,6 +2917,7 @@ instead of the current one; consumers that do not restore context; log lines wit
 **Not a violation when:** The work genuinely starts there (a scheduled job mints its own ID).
 
 ### MS-602 — Unstructured log, or a secret or personal data in a log line
+
 **Severity:** critical · **Applies to:** all logging
 **Detect:** `console.log`; string-interpolated messages carrying data; logged request bodies, event
 payloads, tokens, OTPs, PINs, National IDs, card data or Stripe client secrets; no `redact` config.
@@ -2748,6 +2926,7 @@ Pairs with `CC-804`, `CC-605`.
 **Not a violation when:** The value is an opaque identifier (`bookingId`, `eventId`, `userId`).
 
 ### MS-603 — Service not traced, or trace broken at the outbox
+
 **Severity:** major · **Applies to:** `tracing.ts`, `main.ts`, outbox store and relay
 **Detect:** No `tracing.ts`, or imported after other modules; no service name; outbox rows without
 trace context; the relay publishing outside the restored context.
@@ -2755,6 +2934,7 @@ trace context; the relay publishing outside the restored context.
 **Not a violation when:** Never, from sprint 5 onwards (PLAT-5).
 
 ### MS-604 — Liveness checks dependencies, or readiness checks the wrong ones
+
 **Severity:** major · **Applies to:** health controllers, Compose healthchecks
 **Detect:** Database or broker checks in liveness; readiness that calls other services or Redis; a
 single `/health` used for both.
@@ -2762,6 +2942,7 @@ single `/health` used for both.
 **Not a violation when:** Never.
 
 ### MS-605 — Backlogs invisible
+
 **Severity:** major · **Applies to:** each service's README and runbook
 **Detect:** No documented way (query, UI, metric) to see outbox backlog, parking-lot depth and
 sagas past their deadline.
@@ -2784,14 +2965,14 @@ from using up resources everything else needs. Graceful shutdown makes your own 
 
 ## 12.2 Timeouts on every network call
 
-| Call | Where the timeout lives | Default if you do nothing |
-| --- | --- | --- |
-| gRPC | Deadline interceptor per client (Part 5.4) | None — waits forever |
-| Stripe | `new Stripe(key, { timeout })` | 80 seconds |
-| Redis | `commandTimeout` on the ioredis client (Part 10.7) | None |
-| PostgreSQL | `statement_timeout` in the driver options (TypeORM `extra`) | None |
-| RabbitMQ publish | `timeout()` around the relay's publish (Part 7.2) | Waits for the connection to return |
-| SMTP, push provider | The client library's connection and socket timeouts | Library-specific; look it up |
+| Call                | Where the timeout lives                                     | Default if you do nothing          |
+| ------------------- | ----------------------------------------------------------- | ---------------------------------- |
+| gRPC                | Deadline interceptor per client (Part 5.4)                  | None — waits forever               |
+| Stripe              | `new Stripe(key, { timeout })`                              | 80 seconds                         |
+| Redis               | `commandTimeout` on the ioredis client (Part 10.7)          | None                               |
+| PostgreSQL          | `statement_timeout` in the driver options (TypeORM `extra`) | None                               |
+| RabbitMQ publish    | `timeout()` around the relay's publish (Part 7.2)           | Waits for the connection to return |
+| SMTP, push provider | The client library's connection and socket timeouts         | Library-specific; look it up       |
 
 An 80-second Stripe timeout behind a 3-second gateway budget means the user gave up 77 seconds ago
 while your service still holds a connection, a saga step and a slot in the bulkhead.
@@ -2804,7 +2985,11 @@ retrying in the same millisecond.
 
 ```ts
 // libs/resilience/src/backoff.ts — "full jitter": a random delay up to an exponential ceiling
-export function backoffWithJitter(attempt: number, baseMs = 100, capMs = 5_000): number {
+export function backoffWithJitter(
+  attempt: number,
+  baseMs = 100,
+  capMs = 5_000,
+): number {
   const ceiling = Math.min(capMs, baseMs * 2 ** attempt);
   return Math.floor(Math.random() * ceiling);
 }
@@ -2836,15 +3021,18 @@ this.createIntent = new CircuitBreaker(
   (params: Stripe.PaymentIntentCreateParams, idempotencyKey: string) =>
     this.stripe.paymentIntents.create(params, { idempotencyKey }),
   {
-    timeout: 10_000,              // our ceiling for one call
+    timeout: 10_000, // our ceiling for one call
     errorThresholdPercentage: 50, // open when half the recent calls fail…
-    volumeThreshold: 10,          // …but only once there have been 10 calls in the window
-    resetTimeout: 30_000,         // try one call again after 30 s
+    volumeThreshold: 10, // …but only once there have been 10 calls in the window
+    resetTimeout: 30_000, // try one call again after 30 s
     // a declined card is not an outage: do not count it
-    errorFilter: (error: unknown) => error instanceof Stripe.errors.StripeCardError,
+    errorFilter: (error: unknown) =>
+      error instanceof Stripe.errors.StripeCardError,
   },
 );
-this.createIntent.on('open', () => this.logger.warn({ dependency: 'stripe' }, 'circuit opened'));
+this.createIntent.on("open", () =>
+  this.logger.warn({ dependency: "stripe" }, "circuit opened"),
+);
 ```
 
 `opossum` is the breaker library here; it does not bundle TypeScript types, and `@types/opossum`
@@ -2900,22 +3088,23 @@ Consequences worth internalising:
 Write this table for your own service; it is part of the README (`MS-655`) and the sprint 5 drill
 checks it. The ENR-wide version looks like this:
 
-| Down | What users see | What the system does |
-| --- | --- | --- |
-| A service's own Postgres | That service's routes return 503; others work | Readiness fails; consumers stop acking, messages wait in the queue |
-| RabbitMQ | Almost nothing at first: bookings still commit | Outboxes fill up; relays retry; consumers reconnect; everything drains on recovery |
-| Redis | Slower search; stricter behaviour on OTP and logout (Part 10.7) | Cache-aside falls back to Postgres; local rate limits |
-| identity | Cannot sign in or edit profile; **existing sessions keep working** | Gateway verifies tokens locally |
-| catalog | Cannot search or start a booking | Bookings in progress continue; the Tickets tab shows stations from booking's copy |
-| inventory | Cannot hold seats | Paid sagas wait in `PAID`; the sweeper retries `ConfirmHold`; late-payment path if the hold expires |
-| payment | Cannot pay | Stripe retries webhooks (test mode: three times over a few hours); booking's sweeper asks payment to reconcile intent status on restart |
-| Stripe | "Payment temporarily unavailable" | Breaker open; holds expire normally; refunds wait in the queue and retry |
-| notification / Mailpit | Emails and the bell arrive late | Events wait in the queue, then retry tiers, then the parking lot |
-| gateway | Everything | Run two instances; it holds no state of its own except Redis |
+| Down                     | What users see                                                     | What the system does                                                                                                                    |
+| ------------------------ | ------------------------------------------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------- |
+| A service's own Postgres | That service's routes return 503; others work                      | Readiness fails; consumers stop acking, messages wait in the queue                                                                      |
+| RabbitMQ                 | Almost nothing at first: bookings still commit                     | Outboxes fill up; relays retry; consumers reconnect; everything drains on recovery                                                      |
+| Redis                    | Slower search; stricter behaviour on OTP and logout (Part 10.7)    | Cache-aside falls back to Postgres; local rate limits                                                                                   |
+| identity                 | Cannot sign in or edit profile; **existing sessions keep working** | Gateway verifies tokens locally                                                                                                         |
+| catalog                  | Cannot search or start a booking                                   | Bookings in progress continue; the Tickets tab shows stations from booking's copy                                                       |
+| inventory                | Cannot hold seats                                                  | Paid sagas wait in `PAID`; the sweeper retries `ConfirmHold`; late-payment path if the hold expires                                     |
+| payment                  | Cannot pay                                                         | Stripe retries webhooks (test mode: three times over a few hours); booking's sweeper asks payment to reconcile intent status on restart |
+| Stripe                   | "Payment temporarily unavailable"                                  | Breaker open; holds expire normally; refunds wait in the queue and retry                                                                |
+| notification / Mailpit   | Emails and the bell arrive late                                    | Events wait in the queue, then retry tiers, then the parking lot                                                                        |
+| gateway                  | Everything                                                         | Run two instances; it holds no state of its own except Redis                                                                            |
 
 ## Rules — resilience
 
 ### MS-651 — Network call without a timeout
+
 **Severity:** critical · **Applies to:** every client: gRPC, Stripe, Redis, Postgres, SMTP, HTTP
 **Detect:** A client constructed with library defaults for timeouts; `fetch` without an
 `AbortSignal.timeout`; a Stripe client without `timeout`. Generalizes `MS-251`.
@@ -2923,6 +3112,7 @@ checks it. The ENR-wide version looks like this:
 **Not a violation when:** The library's default is short and documented, and you have checked it.
 
 ### MS-652 — Retry without backoff, jitter or a cap, or at several layers
+
 **Severity:** major · **Applies to:** retry helpers, client configuration
 **Detect:** Fixed-delay or immediate retries; no maximum attempt count; the same failure retried by
 the gateway, the service and the client library.
@@ -2930,6 +3120,7 @@ the gateway, the service and the client library.
 **Not a violation when:** The retries are RabbitMQ delay tiers (Part 6.3), which already space out.
 
 ### MS-653 — Stripe called without a circuit breaker
+
 **Severity:** major · **Applies to:** payment adapters
 **Detect:** `stripe.paymentIntents.*` / `stripe.refunds.*` called directly from use cases; a breaker
 that counts card declines as failures; no mapping from "breaker open" to a clear error code.
@@ -2938,6 +3129,7 @@ attempt.
 **Not a violation when:** The call is made by an offline script (reconciliation run by hand).
 
 ### MS-654 — Shutdown drops in-flight work
+
 **Severity:** major · **Applies to:** `main.ts`, relays, sweepers, Dockerfiles, Compose
 **Detect:** No `enableShutdownHooks()`; pollers without a stop flag; gRPC server without
 `gracefulShutdown: true`; `CMD ["npm", "run", "start:prod"]` without `init: true`.
@@ -2946,6 +3138,7 @@ production instead of in CI.
 **Not a violation when:** Never.
 
 ### MS-655 — Undocumented behaviour when a dependency is down
+
 **Severity:** major · **Applies to:** each service's README
 **Detect:** No failure-mode table like 12.7 for the service; behaviour in the table never exercised
 (the sprint 5 drill or a test with the dependency stopped).
@@ -2962,12 +3155,12 @@ The DOCURA reviews counted test files: 79 in the strongest team, 2 in the weakes
 interesting bugs live **between** services — duplicates, retries, contract drift, races — so the
 suite needs a level that most of you skipped last time.
 
-| Level | Scope | Real infrastructure? | Catches | How many |
-| --- | --- | --- | --- | --- |
-| **Unit** | One domain function or class | None | Wrong rules: refund tiers, fees, transitions, allocation | Hundreds; milliseconds each |
-| **Integration** | One service, booted for real | Postgres, RabbitMQ, Redis via Testcontainers | Wrong SQL, locks, acks, retries, inbox, cache behaviour | Dozens per service |
-| **Contract** | One `.proto` or event schema | None | A change that breaks another team's service | One per contract and version |
-| **End-to-end** | The whole Compose stack | Everything, Stripe test mode | Wiring and configuration | A handful of flows |
+| Level           | Scope                        | Real infrastructure?                         | Catches                                                  | How many                     |
+| --------------- | ---------------------------- | -------------------------------------------- | -------------------------------------------------------- | ---------------------------- |
+| **Unit**        | One domain function or class | None                                         | Wrong rules: refund tiers, fees, transitions, allocation | Hundreds; milliseconds each  |
+| **Integration** | One service, booted for real | Postgres, RabbitMQ, Redis via Testcontainers | Wrong SQL, locks, acks, retries, inbox, cache behaviour  | Dozens per service           |
+| **Contract**    | One `.proto` or event schema | None                                         | A change that breaks another team's service              | One per contract and version |
+| **End-to-end**  | The whole Compose stack      | Everything, Stripe test mode                 | Wiring and configuration                                 | A handful of flows           |
 
 ## 13.2 Unit tests: the rules, with their boundaries
 
@@ -2976,22 +3169,26 @@ the textbook case: the boundaries are the bugs.
 
 ```ts
 // apps/booking/src/domain/refund-policy.spec.ts
-describe('refundFor', () => {
-  const boardingAt = new Date('2026-10-24T10:00:00Z');
+describe("refundFor", () => {
+  const boardingAt = new Date("2026-10-24T10:00:00Z");
   const ticket = { farePiastres: 15_500, boardingAt };
 
   it.each([
-    ['exactly 24 h before boarding: full fare', '2026-10-23T10:00:00Z', 15_500],
-    ['one second inside 24 h: half fare', '2026-10-23T10:00:01Z', 7_750],
-    ['exactly 2 h before boarding: half fare', '2026-10-24T08:00:00Z', 7_750],
-  ])('refunds %s', (_case, cancelledAt, expectedPiastres) => {
-    expect(refundFor(ticket, new Date(cancelledAt)))
-      .toEqual({ kind: 'REFUND', amountPiastres: expectedPiastres });
+    ["exactly 24 h before boarding: full fare", "2026-10-23T10:00:00Z", 15_500],
+    ["one second inside 24 h: half fare", "2026-10-23T10:00:01Z", 7_750],
+    ["exactly 2 h before boarding: half fare", "2026-10-24T08:00:00Z", 7_750],
+  ])("refunds %s", (_case, cancelledAt, expectedPiastres) => {
+    expect(refundFor(ticket, new Date(cancelledAt))).toEqual({
+      kind: "REFUND",
+      amountPiastres: expectedPiastres,
+    });
   });
 
-  it('refuses cancellation less than 2 h before boarding', () => {
-    expect(refundFor(ticket, new Date('2026-10-24T08:00:01Z')))
-      .toEqual({ kind: 'REFUSED', reason: 'TOO_CLOSE_TO_DEPARTURE' });
+  it("refuses cancellation less than 2 h before boarding", () => {
+    expect(refundFor(ticket, new Date("2026-10-24T08:00:01Z"))).toEqual({
+      kind: "REFUSED",
+      reason: "TOO_CLOSE_TO_DEPARTURE",
+    });
   });
 });
 ```
@@ -3008,20 +3205,20 @@ a fake `PaymentGateway`), never by mocking your own database or broker.
 
 ```ts
 // apps/notification/test/booking-confirmed.int-spec.ts
-describe('booking.confirmed consumer', () => {
+describe("booking.confirmed consumer", () => {
   let postgres: StartedPostgreSqlContainer;
   let rabbit: StartedRabbitMQContainer;
   let app: INestApplication;
 
   beforeAll(async () => {
     [postgres, rabbit] = await Promise.all([
-      new PostgreSqlContainer('postgres:18').start(),
-      new RabbitMQContainer('rabbitmq:4-management').start(),
+      new PostgreSqlContainer("postgres:18").start(),
+      new RabbitMQContainer("rabbitmq:4-management").start(),
     ]);
     app = await startNotificationApp({
       DATABASE_URL: postgres.getConnectionUri(),
       RABBITMQ_URL: rabbit.getAmqpUrl(),
-      RABBITMQ_PREFETCH: '1', // one message at a time: deliveries are handled in publish order
+      RABBITMQ_PREFETCH: "1", // one message at a time: deliveries are handled in publish order
     });
   }, 120_000);
 
@@ -3030,31 +3227,34 @@ describe('booking.confirmed consumer', () => {
     await Promise.all([postgres.stop(), rabbit.stop()]);
   });
 
-  it('sends one confirmation when the same event arrives twice', async () => {
+  it("sends one confirmation when the same event arrives twice", async () => {
     const event = aBookingConfirmedEvent();
     const sentinel = aBookingConfirmedEvent();
     await publishEvents(rabbit.getAmqpUrl(), [event, event, sentinel]);
 
-    await waitUntil(async () => (await deliveriesFor(app, sentinel.payload.bookingId)).length === 1);
+    await waitUntil(
+      async () =>
+        (await deliveriesFor(app, sentinel.payload.bookingId)).length === 1,
+    );
     expect(await deliveriesFor(app, event.payload.bookingId)).toHaveLength(1);
   });
 });
 ```
 
-The sentinel is how you assert that something did *not* happen without sleeping: once the message
+The sentinel is how you assert that something did _not_ happen without sleeping: once the message
 published after the duplicate has been handled, the duplicate has been handled too. `waitUntil` polls
 with a timeout; there is no `setTimeout(2000)` anywhere (`JT-503`).
 
 Integration tests every service needs:
 
-| Test | Proves |
-| --- | --- |
-| Same event delivered twice → one effect | The inbox works (`MS-353`, `JT-706`) |
+| Test                                                          | Proves                                        |
+| ------------------------------------------------------------- | --------------------------------------------- |
+| Same event delivered twice → one effect                       | The inbox works (`MS-353`, `JT-706`)          |
 | Handler throws → message in a retry queue → eventually parked | Retry topology and `x-retry-attempt` counting |
-| Schema-invalid payload → parked immediately | Non-retryable errors skip the retries |
-| Two relays draining one outbox → each event published once | `FOR UPDATE SKIP LOCKED` and the lease |
-| Two concurrent holds for the last seat → exactly one succeeds | The database guard, not luck (`JT-310`) |
-| Redis container stopped → reads still served | Graceful degradation (Part 10.7) |
+| Schema-invalid payload → parked immediately                   | Non-retryable errors skip the retries         |
+| Two relays draining one outbox → each event published once    | `FOR UPDATE SKIP LOCKED` and the lease        |
+| Two concurrent holds for the last seat → exactly one succeeds | The database guard, not luck (`JT-310`)       |
+| Redis container stopped → reads still served                  | Graceful degradation (Part 10.7)              |
 
 Each test file gets its own containers, or its own database inside one container; tests never share
 rows (`JT-604`). Testcontainers 12 needs Node 22.22 or later and an explicit image in every
@@ -3105,18 +3305,19 @@ the booking flow — triggered events do not belong to your bookings.
 
 ## 13.6 What not to do
 
-| Don't | Because | Instead |
-| --- | --- | --- |
-| Mock the broker or the database in integration tests | You test your mock's ack and lock semantics, not RabbitMQ's or Postgres's | Testcontainers |
-| Share one test database between services or test files | Order-dependent, flaky tests (`JT-604`) | A database per test file, or snapshots |
-| `sleep(2000)` and hope | Slow when it works, flaky when it does not (`JT-503`) | Poll with a timeout; use a sentinel |
-| Test business rules end to end | Minutes per case, and the failure points nowhere | Unit tests at the boundaries |
-| Spin up all seven services for one service's test | You are testing Compose | Fake the neighbours at the port |
-| `expect(controller).toBeDefined()` | Cannot fail (`JT-401`) | Assert a behaviour |
+| Don't                                                  | Because                                                                   | Instead                                |
+| ------------------------------------------------------ | ------------------------------------------------------------------------- | -------------------------------------- |
+| Mock the broker or the database in integration tests   | You test your mock's ack and lock semantics, not RabbitMQ's or Postgres's | Testcontainers                         |
+| Share one test database between services or test files | Order-dependent, flaky tests (`JT-604`)                                   | A database per test file, or snapshots |
+| `sleep(2000)` and hope                                 | Slow when it works, flaky when it does not (`JT-503`)                     | Poll with a timeout; use a sentinel    |
+| Test business rules end to end                         | Minutes per case, and the failure points nowhere                          | Unit tests at the boundaries           |
+| Spin up all seven services for one service's test      | You are testing Compose                                                   | Fake the neighbours at the port        |
+| `expect(controller).toBeDefined()`                     | Cannot fail (`JT-401`)                                                    | Assert a behaviour                     |
 
 ## Rules — testing
 
 ### MS-701 — Business rule without boundary unit tests
+
 **Severity:** major · **Applies to:** `apps/*/src/domain/**`
 **Detect:** A rule from the brief (R2, R4, R6, R8, R9, the saga transitions) with no unit test, or
 tests that skip the exact boundary values. Pairs with `JT-704`, `JT-701`.
@@ -3124,6 +3325,7 @@ tests that skip the exact boundary values. Pairs with `JT-704`, `JT-701`.
 **Not a violation when:** Never.
 
 ### MS-702 — Integration test against mocks of the database or broker
+
 **Severity:** major · **Applies to:** `apps/*/test/**`
 **Detect:** `jest.mock` of TypeORM, `amqplib`, `ClientProxy` or ioredis in a test named or placed as
 an integration test; a service with no Testcontainers-based tests at all.
@@ -3132,6 +3334,7 @@ in the real thing.
 **Not a violation when:** The mocked collaborator is another service, replaced at its port.
 
 ### MS-703 — Contract without a contract test
+
 **Severity:** major · **Applies to:** `libs/contracts/**`, CI or pre-merge scripts
 **Detect:** No `buf lint`/`buf breaking` step; event types without a schema and fixture; producers or
 consumers not tested against the shared schema.
@@ -3139,6 +3342,7 @@ consumers not tested against the shared schema.
 **Not a violation when:** Never.
 
 ### MS-704 — Consumer untested for duplicates and failures
+
 **Severity:** major · **Applies to:** event handlers
 **Detect:** A consumer without an integration test for duplicate delivery, and for failure ending in
 retry or the parking lot. Pairs with `JT-706`.
@@ -3146,6 +3350,7 @@ retry or the parking lot. Pairs with `JT-706`.
 **Not a violation when:** Never.
 
 ### MS-705 — End-to-end suite used for rules, or built on sleeps
+
 **Severity:** minor · **Applies to:** `e2e/**`
 **Detect:** More than a handful of end-to-end tests; business-rule cases asserted only end to end;
 fixed sleeps.
@@ -3153,6 +3358,7 @@ fixed sleeps.
 **Not a violation when:** Never.
 
 ### MS-706 — Tests share state across files or services
+
 **Severity:** major · **Applies to:** test setup
 **Detect:** One long-lived database for all test files; tests relying on rows created by another
 file; integration tests pointing at the Compose stack's databases. Pairs with `JT-604`, `JT-105`.
@@ -3169,15 +3375,15 @@ file; integration tests pointing at the Compose stack's databases. Pairs with `J
 infrastructure to healthy. That is the only infrastructure requirement of the project, and it is
 what your mentor runs first.
 
-| Container | Image | Host ports | Purpose |
-| --- | --- | --- | --- |
-| `postgres` | `postgres:18` | 5432 | One server, six databases, six roles |
-| `redis` | `redis:8` | 6379 | Cache and short-lived stores |
-| `rabbitmq` | `rabbitmq:4-management` | 5672, **15672** (UI) | Events, retries, parking lots |
-| `mailpit` | `axllent/mailpit` | **8025** (UI) | Catches every email; SMTP on 1025 inside the network |
-| `stripe-cli` | `stripe/stripe-cli` | — | Forwards test-mode webhooks to payment |
-| `jaeger` | `cr.jaegertracing.io/jaegertracing/jaeger:2.22.0` | **16686** (UI), 4318 | Receives traces over OTLP/HTTP on 4318 |
-| 7 apps | Built from `apps/*/Dockerfile` | gateway only: 3000 | Internal gRPC ports stay unpublished (Part 4.3) |
+| Container    | Image                                             | Host ports           | Purpose                                              |
+| ------------ | ------------------------------------------------- | -------------------- | ---------------------------------------------------- |
+| `postgres`   | `postgres:18`                                     | 5432                 | One server, six databases, six roles                 |
+| `redis`      | `redis:8`                                         | 6379                 | Cache and short-lived stores                         |
+| `rabbitmq`   | `rabbitmq:4-management`                           | 5672, **15672** (UI) | Events, retries, parking lots                        |
+| `mailpit`    | `axllent/mailpit`                                 | **8025** (UI)        | Catches every email; SMTP on 1025 inside the network |
+| `stripe-cli` | `stripe/stripe-cli`                               | —                    | Forwards test-mode webhooks to payment               |
+| `jaeger`     | `cr.jaegertracing.io/jaegertracing/jaeger:2.22.0` | **16686** (UI), 4318 | Receives traces over OTLP/HTTP on 4318               |
+| 7 apps       | Built from `apps/*/Dockerfile`                    | gateway only: 3000   | Internal gRPC ports stay unpublished (Part 4.3)      |
 
 Jaeger v1 (`jaegertracing/all-in-one`) reached end of life on 31 December 2025; use v2.
 
@@ -3212,22 +3418,40 @@ services:
     image: postgres:18
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres   # development only
-    ports: ["5432:5432"]            # infrastructure ports are published so apps can run outside Docker
+      POSTGRES_PASSWORD: postgres # development only
+    ports: ["5432:5432"] # infrastructure ports are published so apps can run outside Docker
     volumes:
-      - pgdata:/var/lib/postgresql  # Postgres 18 images keep data under /var/lib/postgresql
+      - pgdata:/var/lib/postgresql # Postgres 18 images keep data under /var/lib/postgresql
       - ./infra/postgres/init:/docker-entrypoint-initdb.d:ro
-    healthcheck: { test: ["CMD-SHELL", "pg_isready -U postgres"], interval: 5s, timeout: 3s, retries: 10 }
+    healthcheck:
+      {
+        test: ["CMD-SHELL", "pg_isready -U postgres"],
+        interval: 5s,
+        timeout: 3s,
+        retries: 10,
+      }
 
   rabbitmq:
     image: rabbitmq:4-management
     ports: ["5672:5672", "15672:15672"]
-    healthcheck: { test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"], interval: 10s, timeout: 5s, retries: 10 }
+    healthcheck:
+      {
+        test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"],
+        interval: 10s,
+        timeout: 5s,
+        retries: 10,
+      }
 
   redis:
     image: redis:8
     ports: ["6379:6379"]
-    healthcheck: { test: ["CMD", "redis-cli", "ping"], interval: 5s, timeout: 3s, retries: 10 }
+    healthcheck:
+      {
+        test: ["CMD", "redis-cli", "ping"],
+        interval: 5s,
+        timeout: 3s,
+        retries: 10,
+      }
 
   mailpit:
     image: axllent/mailpit
@@ -3241,7 +3465,7 @@ services:
     image: stripe/stripe-cli
     command: listen --forward-to http://payment:3005/webhooks/stripe
     environment:
-      STRIPE_API_KEY: ${STRIPE_SECRET_KEY}   # from the untracked root .env
+      STRIPE_API_KEY: ${STRIPE_SECRET_KEY} # from the untracked root .env
 
   booking:
     build: { context: ., dockerfile: apps/booking/Dockerfile }
@@ -3254,13 +3478,18 @@ services:
       rabbitmq: { condition: service_healthy }
       redis: { condition: service_healthy }
     healthcheck:
-      test: ["CMD", "node", "-e",
-             "fetch('http://localhost:3004/health/ready').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))"]
+      test:
+        [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3004/health/ready').then(r => process.exit(r.ok ? 0 : 1), () => process.exit(1))",
+        ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 20s
-    init: true                # forwards SIGTERM to node (Part 12.6)
+    init: true # forwards SIGTERM to node (Part 12.6)
     stop_grace_period: 30s
 
 volumes:
@@ -3347,6 +3576,7 @@ Run it as a one-shot Compose service that finishes before dependents start
 ## Rules — local stack and configuration
 
 ### MS-801 — Service boots with missing or invalid configuration
+
 **Severity:** critical · **Applies to:** `apps/*/src/config/**`, `app.module.ts`
 **Detect:** `ConfigModule.forRoot` without `validate` or `validationSchema`; `process.env.X` outside
 the config module; `as string`, `!`, `|| ''` or `String(...)` on configuration values. Pairs with
@@ -3357,6 +3587,7 @@ somewhere else, under load.
 itself in `tracing.ts` before Nest starts.
 
 ### MS-802 — The stack does not come up healthy from a clean clone
+
 **Severity:** major · **Applies to:** Compose file, Dockerfiles, connection setup, README
 **Detect:** Manual steps beyond copying `.env.example` files and setting the Stripe secret (14.5);
 `depends_on` without health conditions; infrastructure without healthchecks; connection retries
@@ -3366,6 +3597,7 @@ start order does not help when RabbitMQ restarts at 3 p.m.
 **Not a violation when:** Never.
 
 ### MS-803 — Secret committed, or no `.env.example` per service
+
 **Severity:** critical · **Applies to:** the repository
 **Detect:** A committed `.env`, Stripe key, webhook secret or private key; a service without an
 `.env.example` listing every key its schema requires. Pairs with `CC-702`.
@@ -3375,6 +3607,7 @@ means the next person discovers each key by crashing.
 development-only password in the init script and Compose file.
 
 ### MS-804 — Seed that bypasses the owner, or is not idempotent
+
 **Severity:** major · **Applies to:** seed scripts, SQL fixtures
 **Detect:** A seed writing into several services' databases; SQL dumps loaded into another service's
 database; a seed that duplicates rows when run twice.
@@ -3398,38 +3631,45 @@ Start from the checklist for the kind of change in front of you, then look up th
 ## 15.2 Checklist by kind of change
 
 **Adds or changes a gRPC call**
+
 - [ ] Deadline set by the client's interceptor, within the caller's remaining budget (`MS-251`)
 - [ ] Retried only if idempotent, only on `UNAVAILABLE`, bounded with backoff (`MS-253`, `MS-652`)
 - [ ] Errors mapped to a status and a catalogued code at both ends (`MS-254`, `MS-205`)
 - [ ] Called through a port; no per-item loop (`MS-054`, `MS-105`)
 
 **Changes a `.proto` or an event schema**
+
 - [ ] Additive within the version; numbers and names of removed fields reserved (`MS-252`, `MS-307`)
 - [ ] `buf lint`/`buf breaking` pass; event fixture added or updated (`MS-703`)
 - [ ] Money in integer piastres, units in names (`MS-154`)
 
 **Publishes an event**
+
 - [ ] Written to the outbox in the same transaction as the state change (`MS-351`)
 - [ ] Standard envelope, past-tense name, no secrets (`MS-305`, `MS-306`, `MS-309`)
 
 **Adds or changes a consumer**
+
 - [ ] Manual ack after commit; every path ends in ack, retry or park (`MS-301`, `MS-308`)
 - [ ] Inbox in the same transaction; external effects keyed (`MS-353`, `MS-355`)
 - [ ] Order-independent; replicated data newer-wins (`MS-354`, `MS-152`)
 - [ ] Integration tests for duplicates and for retry → park (`MS-704`)
 
 **Touches the booking saga or payments**
+
 - [ ] State persisted; every waiting state has a deadline; sweeper covers it (`MS-401`, `MS-403`)
 - [ ] Steps idempotent; compensations defined; late outcomes handled (`MS-402`, `MS-404`, `MS-405`)
 - [ ] Stripe behind a breaker, with idempotency keys and a verified, deduplicated webhook (`MS-653`, `MS-355`)
 
 **Adds or changes a cache**
+
 - [ ] Never used to decide (`MS-501`)
 - [ ] Owner-namespaced, versioned key; per-user data under per-user keys (`MS-503`, `MS-504`)
 - [ ] Jittered TTL, stampede protection, event invalidation, metrics (`MS-505`, `MS-506`, `MS-507`)
 - [ ] Works with Redis stopped (`MS-502`)
 
 **Every pull request**
+
 - [ ] No cross-database access or cross-app import (`MS-102`, `MS-052`)
 - [ ] Correlation ID preserved; structured logs without secrets (`MS-601`, `MS-602`)
 - [ ] Configuration validated at boot; `.env.example` updated (`MS-801`, `MS-803`)
@@ -3439,84 +3679,84 @@ Start from the checklist for the kind of change in front of you, then look up th
 
 Severity is the default; escalate one level on authentication, payment and refund paths.
 
-| ID | Rule | Severity | Part |
-| --- | --- | --- | --- |
-| [`MS-001`](#ms-001--service-boundary-without-a-written-decision) | Every service has an ADR: the capability it owns, the data it alone writes, why it is separate, its owner. | major | 1 |
-| [`MS-002`](#ms-002--contract-written-after-the-code-that-uses-it) | Contracts are reviewed in `libs/contracts` before producer or consumer code merges. | major | 1 |
-| [`MS-051`](#ms-051--domain-code-in-libs) | `libs/` holds contracts and cross-cutting code only — no entities, repositories or business rules. | major | 3 |
-| [`MS-052`](#ms-052--one-app-imports-another-apps-source) | Apps never import another app's source; they share through `libs/contracts`. | **critical** | 3 |
-| [`MS-053`](#ms-053--requestresponse-over-rabbitmq-or-an-unscoped-event-handler) | RabbitMQ carries events only, and `@EventPattern` is scoped to `Transport.RMQ`. | major | 3 |
-| [`MS-054`](#ms-054--transport-types-leak-into-the-application-layer) | Domain and application code depend on ports, never on `ClientGrpc`, Observables, `RmqContext` or Stripe types. | major | 3 |
-| [`MS-055`](#ms-055--connected-microservice-without-the-apps-pipes-filters-and-interceptors) | Connected microservices inherit (or declare) pipes, filters and interceptors; filters handle the rpc context. | major | 3 |
-| [`MS-101`](#ms-101--two-services-write-the-same-table) | Each table has exactly one owning service. | **critical** | 2 |
-| [`MS-102`](#ms-102--a-service-reads-another-services-database) | No service connects to another service's database. | **critical** | 2 |
-| [`MS-103`](#ms-103--entity-service-instead-of-a-capability) | Services expose capabilities, not CRUD over another service's nouns. | major | 2 |
-| [`MS-104`](#ms-104--atomic-invariant-split-across-services) | An invariant that needs atomicity lives inside one service's transaction. | **critical** | 2 |
-| [`MS-105`](#ms-105--chatty-call-an-rpc-per-item) | No RPC per item: batch the call or keep a local copy. | major | 2 |
-| [`MS-151`](#ms-151--schema-changed-outside-the-owning-services-migrations) | Each service migrates only its own database, expand-then-contract, with `synchronize` off. | major | 9 |
-| [`MS-152`](#ms-152--replicated-data-written-without-an-ordering-guard) | Local copies are read-only and updated newer-version-wins. | major | 9 |
-| [`MS-153`](#ms-153--transaction-held-across-a-remote-call) | No transaction is held open across a remote call; no distributed transactions. | **critical** | 9 |
-| [`MS-154`](#ms-154--money-not-in-integer-piastres-end-to-end) | Money is integer piastres in the database, `.proto`, events and Stripe. | **critical** | 9 |
-| [`MS-155`](#ms-155--historical-record-references-mutable-data-instead-of-a-snapshot) | Historical records snapshot the facts they sold. | major | 9 |
-| [`MS-201`](#ms-201--access-token-verified-remotely-or-loosely) | The gateway verifies RS256 tokens locally, pinning `alg`, `iss`, `aud`, `exp`, and checks the `jti` denylist. | **critical** | 4 |
-| [`MS-202`](#ms-202--route-reachable-without-an-explicit-access-decision) | Every route is denied by default; public routes opt out explicitly. | **critical** | 4 |
-| [`MS-203`](#ms-203--caller-identity-trusted-from-a-header-or-the-body) | Caller identity comes from a verified token, never from a header or a request field. | **critical** | 4 |
-| [`MS-204`](#ms-204--business-rule-in-the-gateway) | The gateway authenticates, routes, aggregates and translates — it holds no business rules. | major | 4 |
-| [`MS-205`](#ms-205--upstream-error-shape-or-detail-leaks-through-the-edge) | One envelope; every upstream failure maps to a catalogued code; no internals leak. | major | 4 |
-| [`MS-206`](#ms-206--rate-limit-kept-per-instance-or-keyed-too-broadly) | Rate limits live in Redis, keyed per user or IP and per route class. | major | 4 |
-| [`MS-251`](#ms-251--grpc-call-without-a-deadline) | Every gRPC call carries an absolute deadline within the caller's remaining budget. | **critical** | 5 |
-| [`MS-252`](#ms-252--breaking-change-inside-a-published-proto-package) | Proto changes inside a version are additive; numbers are never reused; removals are reserved. | **critical** | 5 |
-| [`MS-253`](#ms-253--retry-of-a-non-idempotent-call-or-an-unbounded-retry) | Only idempotent calls are retried, only on retryable codes, bounded and with backoff. | major | 5 |
-| [`MS-254`](#ms-254--expected-failure-returned-as-unknown-or-internal) | Expected failures cross gRPC as a specific status plus a stable error code. | major | 5 |
-| [`MS-255`](#ms-255--hand-written-copy-of-a-contract-type) | Contract types are generated from the `.proto`, never copied by hand. | major | 5 |
-| [`MS-301`](#ms-301--message-acknowledged-before-the-work-commits-or-never) | `noAck: false`; ack after the commit; every path ends in ack, retry or park. | **critical** | 6 |
-| [`MS-302`](#ms-302--unbounded-or-untuned-prefetch) | Every consumer sets a prefetch sized to the resources its handler uses. | major | 6 |
-| [`MS-303`](#ms-303--message-can-be-lost-by-the-broker) | Durable exchanges and queues, persistent messages, awaited publisher confirms. | **critical** | 6 |
-| [`MS-304`](#ms-304--queue-shared-across-services-or-consumed-by-a-non-owner) | One queue per consuming service; that service's instances compete on it. | major | 6 |
-| [`MS-305`](#ms-305--message-without-the-standard-envelope) | Every event travels in the standard envelope. | major | 6 |
-| [`MS-306`](#ms-306--event-named-as-a-command-or-a-crud-operation) | Events are named as past-tense business facts. | minor | 6 |
-| [`MS-307`](#ms-307--breaking-event-change-under-the-same-version) | Event changes within a version are additive; consumers are tolerant readers. | major | 6 |
-| [`MS-308`](#ms-308--failed-message-requeued-in-a-hot-loop-or-dropped) | Failures go through delayed retry tiers, then the parking lot — never a hot requeue loop, never dropped. | **critical** | 6 |
-| [`MS-309`](#ms-309--secret-or-unnecessary-personal-data-in-an-event) | Events carry no secrets and only the personal data a consumer needs. | **critical** | 6 |
-| [`MS-351`](#ms-351--state-change-published-without-the-outbox) | State changes publish through an outbox written in the same transaction. | **critical** | 7 |
-| [`MS-352`](#ms-352--outbox-relay-that-holds-a-transaction-across-the-publish-or-cannot-run-twice) | The relay claims with `SKIP LOCKED` and a lease, publishes outside the transaction, marks after the confirm. | major | 7 |
-| [`MS-353`](#ms-353--consumer-without-an-inbox) | Consumers record the `eventId` in an inbox in the same transaction as their writes. | **critical** | 7 |
-| [`MS-354`](#ms-354--consumer-depends-on-delivery-order) | Consumers never depend on delivery order. | major | 7 |
-| [`MS-355`](#ms-355--external-side-effect-without-an-idempotency-key) | External side effects carry idempotency keys derived from business ids. | **critical** | 7 |
-| [`MS-356`](#ms-356--parking-lot-without-an-owner-or-a-replay-path) | Every parking lot has an owner, an alert and a replay script. | major | 7 |
-| [`MS-401`](#ms-401--cross-service-process-without-a-persisted-state-machine) | Cross-service processes are persisted state machines with one owner. | **critical** | 8 |
-| [`MS-402`](#ms-402--saga-step-that-is-not-idempotent) | Every saga step is idempotent on a deterministic key. | **critical** | 8 |
-| [`MS-403`](#ms-403--waiting-state-without-a-deadline) | Every waiting state has a deadline and a sweeper. | **critical** | 8 |
-| [`MS-404`](#ms-404--step-without-a-defined-compensation) | Every step that a later failure can strand has a defined compensation. | **critical** | 8 |
-| [`MS-405`](#ms-405--late-or-out-of-order-outcome-not-handled) | Late, duplicate and out-of-order outcomes have explicit transitions. | **critical** | 8 |
-| [`MS-406`](#ms-406--transition-logic-tangled-with-io-or-untested) | Saga transitions are a pure function with a test per (state, event) pair. | major | 8 |
-| [`MS-501`](#ms-501--decision-taken-from-a-cached-value) | The cache displays; the database decides. | **critical** | 10 |
-| [`MS-502`](#ms-502--redis-failure-fails-the-request) | A Redis failure degrades to the source; store-type keys have a decided failure mode. | major | 10 |
-| [`MS-503`](#ms-503--unversioned-key-or-a-key-outside-the-owners-namespace) | Keys are namespaced by their owner and versioned; cached values are validated on read. | major | 10 |
-| [`MS-504`](#ms-504--per-user-data-under-a-shared-key) | Per-user data lives only under per-user keys. | **critical** | 10 |
-| [`MS-505`](#ms-505--no-ttl-no-jitter-or-no-stampede-protection-on-a-hot-key) | Every entry has a jittered TTL; hot keys have stampede protection. | major | 10 |
-| [`MS-506`](#ms-506--cache-invalidated-by-someone-other-than-its-owner-or-not-at-all) | The owner invalidates its cache from events; the TTL is the safety net. | major | 10 |
-| [`MS-507`](#ms-507--cache-without-hitmiss-metrics) | Every cache records hit, miss and error counts. | minor | 10 |
-| [`MS-601`](#ms-601--correlation-id-lost-at-a-hop) | The correlation ID crosses every hop and appears in every log line. | major | 11 |
-| [`MS-602`](#ms-602--unstructured-log-or-a-secret-or-personal-data-in-a-log-line) | Logs are structured JSON with redaction; no secrets or personal data. | **critical** | 11 |
-| [`MS-603`](#ms-603--service-not-traced-or-trace-broken-at-the-outbox) | Every service exports traces, and the outbox preserves trace context. | major | 11 |
-| [`MS-604`](#ms-604--liveness-checks-dependencies-or-readiness-checks-the-wrong-ones) | Liveness checks the process; readiness checks only the service's own hard dependencies. | major | 11 |
-| [`MS-605`](#ms-605--backlogs-invisible) | Outbox backlog, parking-lot depth and overdue sagas are observable. | major | 11 |
-| [`MS-651`](#ms-651--network-call-without-a-timeout) | Every network call has a timeout. | **critical** | 12 |
-| [`MS-652`](#ms-652--retry-without-backoff-jitter-or-a-cap-or-at-several-layers) | Retries use capped exponential backoff with jitter, at one layer only. | major | 12 |
-| [`MS-653`](#ms-653--stripe-called-without-a-circuit-breaker) | Stripe calls go through a circuit breaker that does not count card declines. | major | 12 |
-| [`MS-654`](#ms-654--shutdown-drops-in-flight-work) | Shutdown stops intake, lets in-flight work finish, and relies on redelivery only for the rest. | major | 12 |
-| [`MS-655`](#ms-655--undocumented-behaviour-when-a-dependency-is-down) | Each service documents and exercises its behaviour when each dependency is down. | major | 12 |
-| [`MS-701`](#ms-701--business-rule-without-boundary-unit-tests) | Every business rule has unit tests at its boundaries. | major | 13 |
-| [`MS-702`](#ms-702--integration-test-against-mocks-of-the-database-or-broker) | Integration tests run against real Postgres, RabbitMQ and Redis via Testcontainers. | major | 13 |
-| [`MS-703`](#ms-703--contract-without-a-contract-test) | Every `.proto` and event schema has contract tests. | major | 13 |
-| [`MS-704`](#ms-704--consumer-untested-for-duplicates-and-failures) | Every consumer is tested for duplicate delivery and for failure → retry → park. | major | 13 |
-| [`MS-705`](#ms-705--end-to-end-suite-used-for-rules-or-built-on-sleeps) | End-to-end tests cover a handful of flows and never sleep. | minor | 13 |
-| [`MS-706`](#ms-706--tests-share-state-across-files-or-services) | Tests never share state across files or services. | major | 13 |
-| [`MS-801`](#ms-801--service-boots-with-missing-or-invalid-configuration) | Configuration is validated by a typed schema at boot; invalid configuration stops the process. | **critical** | 14 |
-| [`MS-802`](#ms-802--the-stack-does-not-come-up-healthy-from-a-clean-clone) | A clean clone comes up healthy with one command; clients reconnect on their own. | major | 14 |
-| [`MS-803`](#ms-803--secret-committed-or-no-envexample-per-service) | No secrets in the repository; a complete `.env.example` per service. | **critical** | 14 |
-| [`MS-804`](#ms-804--seed-that-bypasses-the-owner-or-is-not-idempotent) | Seeds go through the owning service and are idempotent. | major | 14 |
+| ID                                                                                                | Rule                                                                                                           | Severity     | Part |
+| ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------- | ------------ | ---- |
+| [`MS-001`](#ms-001--service-boundary-without-a-written-decision)                                  | Every service has an ADR: the capability it owns, the data it alone writes, why it is separate, its owner.     | major        | 1    |
+| [`MS-002`](#ms-002--contract-written-after-the-code-that-uses-it)                                 | Contracts are reviewed in `libs/contracts` before producer or consumer code merges.                            | major        | 1    |
+| [`MS-051`](#ms-051--domain-code-in-libs)                                                          | `libs/` holds contracts and cross-cutting code only — no entities, repositories or business rules.             | major        | 3    |
+| [`MS-052`](#ms-052--one-app-imports-another-apps-source)                                          | Apps never import another app's source; they share through `libs/contracts`.                                   | **critical** | 3    |
+| [`MS-053`](#ms-053--requestresponse-over-rabbitmq-or-an-unscoped-event-handler)                   | RabbitMQ carries events only, and `@EventPattern` is scoped to `Transport.RMQ`.                                | major        | 3    |
+| [`MS-054`](#ms-054--transport-types-leak-into-the-application-layer)                              | Domain and application code depend on ports, never on `ClientGrpc`, Observables, `RmqContext` or Stripe types. | major        | 3    |
+| [`MS-055`](#ms-055--connected-microservice-without-the-apps-pipes-filters-and-interceptors)       | Connected microservices inherit (or declare) pipes, filters and interceptors; filters handle the rpc context.  | major        | 3    |
+| [`MS-101`](#ms-101--two-services-write-the-same-table)                                            | Each table has exactly one owning service.                                                                     | **critical** | 2    |
+| [`MS-102`](#ms-102--a-service-reads-another-services-database)                                    | No service connects to another service's database.                                                             | **critical** | 2    |
+| [`MS-103`](#ms-103--entity-service-instead-of-a-capability)                                       | Services expose capabilities, not CRUD over another service's nouns.                                           | major        | 2    |
+| [`MS-104`](#ms-104--atomic-invariant-split-across-services)                                       | An invariant that needs atomicity lives inside one service's transaction.                                      | **critical** | 2    |
+| [`MS-105`](#ms-105--chatty-call-an-rpc-per-item)                                                  | No RPC per item: batch the call or keep a local copy.                                                          | major        | 2    |
+| [`MS-151`](#ms-151--schema-changed-outside-the-owning-services-migrations)                        | Each service migrates only its own database, expand-then-contract, with `synchronize` off.                     | major        | 9    |
+| [`MS-152`](#ms-152--replicated-data-written-without-an-ordering-guard)                            | Local copies are read-only and updated newer-version-wins.                                                     | major        | 9    |
+| [`MS-153`](#ms-153--transaction-held-across-a-remote-call)                                        | No transaction is held open across a remote call; no distributed transactions.                                 | **critical** | 9    |
+| [`MS-154`](#ms-154--money-not-in-integer-piastres-end-to-end)                                     | Money is integer piastres in the database, `.proto`, events and Stripe.                                        | **critical** | 9    |
+| [`MS-155`](#ms-155--historical-record-references-mutable-data-instead-of-a-snapshot)              | Historical records snapshot the facts they sold.                                                               | major        | 9    |
+| [`MS-201`](#ms-201--access-token-verified-remotely-or-loosely)                                    | The gateway verifies RS256 tokens locally, pinning `alg`, `iss`, `aud`, `exp`, and checks the `jti` denylist.  | **critical** | 4    |
+| [`MS-202`](#ms-202--route-reachable-without-an-explicit-access-decision)                          | Every route is denied by default; public routes opt out explicitly.                                            | **critical** | 4    |
+| [`MS-203`](#ms-203--caller-identity-trusted-from-a-header-or-the-body)                            | Caller identity comes from a verified token, never from a header or a request field.                           | **critical** | 4    |
+| [`MS-204`](#ms-204--business-rule-in-the-gateway)                                                 | The gateway authenticates, routes, aggregates and translates — it holds no business rules.                     | major        | 4    |
+| [`MS-205`](#ms-205--upstream-error-shape-or-detail-leaks-through-the-edge)                        | One envelope; every upstream failure maps to a catalogued code; no internals leak.                             | major        | 4    |
+| [`MS-206`](#ms-206--rate-limit-kept-per-instance-or-keyed-too-broadly)                            | Rate limits live in Redis, keyed per user or IP and per route class.                                           | major        | 4    |
+| [`MS-251`](#ms-251--grpc-call-without-a-deadline)                                                 | Every gRPC call carries an absolute deadline within the caller's remaining budget.                             | **critical** | 5    |
+| [`MS-252`](#ms-252--breaking-change-inside-a-published-proto-package)                             | Proto changes inside a version are additive; numbers are never reused; removals are reserved.                  | **critical** | 5    |
+| [`MS-253`](#ms-253--retry-of-a-non-idempotent-call-or-an-unbounded-retry)                         | Only idempotent calls are retried, only on retryable codes, bounded and with backoff.                          | major        | 5    |
+| [`MS-254`](#ms-254--expected-failure-returned-as-unknown-or-internal)                             | Expected failures cross gRPC as a specific status plus a stable error code.                                    | major        | 5    |
+| [`MS-255`](#ms-255--hand-written-copy-of-a-contract-type)                                         | Contract types are generated from the `.proto`, never copied by hand.                                          | major        | 5    |
+| [`MS-301`](#ms-301--message-acknowledged-before-the-work-commits-or-never)                        | `noAck: false`; ack after the commit; every path ends in ack, retry or park.                                   | **critical** | 6    |
+| [`MS-302`](#ms-302--unbounded-or-untuned-prefetch)                                                | Every consumer sets a prefetch sized to the resources its handler uses.                                        | major        | 6    |
+| [`MS-303`](#ms-303--message-can-be-lost-by-the-broker)                                            | Durable exchanges and queues, persistent messages, awaited publisher confirms.                                 | **critical** | 6    |
+| [`MS-304`](#ms-304--queue-shared-across-services-or-consumed-by-a-non-owner)                      | One queue per consuming service; that service's instances compete on it.                                       | major        | 6    |
+| [`MS-305`](#ms-305--message-without-the-standard-envelope)                                        | Every event travels in the standard envelope.                                                                  | major        | 6    |
+| [`MS-306`](#ms-306--event-named-as-a-command-or-a-crud-operation)                                 | Events are named as past-tense business facts.                                                                 | minor        | 6    |
+| [`MS-307`](#ms-307--breaking-event-change-under-the-same-version)                                 | Event changes within a version are additive; consumers are tolerant readers.                                   | major        | 6    |
+| [`MS-308`](#ms-308--failed-message-requeued-in-a-hot-loop-or-dropped)                             | Failures go through delayed retry tiers, then the parking lot — never a hot requeue loop, never dropped.       | **critical** | 6    |
+| [`MS-309`](#ms-309--secret-or-unnecessary-personal-data-in-an-event)                              | Events carry no secrets and only the personal data a consumer needs.                                           | **critical** | 6    |
+| [`MS-351`](#ms-351--state-change-published-without-the-outbox)                                    | State changes publish through an outbox written in the same transaction.                                       | **critical** | 7    |
+| [`MS-352`](#ms-352--outbox-relay-that-holds-a-transaction-across-the-publish-or-cannot-run-twice) | The relay claims with `SKIP LOCKED` and a lease, publishes outside the transaction, marks after the confirm.   | major        | 7    |
+| [`MS-353`](#ms-353--consumer-without-an-inbox)                                                    | Consumers record the `eventId` in an inbox in the same transaction as their writes.                            | **critical** | 7    |
+| [`MS-354`](#ms-354--consumer-depends-on-delivery-order)                                           | Consumers never depend on delivery order.                                                                      | major        | 7    |
+| [`MS-355`](#ms-355--external-side-effect-without-an-idempotency-key)                              | External side effects carry idempotency keys derived from business ids.                                        | **critical** | 7    |
+| [`MS-356`](#ms-356--parking-lot-without-an-owner-or-a-replay-path)                                | Every parking lot has an owner, an alert and a replay script.                                                  | major        | 7    |
+| [`MS-401`](#ms-401--cross-service-process-without-a-persisted-state-machine)                      | Cross-service processes are persisted state machines with one owner.                                           | **critical** | 8    |
+| [`MS-402`](#ms-402--saga-step-that-is-not-idempotent)                                             | Every saga step is idempotent on a deterministic key.                                                          | **critical** | 8    |
+| [`MS-403`](#ms-403--waiting-state-without-a-deadline)                                             | Every waiting state has a deadline and a sweeper.                                                              | **critical** | 8    |
+| [`MS-404`](#ms-404--step-without-a-defined-compensation)                                          | Every step that a later failure can strand has a defined compensation.                                         | **critical** | 8    |
+| [`MS-405`](#ms-405--late-or-out-of-order-outcome-not-handled)                                     | Late, duplicate and out-of-order outcomes have explicit transitions.                                           | **critical** | 8    |
+| [`MS-406`](#ms-406--transition-logic-tangled-with-io-or-untested)                                 | Saga transitions are a pure function with a test per (state, event) pair.                                      | major        | 8    |
+| [`MS-501`](#ms-501--decision-taken-from-a-cached-value)                                           | The cache displays; the database decides.                                                                      | **critical** | 10   |
+| [`MS-502`](#ms-502--redis-failure-fails-the-request)                                              | A Redis failure degrades to the source; store-type keys have a decided failure mode.                           | major        | 10   |
+| [`MS-503`](#ms-503--unversioned-key-or-a-key-outside-the-owners-namespace)                        | Keys are namespaced by their owner and versioned; cached values are validated on read.                         | major        | 10   |
+| [`MS-504`](#ms-504--per-user-data-under-a-shared-key)                                             | Per-user data lives only under per-user keys.                                                                  | **critical** | 10   |
+| [`MS-505`](#ms-505--no-ttl-no-jitter-or-no-stampede-protection-on-a-hot-key)                      | Every entry has a jittered TTL; hot keys have stampede protection.                                             | major        | 10   |
+| [`MS-506`](#ms-506--cache-invalidated-by-someone-other-than-its-owner-or-not-at-all)              | The owner invalidates its cache from events; the TTL is the safety net.                                        | major        | 10   |
+| [`MS-507`](#ms-507--cache-without-hitmiss-metrics)                                                | Every cache records hit, miss and error counts.                                                                | minor        | 10   |
+| [`MS-601`](#ms-601--correlation-id-lost-at-a-hop)                                                 | The correlation ID crosses every hop and appears in every log line.                                            | major        | 11   |
+| [`MS-602`](#ms-602--unstructured-log-or-a-secret-or-personal-data-in-a-log-line)                  | Logs are structured JSON with redaction; no secrets or personal data.                                          | **critical** | 11   |
+| [`MS-603`](#ms-603--service-not-traced-or-trace-broken-at-the-outbox)                             | Every service exports traces, and the outbox preserves trace context.                                          | major        | 11   |
+| [`MS-604`](#ms-604--liveness-checks-dependencies-or-readiness-checks-the-wrong-ones)              | Liveness checks the process; readiness checks only the service's own hard dependencies.                        | major        | 11   |
+| [`MS-605`](#ms-605--backlogs-invisible)                                                           | Outbox backlog, parking-lot depth and overdue sagas are observable.                                            | major        | 11   |
+| [`MS-651`](#ms-651--network-call-without-a-timeout)                                               | Every network call has a timeout.                                                                              | **critical** | 12   |
+| [`MS-652`](#ms-652--retry-without-backoff-jitter-or-a-cap-or-at-several-layers)                   | Retries use capped exponential backoff with jitter, at one layer only.                                         | major        | 12   |
+| [`MS-653`](#ms-653--stripe-called-without-a-circuit-breaker)                                      | Stripe calls go through a circuit breaker that does not count card declines.                                   | major        | 12   |
+| [`MS-654`](#ms-654--shutdown-drops-in-flight-work)                                                | Shutdown stops intake, lets in-flight work finish, and relies on redelivery only for the rest.                 | major        | 12   |
+| [`MS-655`](#ms-655--undocumented-behaviour-when-a-dependency-is-down)                             | Each service documents and exercises its behaviour when each dependency is down.                               | major        | 12   |
+| [`MS-701`](#ms-701--business-rule-without-boundary-unit-tests)                                    | Every business rule has unit tests at its boundaries.                                                          | major        | 13   |
+| [`MS-702`](#ms-702--integration-test-against-mocks-of-the-database-or-broker)                     | Integration tests run against real Postgres, RabbitMQ and Redis via Testcontainers.                            | major        | 13   |
+| [`MS-703`](#ms-703--contract-without-a-contract-test)                                             | Every `.proto` and event schema has contract tests.                                                            | major        | 13   |
+| [`MS-704`](#ms-704--consumer-untested-for-duplicates-and-failures)                                | Every consumer is tested for duplicate delivery and for failure → retry → park.                                | major        | 13   |
+| [`MS-705`](#ms-705--end-to-end-suite-used-for-rules-or-built-on-sleeps)                           | End-to-end tests cover a handful of flows and never sleep.                                                     | minor        | 13   |
+| [`MS-706`](#ms-706--tests-share-state-across-files-or-services)                                   | Tests never share state across files or services.                                                              | major        | 13   |
+| [`MS-801`](#ms-801--service-boots-with-missing-or-invalid-configuration)                          | Configuration is validated by a typed schema at boot; invalid configuration stops the process.                 | **critical** | 14   |
+| [`MS-802`](#ms-802--the-stack-does-not-come-up-healthy-from-a-clean-clone)                        | A clean clone comes up healthy with one command; clients reconnect on their own.                               | major        | 14   |
+| [`MS-803`](#ms-803--secret-committed-or-no-envexample-per-service)                                | No secrets in the repository; a complete `.env.example` per service.                                           | **critical** | 14   |
+| [`MS-804`](#ms-804--seed-that-bypasses-the-owner-or-is-not-idempotent)                            | Seeds go through the owning service and are idempotent.                                                        | major        | 14   |
 
 ## 15.4 Extending the catalogue
 

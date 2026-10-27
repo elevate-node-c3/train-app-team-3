@@ -1,8 +1,10 @@
+import { AccessLevel } from "apps/identity/src/modules/users/applicatoin/enums/access-level.enum";
+
 export interface IJwtUserPayload {
   sub: string;
   email: string;
   sid: string;
-  // level: AccessLevel;
+  level: AccessLevel;
 }
 
 export interface IDecodedJwtPayload extends IJwtUserPayload {

@@ -1,21 +1,17 @@
 import { Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import { AppConfig } from '@app/common';
 
-/**
- * Transport بس: بيبعت لـ SMTP (Mailpit في التطوير). مفيش templates ولا لغات هنا:
- * ده شغلك (BR-56)، والـ consumers هي اللي بتنادي send() بالمحتوى الجاهز.
- */
 @Injectable()
 export class MailerService {
   private readonly transport: nodemailer.Transporter;
   private readonly from: string;
 
-  constructor(config: AppConfig) {
-    this.from = config.get('MAIL_FROM');
+  constructor(private readonly configService: ConfigService) {
+    this.from = this.configService.get<string>('MAIL_FROM', 'no-reply@example.com');
     this.transport = nodemailer.createTransport({
-      host: config.get('SMTP_HOST'),
-      port: config.get<number>('SMTP_PORT'),
+      host: this.configService.get<string>('SMTP_HOST', 'localhost'),
+      port: this.configService.get<number>('SMTP_PORT', 1025),
       secure: false,
       ignoreTLS: true,
     });

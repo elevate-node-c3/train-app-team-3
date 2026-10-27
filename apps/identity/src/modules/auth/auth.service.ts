@@ -39,7 +39,7 @@ export class AuthService {
   }
 
   async verifyOtp(input: { email: string; otp: string; userId: string }) {
-    const valid = await this.otpService.verify(
+    const valid = await this.otpService.verifyUserOtp(
       input.userId,
       "forgot-password",
       input.otp,

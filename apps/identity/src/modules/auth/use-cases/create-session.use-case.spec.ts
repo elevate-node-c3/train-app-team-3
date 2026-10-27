@@ -62,12 +62,12 @@ describe("CreateSessionUseCase", () => {
     );
   });
 
-  it("does not persist a session if signing the token fails", async () => {
-    tokenService.sign.mockRejectedValue(new Error("signing failed"));
+  it("does not persist a session if logining the token fails", async () => {
+    tokenService.sign.mockRejectedValue(new Error("logining failed"));
 
     await expect(
       useCase.execute({ userId: "user-id", email: "user@example.com" }),
-    ).rejects.toThrow("signing failed");
+    ).rejects.toThrow("logining failed");
     expect(sessionService.create).not.toHaveBeenCalled();
   });
 });

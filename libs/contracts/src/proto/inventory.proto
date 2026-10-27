@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package inventory;
+
+service InventoryService {
+  rpc GetAvailability (GetAvailabilityRequest) returns (GetAvailabilityResponse);
+  rpc HoldSeats (HoldSeatsRequest) returns (HoldSeatsResponse);
+  rpc ConfirmHold (HoldRequest) returns (HoldResponse);
+  rpc ReleaseHold (HoldRequest) returns (HoldResponse);
+}
+
+message GetAvailabilityRequest {
+  string trip_id = 1;
+  string seat_class_id = 2;
+  string origin_station_id = 3;
+  string destination_station_id = 4;
+}
+
+message GetAvailabilityResponse {
+  int32 available_seats = 1;
+}
+
+message HoldSeatsRequest {
+  repeated HoldLeg legs = 1;
+  repeated string passenger_ids = 2;
+}
+
+message HoldLeg {
+  string trip_id = 1;
+  string seat_class_id = 2;
+  string origin_station_id = 3;
+  string destination_station_id = 4;
+}
+
+message HeldSeat {
+  string passenger_id = 1;
+  string coach = 2;
+  string seat = 3;
+}
+
+message HoldSeatsResponse {
+  string hold_id = 1;
+  string expires_at = 2;
+  repeated HeldSeat seats = 3;
+}
+
+message HoldRequest {
+  string hold_id = 1;
+}
+
+message HoldResponse {
+  bool success = 1;
+  string hold_id = 2;
+}

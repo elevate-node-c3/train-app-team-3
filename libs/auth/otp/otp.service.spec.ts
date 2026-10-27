@@ -8,9 +8,16 @@ describe("OtpService", () => {
     exec: jest.fn(),
   };
   const redis = {
-    multi: jest.fn(),
+    multi: jest.fn(() => ({
+      set: jest.fn(),
+      del: jest.fn(),
+      exec: jest.fn().mockResolvedValue([[null, "OK"], [null, 1]]),
+    })),
     eval: jest.fn(),
     del: jest.fn(),
+    get: jest.fn(),
+    set: jest.fn(),
+    ttl: jest.fn(),
   } as unknown as Redis;
 
   let service: OtpService;

@@ -4,6 +4,7 @@ import { TokenService } from "../../../../../../libs/auth/token/jwt.services";
 import { TokenType } from "../../../../../../libs/auth/token/token.interfaces";
 import { CacheService } from "../../../../../../libs/cache/src";
 import { SessionService } from "../sessions/session.service";
+import { AccessLevel } from "../../users/applicatoin/enums/access-level.enum";
 
 export interface CreateSessionInput {
   userId: string;
@@ -26,6 +27,7 @@ export class CreateSessionUseCase {
         sub: input.userId,
         email: input.email,
         sid: sessionId,
+        level: AccessLevel.UNVERIFIED,
       },
       TokenType.ACCESS,
     );
@@ -34,6 +36,7 @@ export class CreateSessionUseCase {
         sub: input.userId,
         email: input.email,
         sid: sessionId,
+        level: AccessLevel.UNVERIFIED,
       },
       TokenType.REFRESH,
     );

@@ -1,0 +1,648 @@
+{
+  "version": 1,
+  "defaultLanguage": "ar",
+  "supportedLanguages": [
+    "ar",
+    "en"
+  ],
+  "errors": {
+    "VALIDATION_FAILED": {
+      "httpStatus": 400,
+      "group": "General",
+      "message": {
+        "ar": "بعض البيانات المرسلة غير صالحة.",
+        "en": "Some of the information you sent is not valid."
+      },
+      "hint": {
+        "ar": "صحّح الحقول المذكورة في التفاصيل ثم أعد إرسال الطلب.",
+        "en": "Fix the fields listed in details and send the request again."
+      }
+    },
+    "MALFORMED_REQUEST": {
+      "httpStatus": 400,
+      "group": "General",
+      "message": {
+        "ar": "تعذّرت قراءة الطلب.",
+        "en": "The request could not be read."
+      },
+      "hint": {
+        "ar": "أرسل محتوى بصيغة JSON صحيحة.",
+        "en": "Send a valid JSON body."
+      }
+    },
+    "AUTH_TOKEN_MISSING": {
+      "httpStatus": 401,
+      "group": "General",
+      "message": {
+        "ar": "يجب تسجيل الدخول لتنفيذ هذا الإجراء.",
+        "en": "You need to sign in to do this."
+      },
+      "hint": {
+        "ar": "سجّل الدخول ثم حاول مرة أخرى.",
+        "en": "Sign in and try again."
+      }
+    },
+    "AUTH_TOKEN_EXPIRED": {
+      "httpStatus": 401,
+      "group": "General",
+      "message": {
+        "ar": "انتهت صلاحية الجلسة.",
+        "en": "Your session has expired."
+      },
+      "hint": {
+        "ar": "جدّد الجلسة أو سجّل الدخول من جديد.",
+        "en": "Renew your session or sign in again."
+      }
+    },
+    "AUTH_TOKEN_INVALID": {
+      "httpStatus": 401,
+      "group": "General",
+      "message": {
+        "ar": "الجلسة غير صالحة.",
+        "en": "Your session is not valid."
+      },
+      "hint": {
+        "ar": "سجّل الدخول من جديد.",
+        "en": "Sign in again."
+      }
+    },
+    "AUTH_TOKEN_REVOKED": {
+      "httpStatus": 401,
+      "group": "General",
+      "message": {
+        "ar": "تم إنهاء هذه الجلسة.",
+        "en": "This session was ended."
+      },
+      "hint": {
+        "ar": "سجّل الدخول من جديد.",
+        "en": "Sign in again."
+      }
+    },
+    "FORBIDDEN": {
+      "httpStatus": 403,
+      "group": "General",
+      "message": {
+        "ar": "ليست لديك صلاحية لتنفيذ هذا الإجراء.",
+        "en": "You do not have permission to do this."
+      },
+      "hint": {
+        "ar": "استخدم حسابًا يملك مستوى الوصول المطلوب.",
+        "en": "Use an account with the required access level."
+      }
+    },
+    "NOT_FOUND": {
+      "httpStatus": 404,
+      "group": "General",
+      "message": {
+        "ar": "لم نعثر على ما طلبته.",
+        "en": "We could not find what you asked for."
+      },
+      "hint": {
+        "ar": "تحقق من العنوان أو المعرّف ثم حاول مرة أخرى.",
+        "en": "Check the address or the id and try again."
+      }
+    },
+    "METHOD_NOT_ALLOWED": {
+      "httpStatus": 405,
+      "group": "General",
+      "message": {
+        "ar": "هذه الطريقة غير مدعومة لهذا العنوان.",
+        "en": "This method is not supported for this address."
+      },
+      "hint": {
+        "ar": "راجع توثيق نقطة الاتصال.",
+        "en": "Check the endpoint documentation."
+      }
+    },
+    "RATE_LIMITED": {
+      "httpStatus": 429,
+      "group": "General",
+      "message": {
+        "ar": "عدد الطلبات كبير جدًا.",
+        "en": "Too many requests."
+      },
+      "hint": {
+        "ar": "انتظر {seconds} ثانية ثم حاول مرة أخرى.",
+        "en": "Wait {seconds} seconds and try again."
+      }
+    },
+    "INTERNAL_ERROR": {
+      "httpStatus": 500,
+      "group": "General",
+      "message": {
+        "ar": "تعذّر إكمال طلبك بسبب مشكلة من جهتنا.",
+        "en": "We could not complete your request because of a problem on our side."
+      },
+      "hint": {
+        "ar": "حاول مرة أخرى بعد قليل. وإذا استمرت المشكلة تواصل مع الدعم واذكر الرقم المرجعي {correlationId}.",
+        "en": "Try again in a moment. If it continues, contact support and quote reference {correlationId}."
+      }
+    },
+    "SERVICE_UNAVAILABLE": {
+      "httpStatus": 503,
+      "group": "General",
+      "message": {
+        "ar": "هذه الخدمة غير متاحة مؤقتًا.",
+        "en": "This feature is temporarily unavailable."
+      },
+      "hint": {
+        "ar": "حاول مرة أخرى بعد دقائق.",
+        "en": "Try again in a few minutes."
+      }
+    },
+    "UPSTREAM_TIMEOUT": {
+      "httpStatus": 504,
+      "group": "General",
+      "message": {
+        "ar": "استغرق الطلب وقتًا أطول من المسموح.",
+        "en": "The request took longer than allowed."
+      },
+      "hint": {
+        "ar": "راجع حجوزاتك قبل إعادة المحاولة.",
+        "en": "Check your bookings before trying again."
+      }
+    },
+    "AUTH_INVALID_CREDENTIALS": {
+      "httpStatus": 401,
+      "group": "Auth (identity)",
+      "message": {
+        "ar": "البريد الإلكتروني أو كلمة المرور غير صحيحة.",
+        "en": "The email or password is incorrect."
+      },
+      "hint": {
+        "ar": "تحقق منهما وحاول مرة أخرى، أو أعد تعيين كلمة المرور.",
+        "en": "Check them and try again, or reset your password."
+      }
+    },
+    "AUTH_EMAIL_TAKEN": {
+      "httpStatus": 409,
+      "group": "Auth (identity)",
+      "message": {
+        "ar": "يوجد حساب مسجّل بهذا البريد الإلكتروني.",
+        "en": "An account with this email already exists."
+      },
+      "hint": {
+        "ar": "سجّل الدخول، أو استخدم بريدًا آخر.",
+        "en": "Sign in, or use a different email."
+      }
+    },
+    "AUTH_PHONE_TAKEN": {
+      "httpStatus": 409,
+      "group": "Auth (identity)",
+      "message": {
+        "ar": "يوجد حساب مسجّل بهذا الرقم.",
+        "en": "An account with this phone number already exists."
+      },
+      "hint": {
+        "ar": "سجّل الدخول، أو استخدم رقمًا آخر.",
+        "en": "Sign in, or use a different phone number."
+      }
+    },
+    "AUTH_NATIONAL_ID_TAKEN": {
+      "httpStatus": 409,
+      "group": "Auth (identity)",
+      "message": {
+        "ar": "هذا الرقم القومي مرتبط بحساب آخر.",
+        "en": "This National ID is already linked to another account."
+      },
+      "hint": {
+        "ar": "سجّل الدخول إلى ذلك الحساب، أو تواصل مع الدعم.",
+        "en": "Sign in to that account, or contact support."
+      }
+    },
+    "AUTH_CODE_INVALID": {
+      "httpStatus": 400,
+      "group": "Auth (identity)",
+      "message": {
+        "ar": "رمز التحقق غير صحيح.",
+        "en": "The verification code is incorrect."
+      },
+      "hint": {
+        "ar": "تحقق من الرمز وحاول مرة أخرى.",
+        "en": "Check the code and try again."
+      }
+    },
+    "AUTH_CODE_EXPIRED": {
+      "httpStatus": 400,
+      "group": "Auth (identity)",
+      "message": {
+        "ar": "انتهت صلاحية رمز التحقق.",
+        "en": "The verification code has expired."
+      },
+      "hint": {
+        "ar": "اطلب رمزًا جديدًا.",
+        "en": "Request a new code."
+      }
+    },
+    "AUTH_TOO_MANY_ATTEMPTS": {
+      "httpStatus": 429,
+      "group": "Auth (identity)",
+      "message": {
+        "ar": "عدد المحاولات الفاشلة كبير.",
+        "en": "Too many failed attempts."
+      },
+      "hint": {
+        "ar": "حاول مرة أخرى بعد {seconds} ثانية.",
+        "en": "Try again in {seconds} seconds."
+      }
+    },
+    "AUTH_ACCOUNT_NOT_VERIFIED": {
+      "httpStatus": 403,
+      "group": "Auth (identity)",
+      "message": {
+        "ar": "يجب التحقق من بريدك الإلكتروني أو هاتفك أولًا.",
+        "en": "Verify your email or phone first."
+      },
+      "hint": {
+        "ar": "أدخل الرمز الذي أرسلناه إليك.",
+        "en": "Enter the code we sent you."
+      }
+    },
+    "AUTH_ACCOUNT_SUSPENDED": {
+      "httpStatus": 403,
+      "group": "Auth (identity)",
+      "message": {
+        "ar": "هذا الحساب موقوف.",
+        "en": "This account is suspended."
+      },
+      "hint": {
+        "ar": "تواصل مع الدعم.",
+        "en": "Contact support."
+      }
+    },
+    "AUTH_NOT_BOOKABLE": {
+      "httpStatus": 403,
+      "group": "Auth (identity)",
+      "message": {
+        "ar": "لا يمكن لحسابك إجراء حجوزات بعد.",
+        "en": "Your account cannot make bookings yet."
+      },
+      "hint": {
+        "ar": "وثّق حسابك وأضف رقمك القومي.",
+        "en": "Verify your account and add your National ID."
+      }
+    },
+    "AUTH_REFRESH_TOKEN_INVALID": {
+      "httpStatus": 401,
+      "group": "Auth (identity)",
+      "message": {
+        "ar": "تعذّر تجديد الجلسة.",
+        "en": "Your session cannot be renewed."
+      },
+      "hint": {
+        "ar": "سجّل الدخول من جديد.",
+        "en": "Sign in again."
+      }
+    },
+    "TRIP_NOT_FOUND": {
+      "httpStatus": 404,
+      "group": "Catalog",
+      "message": {
+        "ar": "هذه الرحلة غير موجودة.",
+        "en": "This trip does not exist."
+      },
+      "hint": {
+        "ar": "ابحث من جديد.",
+        "en": "Search again."
+      }
+    },
+    "STATION_NOT_FOUND": {
+      "httpStatus": 404,
+      "group": "Catalog",
+      "message": {
+        "ar": "هذه المحطة غير موجودة.",
+        "en": "This station does not exist."
+      },
+      "hint": {
+        "ar": "اختر محطة من القائمة.",
+        "en": "Choose a station from the list."
+      }
+    },
+    "TRIP_DEPARTED": {
+      "httpStatus": 409,
+      "group": "Catalog",
+      "message": {
+        "ar": "غادرت هذه الرحلة بالفعل.",
+        "en": "This trip has already left."
+      },
+      "hint": {
+        "ar": "اختر رحلة لاحقة.",
+        "en": "Choose a later trip."
+      }
+    },
+    "TRIP_CANCELLED": {
+      "httpStatus": 409,
+      "group": "Catalog",
+      "message": {
+        "ar": "تم إلغاء هذه الرحلة.",
+        "en": "This trip was cancelled."
+      },
+      "hint": {
+        "ar": "اختر رحلة أخرى. يتم رد قيمة الحجوزات المدفوعة.",
+        "en": "Choose another trip. Paid bookings are refunded."
+      }
+    },
+    "SEATS_UNAVAILABLE": {
+      "httpStatus": 409,
+      "group": "Booking and seats",
+      "message": {
+        "ar": "لم يعد مقعد أو أكثر من المقاعد التي اخترتها متاحًا.",
+        "en": "One or more of the seats you chose are no longer available."
+      },
+      "hint": {
+        "ar": "اختر مقاعد أخرى وحاول مرة أخرى.",
+        "en": "Pick other seats and try again."
+      }
+    },
+    "PASSENGER_SEAT_OVERLAP": {
+      "httpStatus": 409,
+      "group": "Booking and seats",
+      "message": {
+        "ar": "لدى أحد الركاب مقعد محجوز بالفعل على هذه الرحلة في جزء متداخل منها.",
+        "en": "A passenger already has a seat on this trip for an overlapping part of the journey."
+      },
+      "hint": {
+        "ar": "احذف هذا الراكب أو غيّر مسار الرحلة.",
+        "en": "Remove that passenger or change the journey."
+      }
+    },
+    "BOOKING_NOT_FOUND": {
+      "httpStatus": 404,
+      "group": "Booking and seats",
+      "message": {
+        "ar": "هذا الحجز غير موجود.",
+        "en": "This booking does not exist."
+      },
+      "hint": {
+        "ar": "راجع قائمة حجوزاتك.",
+        "en": "Check your bookings list."
+      }
+    },
+    "BOOKING_HOLD_EXPIRED": {
+      "httpStatus": 409,
+      "group": "Booking and seats",
+      "message": {
+        "ar": "انتهت مهلة حجز المقاعد.",
+        "en": "Your seat reservation time has run out."
+      },
+      "hint": {
+        "ar": "ابدأ حجزًا جديدًا. وإذا تم خصم مبلغ فسيتم رده إليك.",
+        "en": "Start a new booking. If you were charged, you will be refunded."
+      }
+    },
+    "BOOKING_ALREADY_CONFIRMED": {
+      "httpStatus": 409,
+      "group": "Booking and seats",
+      "message": {
+        "ar": "تم تأكيد هذا الحجز بالفعل.",
+        "en": "This booking is already confirmed."
+      },
+      "hint": {
+        "ar": "افتحه من تذاكرك.",
+        "en": "Open it from your tickets."
+      }
+    },
+    "BOOKING_CANNOT_BE_CANCELLED": {
+      "httpStatus": 409,
+      "group": "Booking and seats",
+      "message": {
+        "ar": "لا يمكن إلغاء هذا الحجز الآن.",
+        "en": "This booking can no longer be cancelled."
+      },
+      "hint": {
+        "ar": "تواصل مع الدعم إذا احتجت إلى مساعدة.",
+        "en": "Contact support if you need help."
+      }
+    },
+    "TICKET_NOT_FOUND": {
+      "httpStatus": 404,
+      "group": "Booking and seats",
+      "message": {
+        "ar": "هذه التذكرة غير موجودة.",
+        "en": "This ticket does not exist."
+      },
+      "hint": {
+        "ar": "تحقق من رمز التذكرة.",
+        "en": "Check the ticket code."
+      }
+    },
+    "TICKET_ALREADY_USED": {
+      "httpStatus": 409,
+      "group": "Booking and seats",
+      "message": {
+        "ar": "تم استخدام هذه التذكرة من قبل.",
+        "en": "This ticket was already used."
+      },
+      "hint": {
+        "ar": "اطلب من الراكب تذكرة أخرى.",
+        "en": "Ask the passenger for another ticket."
+      }
+    },
+    "TICKET_INVALID": {
+      "httpStatus": 422,
+      "group": "Booking and seats",
+      "message": {
+        "ar": "هذه التذكرة غير صالحة.",
+        "en": "This ticket is not valid."
+      },
+      "hint": {
+        "ar": "لا تقبلها.",
+        "en": "Do not accept it."
+      }
+    },
+    "TICKET_WRONG_TRIP": {
+      "httpStatus": 409,
+      "group": "Booking and seats",
+      "message": {
+        "ar": "هذه التذكرة لرحلة أخرى.",
+        "en": "This ticket is for a different trip."
+      },
+      "hint": {
+        "ar": "اطلب من الراكب ركوب القطار الصحيح.",
+        "en": "Ask the passenger to board the right train."
+      }
+    },
+    "PAYMENT_DECLINED": {
+      "httpStatus": 402,
+      "group": "Payment",
+      "message": {
+        "ar": "تم رفض عملية الدفع.",
+        "en": "Your payment was declined."
+      },
+      "hint": {
+        "ar": "جرّب بطاقة أخرى، أو تواصل مع البنك.",
+        "en": "Try another card, or contact your bank."
+      }
+    },
+    "PAYMENT_PROVIDER_UNAVAILABLE": {
+      "httpStatus": 503,
+      "group": "Payment",
+      "message": {
+        "ar": "الدفع غير متاح مؤقتًا.",
+        "en": "Payments are temporarily unavailable."
+      },
+      "hint": {
+        "ar": "حاول مرة أخرى بعد قليل.",
+        "en": "Try again shortly."
+      }
+    },
+    "PAYMENT_ALREADY_PAID": {
+      "httpStatus": 409,
+      "group": "Payment",
+      "message": {
+        "ar": "تم دفع هذا الحجز بالفعل.",
+        "en": "This booking is already paid."
+      },
+      "hint": {
+        "ar": "افتحه من تذاكرك.",
+        "en": "Open it from your tickets."
+      }
+    },
+    "REFUND_NOT_ALLOWED": {
+      "httpStatus": 409,
+      "group": "Payment",
+      "message": {
+        "ar": "لا يمكن استرداد قيمة هذا الحجز.",
+        "en": "This booking cannot be refunded."
+      },
+      "hint": {
+        "ar": "تواصل مع الدعم إذا كنت ترى أن هذا خطأ.",
+        "en": "Contact support if you think this is wrong."
+      }
+    },
+    "NOTIFICATION_NOT_FOUND": {
+      "httpStatus": 404,
+      "group": "Notifications",
+      "message": {
+        "ar": "هذا الإشعار غير موجود.",
+        "en": "This notification does not exist."
+      },
+      "hint": {
+        "ar": "حدّث صندوق الإشعارات.",
+        "en": "Refresh your inbox."
+      }
+    }
+  },
+  "fieldErrors": {
+    "FIELD_REQUIRED": {
+      "message": {
+        "ar": "{label} مطلوب.",
+        "en": "{label} is required."
+      },
+      "hint": {
+        "ar": "أدخل {label}.",
+        "en": "Enter {label}."
+      }
+    },
+    "FIELD_INVALID_FORMAT": {
+      "message": {
+        "ar": "صيغة {label} غير صحيحة.",
+        "en": "{label} is not in the right format."
+      },
+      "hint": {
+        "ar": "استخدم صيغة مثل {example}.",
+        "en": "Use a format like {example}."
+      }
+    },
+    "FIELD_TOO_SHORT": {
+      "message": {
+        "ar": "يجب ألا يقل {label} عن {min} أحرف.",
+        "en": "{label} must be at least {min} characters."
+      },
+      "hint": {
+        "ar": "اجعله أطول.",
+        "en": "Make it longer."
+      }
+    },
+    "FIELD_TOO_LONG": {
+      "message": {
+        "ar": "يجب ألا يزيد {label} عن {max} حرفًا.",
+        "en": "{label} must be at most {max} characters."
+      },
+      "hint": {
+        "ar": "اجعله أقصر.",
+        "en": "Make it shorter."
+      }
+    },
+    "FIELD_OUT_OF_RANGE": {
+      "message": {
+        "ar": "يجب أن يكون {label} بين {min} و{max}.",
+        "en": "{label} must be between {min} and {max}."
+      },
+      "hint": {
+        "ar": "أدخل قيمة ضمن هذا النطاق.",
+        "en": "Enter a value in that range."
+      }
+    },
+    "FIELD_INVALID_CHOICE": {
+      "message": {
+        "ar": "يجب أن يكون {label} أحد الخيارات: {allowed}.",
+        "en": "{label} must be one of: {allowed}."
+      },
+      "hint": {
+        "ar": "اختر إحدى القيم المسموحة.",
+        "en": "Pick one of the allowed values."
+      }
+    },
+    "FIELD_NOT_ALLOWED": {
+      "message": {
+        "ar": "الحقل {label} غير مقبول في هذا الطلب.",
+        "en": "{label} is not accepted by this request."
+      },
+      "hint": {
+        "ar": "احذفه وأعد الإرسال.",
+        "en": "Remove it and send again."
+      }
+    }
+  },
+  "fieldLabels": {
+    "email": {
+      "ar": "البريد الإلكتروني",
+      "en": "Email"
+    },
+    "password": {
+      "ar": "كلمة المرور",
+      "en": "Password"
+    },
+    "phone": {
+      "ar": "رقم الهاتف",
+      "en": "Phone number"
+    },
+    "nationalId": {
+      "ar": "الرقم القومي",
+      "en": "National ID"
+    },
+    "fullName": {
+      "ar": "الاسم الكامل",
+      "en": "Full name"
+    },
+    "code": {
+      "ar": "رمز التحقق",
+      "en": "Verification code"
+    },
+    "tripId": {
+      "ar": "الرحلة",
+      "en": "Trip"
+    },
+    "fromStationId": {
+      "ar": "محطة الانطلاق",
+      "en": "From station"
+    },
+    "toStationId": {
+      "ar": "محطة الوصول",
+      "en": "To station"
+    },
+    "travelDate": {
+      "ar": "تاريخ السفر",
+      "en": "Travel date"
+    },
+    "passengers": {
+      "ar": "الركاب",
+      "en": "Passengers"
+    },
+    "seatIds": {
+      "ar": "المقاعد",
+      "en": "Seats"
+    }
+  }
+}

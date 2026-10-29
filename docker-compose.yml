@@ -130,6 +130,38 @@ services:
     networks:
       - enr-network
 
+  # 6. Mailpit (Local SMTP Server & Web UI)
+  mailpit:
+    image: axllent/mailpit:latest
+    container_name: enr-mailpit
+    restart: always
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - enr-network
+
+  # 7. Notification Service (Events Consumer & Email Dispatcher)
+  notification:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_NAME: notification
+    container_name: enr-notification
+    restart: always
+    environment:
+      NODE_ENV: production
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      MAIL_FROM: ${MAIL_FROM:-noreply@enr.gov.eg}
+    depends_on:
+      - rabbitmq
+      - mailpit
+    networks:
+      - enr-network
+
 # Persistent Volumes & Network
 
 volumes:
@@ -140,3 +172,4 @@ volumes:
 networks:
   enr-network:
     driver: bridge
+

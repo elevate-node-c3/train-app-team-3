@@ -8,7 +8,7 @@ import { EnvelopeInterceptor } from './common/interceptors/envelope.interceptor'
 async function bootstrap() {
   const app = await NestFactory.create(GatewayModule);
 
-  app.setGlobalPrefix('api');
+  app.setGlobalPrefix('api/v1');
 
   app.useGlobalPipes(createApiValidationPipe());
   app.useGlobalFilters(new GrpcExceptionFilter());
@@ -18,6 +18,6 @@ async function bootstrap() {
   const port = configService.get<number>('gateway.port', 3000);
 
   await app.listen(port);
-  console.log(`Gateway is running on: http://localhost:${port}/api`);
+  console.log(`Gateway is running on: http://localhost:${port}/api/v1`);
 }
 bootstrap();

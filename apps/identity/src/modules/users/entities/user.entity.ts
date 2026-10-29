@@ -25,16 +25,19 @@ export class User {
     @Column({ name: 'password_hash' })
     passwordHash!: string;
 
-    @Column({ name: 'full_name' })
-    fullName!: string;
+    @Column({ name: 'language', default: 'ar' })
+    language!: string;
+
+    @Column({ name: 'full_name', nullable: true })
+    fullName?: string;
 
     @Index({ unique: true })
-    @Column({ unique: true })
-    phone!: string;
+    @Column({ unique: true, nullable: true })
+    phone?: string;
 
     @Index({ unique: true })
-    @Column({ name: 'national_id', unique: true })
-    nationalId!: string;
+    @Column({ name: 'national_id', unique: true, nullable: true })
+    nationalId?: string;
 
     @Column({
         type: 'enum',
@@ -45,6 +48,9 @@ export class User {
 
     @Column({ name: 'is_verified', default: false })
     isVerified!: boolean;
+
+    @Column({ name: 'verified_at', type: 'timestamp', nullable: true })
+    verifiedAt?: Date | null;
 
     @Column({ name: 'is_suspended', default: false })
     isSuspended!: boolean;

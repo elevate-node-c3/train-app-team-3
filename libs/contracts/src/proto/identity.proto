@@ -3,16 +3,57 @@ syntax = "proto3";
 package identity;
 
 service IdentityService {
-  rpc Register (RegisterRequest) returns (RegisterResponse);
+  rpc SignUp (SignUpRequest) returns (SignUpResponse);
+  rpc VerifyEmail (VerifyEmailRequest) returns (VerifyEmailResponse);
+  rpc ResendVerificationCode (ResendVerificationCodeRequest) returns (ResendVerificationCodeResponse);
+  rpc Login (LoginRequest) returns (LoginResponse);
 }
 
-message RegisterRequest {
+message SignUpRequest {
+  string email = 1;
+  string password = 2;
+  string language = 3;
+}
+
+message SignUpResponse {
+  string userId = 1;
+  string email = 2;
+  string maskedEmail = 3;
+  string message = 4;
+}
+
+message VerifyEmailRequest {
+  string email = 1;
+  string code = 2;
+}
+
+message VerifyEmailResponse {
+  string userId = 1;
+  string email = 2;
+  bool isVerified = 3;
+  string accessToken = 4;
+  string refreshToken = 5;
+}
+
+message ResendVerificationCodeRequest {
+  string email = 1;
+  string language = 2;
+}
+
+message ResendVerificationCodeResponse {
+  string message = 1;
+  string maskedEmail = 2;
+  int32 cooldownSeconds = 3;
+}
+
+message LoginRequest {
   string email = 1;
   string password = 2;
 }
 
-message RegisterResponse {
+message LoginResponse {
   string id = 1;
   string email = 2;
   string accessToken = 3;
-}
+  string refreshToken = 4;
+}

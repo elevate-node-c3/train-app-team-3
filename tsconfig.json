@@ -29,6 +29,9 @@
       ],
       "@app/messaging": [
         "libs/messaging/src"
+      ],
+      "@app/cache": [
+        "libs/cache/src"
       ]
     }
   }

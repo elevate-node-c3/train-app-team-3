@@ -1,27 +1,33 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
-import { AppConfig } from '@app/common';
 
-/**
- * Transport بس: بيبعت لـ SMTP (Mailpit في التطوير). مفيش templates ولا لغات هنا:
- * ده شغلك (BR-56)، والـ consumers هي اللي بتنادي send() بالمحتوى الجاهز.
- */
 @Injectable()
 export class MailerService {
+  private readonly logger = new Logger(MailerService.name);
   private readonly transport: nodemailer.Transporter;
   private readonly from: string;
 
-  constructor(config: AppConfig) {
-    this.from = config.get('MAIL_FROM');
+  constructor(config: ConfigService) {
+    this.from = config.get<string>('notification.mail.from') ?? config.get<string>('MAIL_FROM') ?? 'noreply@enr.gov.eg';
+    const host = config.get<string>('notification.smtp.host') ?? config.get<string>('SMTP_HOST') ?? 'localhost';
+    const port = Number(config.get<number>('notification.smtp.port') ?? config.get<number>('SMTP_PORT')) || 1025;
+
     this.transport = nodemailer.createTransport({
-      host: config.get('SMTP_HOST'),
-      port: config.get<number>('SMTP_PORT'),
+      host,
+      port,
       secure: false,
       ignoreTLS: true,
     });
   }
 
   async send(message: { to: string; subject: string; html: string; text?: string }): Promise<void> {
-    await this.transport.sendMail({ from: this.from, ...message });
+    try {
+      await this.transport.sendMail({ from: this.from, ...message });
+      this.logger.log(`Email successfully sent to [${message.to}]: ${message.subject}`);
+    } catch (err: any) {
+      this.logger.error(`Failed to send email to [${message.to}]: ${err.message}`, err.stack);
+      throw err;
+    }
   }
 }

@@ -6,16 +6,27 @@ import { User } from './entities/user.entity';
 export class UsersService {
     constructor(private readonly usersRepository: UsersRepository) { }
 
-    async findByEmail(email: string): Promise<User | null> {
-        return this.usersRepository.findByEmail(email);
-    }
-
     async findById(id: string): Promise<User | null> {
         return this.usersRepository.findById(id);
     }
 
-    async create(userData: Partial<User>): Promise<User> {
-        const user = this.usersRepository.create(userData);
+    async findByEmail(email: string): Promise<User | null> {
+        return this.usersRepository.findByEmail(email);
+    }
+
+    async findByPhone(phone: string): Promise<User | null> {
+        return this.usersRepository.findByPhone(phone);
+    }
+
+    async findByNationalId(nationalId: string): Promise<User | null> {
+        return this.usersRepository.findByNationalId(nationalId);
+    }
+
+    create(userData: Partial<User>): User {
+        return this.usersRepository.create(userData);
+    }
+
+    async save(user: User): Promise<User> {
         return this.usersRepository.save(user);
     }
 }

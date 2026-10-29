@@ -7,6 +7,7 @@
     "experimentalDecorators": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
+    "resolveJsonModule": true,
     "target": "ES2021",
     "sourceMap": true,
     "outDir": "./dist",
@@ -28,6 +29,9 @@
       ],
       "@app/messaging": [
         "libs/messaging/src"
+      ],
+      "@app/cache": [
+        "libs/cache/src"
       ]
     }
   }

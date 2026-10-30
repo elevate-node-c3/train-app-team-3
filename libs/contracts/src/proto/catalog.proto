@@ -1,0 +1,149 @@
+syntax = "proto3";
+
+package catalog;
+
+service CatalogService {
+  rpc SearchStations (SearchStationsRequest) returns (SearchStationsResponse);
+  rpc SearchTrips (SearchTripsRequest) returns (SearchTripsResponse);
+  rpc GetTripStops (GetTripStopsRequest) returns (GetTripStopsResponse);
+  rpc GetRecentSearches (GetRecentSearchesRequest) returns (GetRecentSearchesResponse);
+  rpc SaveRecentSearch (SaveRecentSearchRequest) returns (OperationResponse);
+  rpc QuoteFare (QuoteFareRequest) returns (QuoteFareResponse);
+  rpc PublishTimetable (PublishTimetableRequest) returns (OperationResponse);
+  rpc ChangeFares (ChangeFaresRequest) returns (OperationResponse);
+  rpc DelayTrip (DelayTripRequest) returns (OperationResponse);
+  rpc CancelTrip (CancelTripRequest) returns (OperationResponse);
+}
+
+message SearchStationsRequest {
+  string query = 1;
+}
+
+message Station {
+  string station_id = 1;
+  string name_en = 2;
+  string name_ar = 3;
+  string governorate = 4;
+}
+
+message SearchStationsResponse {
+  repeated Station stations = 1;
+}
+
+message SearchTripsRequest {
+  string origin_station_id = 1;
+  string destination_station_id = 2;
+  string departure_date = 3;
+  string seat_class_id = 4;
+  string train_number = 5;
+  string departure_time_from = 6;
+  string departure_time_to = 7;
+  int64 maximum_fare_piastres = 8;
+  string train_type = 9;
+  TripSort sort = 10;
+}
+
+enum TripSort {
+  TRIP_SORT_DEPARTURE_TIME = 0;
+  TRIP_SORT_DURATION = 1;
+  TRIP_SORT_FARE = 2;
+}
+
+message TripResult {
+  string trip_id = 1;
+  string train_number = 2;
+  string train_type = 3;
+  string seat_class_id = 4;
+  string origin_station_id = 5;
+  string origin_station_name_en = 6;
+  string origin_station_name_ar = 7;
+  string departure_at = 8;
+  string destination_station_id = 9;
+  string destination_station_name_en = 10;
+  string destination_station_name_ar = 11;
+  string arrival_at = 12;
+  int64 duration_minutes = 13;
+  int32 intermediate_stop_count = 14;
+  int32 available_seats = 15;
+  int64 fare_piastres = 16;
+  bool sold_out = 17;
+}
+
+message SearchTripsResponse {
+  repeated TripResult trips = 1;
+}
+
+message GetTripStopsRequest {
+  string trip_id = 1;
+  string origin_station_id = 2;
+  string destination_station_id = 3;
+}
+
+message TripStop {
+  string station_id = 1;
+  string station_name_en = 2;
+  string station_name_ar = 3;
+  string arrival_at = 4;
+  string departure_at = 5;
+}
+
+message GetTripStopsResponse {
+  repeated TripStop stops = 1;
+}
+
+message RecentSearch {
+  string origin_station_id = 1;
+  string destination_station_id = 2;
+  string departure_date = 3;
+  string return_date = 4;
+  string seat_class_id = 5;
+  string train_number = 6;
+}
+
+message GetRecentSearchesRequest {
+}
+
+message GetRecentSearchesResponse {
+  repeated RecentSearch searches = 1;
+}
+
+message SaveRecentSearchRequest {
+  RecentSearch search = 1;
+}
+
+message QuoteFareRequest {
+  string trip_id = 1;
+  string seat_class_id = 2;
+  string origin_station_id = 3;
+  string destination_station_id = 4;
+}
+
+message QuoteFareResponse {
+  int64 fare_piastres = 1;
+}
+
+message PublishTimetableRequest {
+  string timetable_id = 1;
+}
+
+message ChangeFaresRequest {
+  string train_id = 1;
+  string seat_class_id = 2;
+  string origin_station_id = 3;
+  string destination_station_id = 4;
+  int64 fare_piastres = 5;
+}
+
+message DelayTripRequest {
+  string trip_id = 1;
+  string from_station_id = 2;
+  int32 delay_minutes = 3;
+}
+
+message CancelTripRequest {
+  string trip_id = 1;
+}
+
+message OperationResponse {
+  bool success = 1;
+}

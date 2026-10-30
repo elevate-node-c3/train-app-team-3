@@ -1,26 +1,49 @@
-import { Injectable, Inject, OnModuleDestroy } from '@nestjs/common';
-import Redis from 'ioredis';
+import { Injectable, Inject, OnModuleDestroy } from "@nestjs/common";
+import Redis from "ioredis";
+
+export type CacheValue = string | number | boolean | Record<string, unknown> | unknown[] | null;
 
 @Injectable()
 export class CacheService implements OnModuleDestroy {
-    constructor(@Inject('REDIS_CLIENT') private readonly redis: Redis) { }
+  constructor(@Inject("REDIS_CLIENT") private readonly redis: Redis) {}
 
-    async get(key: string): Promise<string | null> {
-        return this.redis.get(key);
+  async get<T = string | null>(key: string): Promise<T | null> {
+    const rawValue = await this.redis.get(key);
+    if (rawValue === null) {
+      return null;
     }
 
-    async set(key: string, value: string, ttlSeconds?: number): Promise<'OK'> {
-        if (ttlSeconds) {
-            return this.redis.set(key, value, 'EX', ttlSeconds);
-        }
-        return this.redis.set(key, value);
+    try {
+      return JSON.parse(rawValue) as T;
+    } catch {
+      return rawValue as T;
+    }
+  }
+
+  async set(key: string, value: CacheValue, ttlSeconds?: number): Promise<"OK"> {
+    const stringValue =
+      typeof value === "string" ? value : JSON.stringify(value ?? "");
+
+    if (typeof ttlSeconds === "number" && ttlSeconds >= 0) {
+      return this.redis.set(key, stringValue, "EX", Math.max(1, Math.ceil(ttlSeconds)));
     }
 
-    async del(key: string): Promise<number> {
-        return this.redis.del(key);
-    }
+    return this.redis.set(key, stringValue);
+  }
 
-    onModuleDestroy() {
-        this.redis.disconnect();
+  async del(key: string): Promise<number> {
+    return this.redis.del(key);
+  }
+
+  async getTTL(key: string): Promise<number> {
+    const ttlSeconds = await this.redis.ttl(key);
+    if (ttlSeconds <= 0) {
+      return 0;
     }
+    return ttlSeconds * 1000;
+  }
+
+  onModuleDestroy() {
+    this.redis.disconnect();
+  }
 }

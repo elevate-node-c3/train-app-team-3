@@ -1,8 +1,9 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import configuration from './config/config';
-import { configValidationSchema } from './config/config.schema';
-import { AuthModule } from './modules/auth/auth.module';
+import { Module } from "@nestjs/common";
+import { ConfigModule } from "@nestjs/config";
+import configuration from "./config/config";
+import { configValidationSchema } from "./config/config.schema";
+import { AuthModule } from "./modules/auth/auth.module";
+import { RateLimitModule } from "./common/rate.limit/rate.limit.module";
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { AuthModule } from './modules/auth/auth.module';
       validationSchema: configValidationSchema,
     }),
     AuthModule,
+    RateLimitModule,
   ],
 })
-export class GatewayModule { }
+export class GatewayModule {}

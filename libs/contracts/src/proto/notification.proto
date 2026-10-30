@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package notification;
+
+service NotificationService {
+  rpc GetInbox (GetInboxRequest) returns (GetInboxResponse);
+  rpc GetUnreadCount (GetUnreadCountRequest) returns (GetUnreadCountResponse);
+  rpc MarkAsRead (MarkAsReadRequest) returns (OperationResponse);
+  rpc RegisterPushToken (RegisterPushTokenRequest) returns (OperationResponse);
+  rpc RemovePushToken (RemovePushTokenRequest) returns (OperationResponse);
+}
+
+message GetInboxRequest {
+  int32 page_size = 1;
+  string page_token = 2;
+}
+
+message InboxNotification {
+  string notification_id = 1;
+  string title = 2;
+  string body = 3;
+  string created_at = 4;
+  bool read = 5;
+}
+
+message GetInboxResponse {
+  repeated InboxNotification notifications = 1;
+  string next_page_token = 2;
+}
+
+message GetUnreadCountRequest {
+}
+
+message GetUnreadCountResponse {
+  int32 unread_count = 1;
+}
+
+message MarkAsReadRequest {
+  string notification_id = 1;
+}
+
+message RegisterPushTokenRequest {
+  string device_id = 1;
+  string push_token = 2;
+}
+
+message RemovePushTokenRequest {
+  string device_id = 1;
+}
+
+message OperationResponse {
+  bool success = 1;
+}

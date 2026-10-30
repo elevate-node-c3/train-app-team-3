@@ -1,0 +1,85 @@
+syntax = "proto3";
+
+package payment;
+
+service PaymentService {
+  rpc CreateSetupIntent (CreateSetupIntentRequest) returns (CreateSetupIntentResponse);
+  rpc ListPaymentMethods (ListPaymentMethodsRequest) returns (ListPaymentMethodsResponse);
+  rpc DeletePaymentMethod (DeletePaymentMethodRequest) returns (OperationResponse);
+  rpc CreatePaymentIntent (CreatePaymentIntentRequest) returns (CreatePaymentIntentResponse);
+  rpc CancelPaymentIntent (CancelPaymentIntentRequest) returns (OperationResponse);
+  rpc RequestRefund (RequestRefundRequest) returns (RequestRefundResponse);
+  rpc GetRefund (GetRefundRequest) returns (GetRefundResponse);
+}
+
+message CreateSetupIntentRequest {
+}
+
+message CreateSetupIntentResponse {
+  string client_secret = 1;
+}
+
+message ListPaymentMethodsRequest {
+}
+
+message PaymentMethod {
+  string payment_method_id = 1;
+  string brand = 2;
+  string last_four = 3;
+  int32 expiry_month = 4;
+  int32 expiry_year = 5;
+  string holder_name = 6;
+}
+
+message ListPaymentMethodsResponse {
+  repeated PaymentMethod payment_methods = 1;
+}
+
+message DeletePaymentMethodRequest {
+  string payment_method_id = 1;
+}
+
+message CreatePaymentIntentRequest {
+  string booking_id = 1;
+  string user_id = 2;
+  string payment_method_id = 3;
+  int64 amount_piastres = 4;
+  string idempotency_key = 5;
+}
+
+message CreatePaymentIntentResponse {
+  string payment_intent_id = 1;
+  string client_secret = 2;
+  string status = 3;
+}
+
+message CancelPaymentIntentRequest {
+  string payment_intent_id = 1;
+}
+
+message RequestRefundRequest {
+  string booking_id = 1;
+  string ticket_id = 2;
+  string payment_intent_id = 3;
+  int64 amount_piastres = 4;
+  string idempotency_key = 5;
+}
+
+message RequestRefundResponse {
+  string refund_id = 1;
+  string status = 2;
+}
+
+message GetRefundRequest {
+  string refund_id = 1;
+}
+
+message GetRefundResponse {
+  string refund_id = 1;
+  string status = 2;
+  string completed_at = 3;
+}
+
+message OperationResponse {
+  bool success = 1;
+}

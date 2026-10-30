@@ -1,21 +1,26 @@
-
 import { Injectable } from '@nestjs/common';
-import { DataSource, IsNull } from 'typeorm';
+import { ConfigService } from '@nestjs/config';
+import { DataSource } from 'typeorm';
 import { createHmac, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
 import {
   VerificationPurpose,
   VerificationCodeIssuedEvent,
 } from '../../../../../libs/contracts/src/verification-code-issued.event';
-import { VerificationCode } from './verification.entity';
-import { encryptPayload, OutboxEvent } from '../outbox/ outbox.entity';
+import { OutboxEvent } from '../outbox/outbox.entity';
+import { OutboxEncryptionService } from '../outbox/outbox-encryption.service';
+import { VerificationRepository } from './verification.repository';
 
 @Injectable()
 export class VerificationService {
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    private readonly outboxEncryptionService: OutboxEncryptionService,
+    private readonly configService: ConfigService,
+    private readonly verificationRepository: VerificationRepository,
+  ) {}
 
   private hashCode(email: string, purpose: VerificationPurpose, code: string): string {
-    const secret = process.env.OTP_HASH_SECRET;
-    if (!secret) throw new Error('OTP_HASH_SECRET is required');
+    const secret = this.configService.getOrThrow<string>('OTP_HASH_SECRET');
 
     return createHmac('sha256', secret)
       .update(`${email.toLowerCase()}:${purpose}:${code}`)
@@ -52,24 +57,27 @@ export class VerificationService {
     };
 
     await this.dataSource.transaction(async (manager) => {
-      await manager.update(
-        VerificationCode,
-        { email, purpose: input.purpose, usedAt: IsNull() },
-        { usedAt: now },
+      await this.verificationRepository.invalidateActiveCodes(
+        email,
+        input.purpose,
+        now,
+        manager,
       );
 
-      await manager.save(VerificationCode, {
-        userId: input.userId,
-        email,
-        codeHash: this.hashCode(email, input.purpose, code),
-        purpose: input.purpose,
-        expiresAt,
-        usedAt: null,
-      });
+      await this.verificationRepository.saveCode(
+        {
+          userId: input.userId,
+          email,
+          codeHash: this.hashCode(email, input.purpose, code),
+          purpose: input.purpose,
+          expiresAt,
+        },
+        manager,
+      );
 
       await manager.save(OutboxEvent, {
         eventId,
-        payload: encryptPayload(event),
+        payload: this.outboxEncryptionService.encryptPayload(event),
         sentAt: null,
       });
     });
@@ -85,15 +93,11 @@ export class VerificationService {
     const email = input.email.toLowerCase();
 
     return this.dataSource.transaction(async (manager) => {
-      const record = await manager.findOne(VerificationCode, {
-        where: {
-          email,
-          purpose: input.purpose,
-          usedAt: IsNull(),
-        },
-        order: { createdAt: 'DESC' },
-        lock: { mode: 'pessimistic_write' },
-      });
+      const record = await this.verificationRepository.findActiveCodeForVerification(
+        email,
+        input.purpose,
+        manager,
+      );
 
       if (!record || record.expiresAt.getTime() <= Date.now()) {
         return false;
@@ -109,10 +113,10 @@ export class VerificationService {
         return false;
       }
 
-      record.usedAt = new Date();
-      await manager.save(record);
+      await this.verificationRepository.markAsUsed(record, manager);
 
       return true;
     });
   }
+  
 }

@@ -10,4 +10,6 @@ export const configValidationSchema = Joi.object({
     DB_NAME: Joi.string().default('identity_db'),
     JWT_PRIVATE_KEY: Joi.string().required(),
     JWT_PUBLIC_KEY: Joi.string().required(),
+    OTP_HASH_SECRET: Joi.string().required(),
+
 });

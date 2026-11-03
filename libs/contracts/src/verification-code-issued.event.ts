@@ -1,7 +1,7 @@
 export const VERIFICATION_CODE_ISSUED_EVENT_KEY =
-  "verification-code-issued" as const;
+  'verification-code-issued' as const;
 
-export type VerificationPurpose = "email-verification" | "password-reset";
+export type VerificationPurpose = 'email-verification' | 'password-reset';
 
 export interface VerificationCodeIssuedEvent {
   eventId: string;
@@ -9,7 +9,7 @@ export interface VerificationCodeIssuedEvent {
   version: 1;
   occurredAt: string;
   correlationId: string;
-  producer: "identity";
+  producer: 'identity';
   payload: {
     email: string;
     code: string;

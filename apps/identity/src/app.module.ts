@@ -1,12 +1,14 @@
-import { Module } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
-import configuration from "./config/config";
-import { configValidationSchema } from "./config/config.schema";
-import { DatabaseModule } from "./database/database.module";
-import { UsersModule } from "./modules/users/users.module";
-import { AuthModule } from "./modules/auth/auth.module";
-import { AppConfigModule } from "./config/config.module";
-import { CacheModule } from "../../../libs/cache/src/cache.module";
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import configuration from './config/config';
+import { configValidationSchema } from './config/config.schema';
+import { DatabaseModule } from './database/database.module';
+import { UsersModule } from './modules/users/users.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { AppConfigModule } from './config/config.module';
+import { CacheModule } from '../../../libs/cache/src/cache.module';
+import { VerificationModule } from './modules/verification/verification.module';
+import { OutboxModule } from './modules/outbox/outbox.module';
 
 @Module({
   imports: [
@@ -16,7 +18,7 @@ import { CacheModule } from "../../../libs/cache/src/cache.module";
       validationSchema: configValidationSchema,
     }),
     CacheModule.register({
-      host: process.env.REDIS_HOST ?? "localhost",
+      host: process.env.REDIS_HOST ?? 'localhost',
       port: Number(process.env.REDIS_PORT) || 6379,
       ...(process.env.REDIS_PASSWORD
         ? { password: process.env.REDIS_PASSWORD }
@@ -26,6 +28,8 @@ import { CacheModule } from "../../../libs/cache/src/cache.module";
     DatabaseModule,
     UsersModule,
     AuthModule,
+    VerificationModule,
+    OutboxModule,
   ],
 })
 export class AppModule {}

@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+package identity;
+
+service IdentityService {
+  rpc Verify (VerifyRequest) returns (VerifyResponse);
+}
+
+
+
+message VerifyRequest {
+  string email = 1;
+  string code = 2;
+  string purpose = 3;
+
+}
+
+message VerifyResponse {
+  bool verified = 1;
+}

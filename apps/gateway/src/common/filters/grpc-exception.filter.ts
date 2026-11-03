@@ -32,6 +32,9 @@ export class GrpcExceptionFilter implements ExceptionFilter {
             case status.ALREADY_EXISTS:
                 httpStatus = HttpStatus.CONFLICT;
                 break;
+            case status.UNAVAILABLE:
+              httpStatus = HttpStatus.SERVICE_UNAVAILABLE;
+              break;      
             default:
                 if (exception.status && typeof exception.status === 'number') {
                     httpStatus = exception.status;

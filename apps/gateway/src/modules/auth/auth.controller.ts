@@ -23,9 +23,9 @@ import { Throttle } from "@nestjs/throttler";
 
 @Controller("auth")
 export class AuthController implements OnModuleInit {
+  private identityService!: IdentityGrpcService;
   constructor(
     @Inject("IDENTITY_PACKAGE") private readonly client: ClientGrpc,
-    private identityService: IdentityGrpcService,
   ) {}
 
   onModuleInit() {

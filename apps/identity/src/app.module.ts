@@ -12,6 +12,7 @@ import { CacheModule } from "../../../libs/cache/src/cache.module";
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: "apps/identity/.env",
       load: [configuration],
       validationSchema: configValidationSchema,
     }),

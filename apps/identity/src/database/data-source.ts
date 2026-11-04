@@ -4,7 +4,7 @@ import { UserOrmEntity } from "../modules/users/infastracture/entities/user.type
 import { SessionOrmEntity } from "../modules/auth/sessions/infastructure/entities/session.typeorm.entity";
 import { migrations } from "./migrations";
 
-dotenv.config();
+dotenv.config({ path: "apps/identity/.env" });
 
 export const dataSourceOptions: DataSourceOptions = {
   type: "postgres",

@@ -9,6 +9,7 @@ import { RateLimitModule } from "./common/rate.limit/rate.limit.module";
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
+      envFilePath: "apps/gateway/.env",
       load: [configuration],
       validationSchema: configValidationSchema,
     }),

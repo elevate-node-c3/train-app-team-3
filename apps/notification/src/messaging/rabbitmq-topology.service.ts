@@ -6,6 +6,8 @@ import {
   NOTIFICATION_DLX,
   NOTIFICATION_QUEUE,
   NOTIFICATION_QUEUE_ARGUMENTS,
+  NOTIFICATION_RETRY_DELAYS_MS,
+  notificationRetryQueue,
   ROUTING_KEYS,
 } from '@app/contracts';
 
@@ -33,6 +35,17 @@ export class RabbitMQTopologyService implements OnModuleInit {
         arguments: NOTIFICATION_QUEUE_ARGUMENTS,
       });
       await channel.bindQueue(NOTIFICATION_QUEUE, EVENTS_EXCHANGE, routingKey);
+
+      for (const delay of NOTIFICATION_RETRY_DELAYS_MS) {
+        await channel.assertQueue(notificationRetryQueue(delay), {
+          durable: true,
+          arguments: {
+            'x-message-ttl': delay,
+            'x-dead-letter-exchange': '',
+            'x-dead-letter-routing-key': NOTIFICATION_QUEUE,
+          },
+        });
+      }
 
       await channel.close();
       this.logger.log('RabbitMQ topology asserted');

@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
-import { connect, ChannelModel, ConfirmChannel } from 'amqplib';
+import { connect, ChannelModel, ConfirmChannel, Options } from 'amqplib';
 import { EVENTS_EXCHANGE } from '@app/contracts';
 
 @Injectable()
@@ -32,17 +32,29 @@ export class RabbitMQService implements OnModuleDestroy {
 
 
   async publishEvent(routingKey: string, event: unknown) {
+    await this.publishRaw(
+      EVENTS_EXCHANGE,
+      routingKey,
+      Buffer.from(JSON.stringify({ pattern: routingKey, data: event })),
+      { contentType: 'application/json' },
+    );
+  }
+
+  async publishRaw(
+    exchange: string,
+    routingKey: string,
+    content: Buffer,
+    options: Options.Publish = {},
+  ) {
     try {
       await this.ensureConnection();
 
-      const message = { pattern: routingKey, data: event };
-
       await new Promise<void>((resolve, reject) => {
         this.channel!.publish(
-          EVENTS_EXCHANGE,
+          exchange,
           routingKey,
-          Buffer.from(JSON.stringify(message)),
-          { persistent: true, contentType: 'application/json' },
+          content,
+          { persistent: true, contentType: 'application/json', ...options },
           (error) => (error ? reject(error) : resolve()),
         );
       });

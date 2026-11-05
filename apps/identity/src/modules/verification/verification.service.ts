@@ -4,8 +4,8 @@ import { DataSource } from 'typeorm';
 import { createHmac, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
 import {
   VerificationPurpose,
-  VerificationCodeIssuedEvent,
   ROUTING_KEYS,
+  buildVerificationCodeIssuedEvent,
 } from '@app/contracts';
 import { OutboxEvent } from '../outbox/outbox.entity';
 import { OutboxEncryptionService } from '../outbox/outbox-encryption.service';
@@ -41,21 +41,16 @@ export class VerificationService {
     const expiresAt = new Date(now.getTime() + 10 * 60 * 1000);
     const eventId = randomUUID();
 
-    const event: VerificationCodeIssuedEvent = {
+    const event = buildVerificationCodeIssuedEvent({
       eventId,
-      type: 'verification-code-issued',
-      version: 1,
-      occurredAt: now.toISOString(),
       correlationId: input.correlationId ?? randomUUID(),
-      producer: 'identity',
-      payload: {
-        email,
-        code,
-        language: input.language ?? 'en',
-        purpose: input.purpose,
-        expiresAt: expiresAt.toISOString(),
-      },
-    };
+      occurredAt: now,
+      email,
+      code,
+      language: input.language ?? 'en',
+      purpose: input.purpose,
+      expiresAt,
+    });
 
     await this.dataSource.transaction(async (manager) => {
       await this.verificationRepository.invalidateActiveCodes(

@@ -13,3 +13,16 @@ export const NOTIFICATION_QUEUE_ARGUMENTS = {
   'x-dead-letter-exchange': NOTIFICATION_DLX,
   'x-dead-letter-routing-key': ROUTING_KEYS.VERIFICATION_CODE_ISSUED,
 };
+
+export const NOTIFICATION_RETRY_DELAYS_MS = [5_000, 15_000, 60_000, 300_000] as const;
+export const NOTIFICATION_MAX_RETRIES = NOTIFICATION_RETRY_DELAYS_MS.length;
+
+export const notificationRetryQueue = (delayMs: number) =>
+  `notification.verification-code.retry.${delayMs}ms`;
+
+export const MESSAGE_HEADERS = {
+  RETRY_COUNT: 'x-retry-count',
+  LAST_ERROR: 'x-last-error',
+  FAILURE_REASON: 'x-failure-reason',
+  FAILED_AT: 'x-failed-at',
+} as const;

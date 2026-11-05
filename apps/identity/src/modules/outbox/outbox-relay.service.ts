@@ -1,7 +1,10 @@
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { DataSource } from 'typeorm';
+import { RabbitMQService } from '@app/messaging';
 import { OutboxEncryptionService } from './outbox-encryption.service';
 import { OutboxRepository } from './outbox.repository';
-import { RabbitMQService } from './rabbitmq.service';
+
+const POLL_INTERVAL_MS = 1000; 
 
 @Injectable()
 export class OutboxRelayService implements OnModuleInit, OnModuleDestroy {
@@ -10,13 +13,14 @@ export class OutboxRelayService implements OnModuleInit, OnModuleDestroy {
   private running = false;
 
   constructor(
+    private readonly dataSource: DataSource,
     private readonly outbox: OutboxRepository,
     private readonly outboxEncryptionService: OutboxEncryptionService,
     private readonly rabbitMQService: RabbitMQService,
   ) {}
 
   onModuleInit() {
-    this.timer = setInterval(() => void this.sendPending(), 1000);
+    this.timer = setInterval(() => void this.sendPending(), POLL_INTERVAL_MS);
     void this.sendPending();
   }
 
@@ -25,24 +29,37 @@ export class OutboxRelayService implements OnModuleInit, OnModuleDestroy {
     this.running = true;
 
     try {
-      const events = await this.outbox.findPending();
+      await this.dataSource.transaction(async (manager) => {
+        const events = await this.outbox.findPendingLocked(manager);
 
-      for (const event of events) {
-        const payload = this.outboxEncryptionService.decryptPayload(event.payload);
+        for (const event of events) {
+          let payload: unknown;
 
-        await this.rabbitMQService.publishEvent(payload);
-        await this.outbox.markAsSent(event.eventId);
-      }
+          try {
+            payload = this.outboxEncryptionService.decryptPayload(event.payload);
+          } catch (error) {
+            this.logger.error(`Cannot decrypt outbox event ${event.eventId}`, error);
+            continue;
+          }
+
+          try {
+            await this.rabbitMQService.publishEvent(event.eventType, payload);
+          } catch (error) {
+            this.logger.error('Broker unavailable, will retry next tick', error);
+            break;
+          }
+
+          await this.outbox.markAsSent(event.eventId, manager);
+        }
+      });
     } catch (error) {
-      this.logger.error('Failed to send pending outbox events', error);
+      this.logger.error('Failed to relay outbox events', error);
     } finally {
       this.running = false;
     }
   }
 
   onModuleDestroy() {
-    if (this.timer) {
-      clearInterval(this.timer)
-    }
+    if (this.timer) clearInterval(this.timer);
   }
 }

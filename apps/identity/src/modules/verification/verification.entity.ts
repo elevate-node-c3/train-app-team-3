@@ -1,6 +1,7 @@
 
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, Index } from 'typeorm';
-import { VerificationPurpose } from '../../../../../libs/contracts/src/verification-code-issued.event';
+import { VerificationPurpose } from '@app/contracts';
+
 
 @Entity('verification_codes')
 @Index(['email', 'purpose', 'createdAt'])

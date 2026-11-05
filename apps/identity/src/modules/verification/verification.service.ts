@@ -5,7 +5,8 @@ import { createHmac, randomInt, randomUUID, timingSafeEqual } from 'node:crypto'
 import {
   VerificationPurpose,
   VerificationCodeIssuedEvent,
-} from '../../../../../libs/contracts/src/verification-code-issued.event';
+  ROUTING_KEYS,
+} from '@app/contracts';
 import { OutboxEvent } from '../outbox/outbox.entity';
 import { OutboxEncryptionService } from '../outbox/outbox-encryption.service';
 import { VerificationRepository } from './verification.repository';
@@ -77,6 +78,7 @@ export class VerificationService {
 
       await manager.save(OutboxEvent, {
         eventId,
+        eventType: ROUTING_KEYS.VERIFICATION_CODE_ISSUED,
         payload: this.outboxEncryptionService.encryptPayload(event),
         sentAt: null,
       });
@@ -118,5 +120,4 @@ export class VerificationService {
       return true;
     });
   }
-  
 }

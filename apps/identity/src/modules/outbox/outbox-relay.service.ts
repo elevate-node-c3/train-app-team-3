@@ -1,7 +1,7 @@
 import { Injectable, Logger, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
+import { RabbitMQService } from '@app/messaging';
 import { OutboxEncryptionService } from './outbox-encryption.service';
 import { OutboxRepository } from './outbox.repository';
-import { RabbitMQService } from './rabbitmq.service';
 
 @Injectable()
 export class OutboxRelayService implements OnModuleInit, OnModuleDestroy {
@@ -28,9 +28,16 @@ export class OutboxRelayService implements OnModuleInit, OnModuleDestroy {
       const events = await this.outbox.findPending();
 
       for (const event of events) {
-        const payload = this.outboxEncryptionService.decryptPayload(event.payload);
+        let payload: unknown;
 
-        await this.rabbitMQService.publishEvent(payload);
+        try {
+          payload = this.outboxEncryptionService.decryptPayload(event.payload);
+        } catch (error) {
+          this.logger.error(`Cannot decrypt outbox event ${event.eventId}`, error);
+          continue;
+        }
+
+        await this.rabbitMQService.publishEvent(event.eventType, payload);
         await this.outbox.markAsSent(event.eventId);
       }
     } catch (error) {
@@ -41,8 +48,6 @@ export class OutboxRelayService implements OnModuleInit, OnModuleDestroy {
   }
 
   onModuleDestroy() {
-    if (this.timer) {
-      clearInterval(this.timer)
-    }
+    if (this.timer) clearInterval(this.timer);
   }
 }

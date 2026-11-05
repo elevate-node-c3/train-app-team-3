@@ -5,15 +5,15 @@ import { VerificationService } from './verification.service';
 import { VerificationController } from './verification.controller';
 import { OutboxEvent } from '../outbox/outbox.entity';
 import { VerificationRepository } from './verification.repository';
-
+import { OutboxModule } from '../outbox/outbox.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([VerificationCode, OutboxEvent])],
-  controllers: [VerificationController],
-  providers: [
-    VerificationService,
-    VerificationRepository,
+  imports: [
+    TypeOrmModule.forFeature([VerificationCode, OutboxEvent]),
+    OutboxModule,
   ],
+  controllers: [VerificationController],
+  providers: [VerificationService, VerificationRepository],
   exports: [VerificationService],
 })
 export class VerificationModule {}

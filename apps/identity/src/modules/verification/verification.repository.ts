@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository, IsNull, EntityManager } from 'typeorm';
 import { VerificationCode } from './verification.entity';
-import { VerificationPurpose } from '../../../../../libs/contracts/src/verification-code-issued.event';
+import { VerificationPurpose } from '@app/contracts';
 
 @Injectable()
 export class VerificationRepository {

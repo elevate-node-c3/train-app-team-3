@@ -2,9 +2,9 @@ import { Controller, Logger } from '@nestjs/common';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
+import { ROUTING_KEYS, VerificationCodeIssuedEvent } from '@app/contracts';
 import { ProcessedEvent } from '../../database/entities/processed-event.entity';
 import { MailerService } from './mailer.service';
-
 
 @Controller()
 export class NotificationConsumer {
@@ -16,14 +16,22 @@ export class NotificationConsumer {
     private readonly mailerService: MailerService,
   ) {}
 
-  @EventPattern('verification_code_issued')
+  @EventPattern(ROUTING_KEYS.VERIFICATION_CODE_ISSUED)
   async handleVerificationCodeIssued(
-    @Payload() data: { eventId: string; email: string; code: string; language: string; expiresAt: string },
+    @Payload() event: VerificationCodeIssuedEvent,
     @Ctx() context: RmqContext,
   ) {
     const channel = context.getChannelRef();
     const originalMessage = context.getMessage();
-    const { eventId, email, code, language, expiresAt } = data;
+
+    if (!this.isValidEvent(event)) {
+      this.logger.error('Invalid event shape received, routing to DLQ');
+      channel.nack(originalMessage, false, false);
+      return;
+    }
+
+    const { eventId, payload } = event;
+    const { email, code, language, expiresAt } = payload;
 
     try {
       const existing = await this.processedEventRepo.findOne({ where: { eventId } });
@@ -32,26 +40,50 @@ export class NotificationConsumer {
         return;
       }
 
-      const now = new Date();
-      const expiryDate = new Date(expiresAt);
-      if (now > expiryDate) {
-        await this.processedEventRepo.save({ eventId });
+      const expiryTime = new Date(expiresAt).getTime();
+      if (Number.isNaN(expiryTime) || Date.now() > expiryTime) {
+        this.logger.warn(`Skipping expired code for event ${eventId}`);
+        await this.markProcessed(eventId);
         channel.ack(originalMessage);
         return;
       }
 
-      await this.mailerService.sendVerificationEmail({
-        to: email,
-        code,
-        language,
-      });
+      await this.mailerService.sendVerificationEmail({ to: email, code, language });
 
-      await this.processedEventRepo.save({ eventId });
+      await this.markProcessed(eventId);
       channel.ack(originalMessage);
     } catch (err: unknown) {
       const error = err as Error;
-      this.logger.error(`Failed to process event: ${error.message}`);
-      channel.nack(originalMessage, false, true);
+      this.logger.error(`Failed to process event ${eventId}: ${error.message}`);
+
+      const requeue = !originalMessage.fields.redelivered;
+      channel.nack(originalMessage, false, requeue);
     }
+  }
+
+  private async markProcessed(eventId: string): Promise<void> {
+    try {
+      await this.processedEventRepo.insert({ eventId });
+    } catch (err) {
+      if (this.isUniqueViolation(err)) return;
+      throw err;
+    }
+  }
+
+  private isUniqueViolation(err: unknown): boolean {
+    const e = err as { code?: string; driverError?: { code?: string } };
+    return e?.code === '23505' || e?.driverError?.code === '23505';
+  }
+
+  private isValidEvent(event: unknown): event is VerificationCodeIssuedEvent {
+    const e = event as Partial<VerificationCodeIssuedEvent> | undefined;
+    return (
+      !!e &&
+      typeof e.eventId === 'string' &&
+      !!e.payload &&
+      typeof e.payload.email === 'string' &&
+      typeof e.payload.code === 'string' &&
+      typeof e.payload.expiresAt === 'string'
+    );
   }
 }

@@ -9,6 +9,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: postgres
+      IDENTITY_DB_NAME: ${IDENTITY_DB_NAME:-identity_db}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
@@ -22,6 +23,24 @@ services:
       timeout: 5s
       retries: 5
 
+  postgres-init:
+    image: postgres:16-alpine
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      SERVICE_DATABASES: ${SERVICE_DATABASES:-${IDENTITY_DB_NAME:-identity_db}}
+    volumes:
+      - ./infra/postgres/ensure-databases.sh:/usr/local/bin/ensure-databases.sh:ro
+    entrypoint: ["/bin/sh", "/usr/local/bin/ensure-databases.sh"]
+    networks:
+      - enr-network
+
   # 2. Message Broker (RabbitMQ)
 
   rabbitmq:
@@ -32,8 +51,8 @@ services:
       - "${RABBITMQ_PORT:-5672}:5672"
       - "${RABBITMQ_MGMT_PORT:-15672}:15672"
     volumes:
-      - ./infra/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
-      - ./infra/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./infra/rabbitmq/config/definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./infra/rabbitmq/config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - enr-network
@@ -105,6 +124,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      postgres-init:
+        condition: service_completed_successfully
       rabbitmq:
         condition: service_healthy
       redis:

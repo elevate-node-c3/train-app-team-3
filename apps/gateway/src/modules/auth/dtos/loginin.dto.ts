@@ -5,18 +5,19 @@ import {
   IsString,
   MaxLength,
 } from "class-validator";
+import { i18nValidationMessage } from "nestjs-i18n";
 
 export class LoginInDto {
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail({}, { message: i18nValidationMessage("validation.invalidEmail") })
+  @IsNotEmpty({ message: i18nValidationMessage("validation.required") })
   email!: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: i18nValidationMessage("validation.mustBeString") })
+  @IsNotEmpty({ message: i18nValidationMessage("validation.required") })
   password!: string;
 
   @IsOptional()
   @IsString()
-  @MaxLength(512)
+  @MaxLength(512, { message: i18nValidationMessage("validation.maxLength") })
   deviceInfo?: string;
 }

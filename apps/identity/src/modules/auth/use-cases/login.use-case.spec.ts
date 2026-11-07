@@ -4,6 +4,7 @@ import { LoginDto } from "../../users/applicatoin/dtos/login.dto";
 import { UsersService } from "../../users/users.service";
 import { CreateSessionUseCase } from "./create-session.use-case";
 import { LoginUseCase } from "./login.use-case";
+import { I18nService } from "nestjs-i18n";
 
 describe("LoginUseCase", () => {
   let user: User;
@@ -13,6 +14,11 @@ describe("LoginUseCase", () => {
   };
   const createSessionUseCase = {
     execute: jest.fn(),
+  };
+  const i18n = {
+    translate: jest.fn().mockReturnValue(
+      "البريد الإلكتروني أو كلمة المرور غير صحيحة",
+    ),
   };
 
   beforeAll(async () => {
@@ -29,11 +35,13 @@ describe("LoginUseCase", () => {
     useCase = new LoginUseCase(
       usersService as unknown as UsersService,
       createSessionUseCase as unknown as CreateSessionUseCase,
+      i18n as unknown as I18nService,
     );
   });
 
   beforeEach(() => {
     jest.clearAllMocks();
+    i18n.translate.mockReturnValue("البريد الإلكتروني أو كلمة المرور غير صحيحة");
     usersService.findByEmail.mockResolvedValue(user);
     createSessionUseCase.execute.mockResolvedValue({
       accessToken: "signed-access-token",
@@ -66,7 +74,7 @@ describe("LoginUseCase", () => {
         email: "traveler@example.com",
         password: "wrong-password",
       }),
-    ).rejects.toThrow("Invalid email or password");
+    ).rejects.toThrow("البريد الإلكتروني أو كلمة المرور غير صحيحة");
     expect(createSessionUseCase.execute).not.toHaveBeenCalled();
   });
 });

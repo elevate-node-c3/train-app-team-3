@@ -7,6 +7,10 @@ import { LogoutUseCase } from "./use-cases/logout.use-case";
 import { RpcException } from "@nestjs/microservices";
 import { status } from "@grpc/grpc-js";
 import { OtpService } from "../../../../../libs/auth/otp/otp.service";
+import { I18nService } from "nestjs-i18n";
+import {
+  AuthLanguage,
+} from "../../i18n/grpc-language";
 
 @Injectable()
 export class AuthService {
@@ -15,18 +19,22 @@ export class AuthService {
     private readonly loginUseCase: LoginUseCase,
     private readonly logoutUseCase: LogoutUseCase,
     private readonly otpService: OtpService,
+    private readonly i18n: I18nService,
   ) {}
 
-  async register(dto: RegisterDto) {
-    return this.registerUseCase.execute(dto);
+  async register(dto: RegisterDto, language: AuthLanguage = "ar") {
+    return this.registerUseCase.execute(dto, language);
   }
 
-  async login(dto: LoginDto) {
-    return this.loginUseCase.execute(dto);
+  async login(dto: LoginDto, language: AuthLanguage = "ar") {
+    return this.loginUseCase.execute(dto, language);
   }
 
-  async logout(input: { userId: string; sessionId: string }) {
-    return this.logoutUseCase.execute(input);
+  async logout(
+    input: { userId: string; sessionId: string },
+    language: AuthLanguage = "ar",
+  ) {
+    return this.logoutUseCase.execute(input, language);
   }
 
   async validateSession(input: { userId: string; sessionId: string }) {
@@ -38,7 +46,10 @@ export class AuthService {
     return { success: true };
   }
 
-  async verifyOtp(input: { email: string; otp: string; userId: string }) {
+  async verifyOtp(
+    input: { email: string; otp: string; userId: string },
+    language: AuthLanguage = "ar",
+  ) {
     const valid = await this.otpService.verifyUserOtp(
       input.userId,
       "forgot-password",
@@ -48,7 +59,9 @@ export class AuthService {
     if (!valid) {
       throw new RpcException({
         code: status.PERMISSION_DENIED,
-        message: "The OTP is invalid or expired",
+        message: this.i18n.translate("auth.otpInvalidOrExpired", {
+          lang: language,
+        }),
       });
     }
 

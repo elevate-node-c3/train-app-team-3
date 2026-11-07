@@ -9,6 +9,7 @@ export class User {
     public isVerified: boolean,
     public readonly createdAt: Date,
     public readonly updatedAt: Date,
+    public lang: string = "ar",
   ) {}
 
   getPasswordHash(): string {

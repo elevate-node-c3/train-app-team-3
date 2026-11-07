@@ -1,7 +1,11 @@
 import { Observable } from "rxjs";
+import { Metadata } from "@grpc/grpc-js";
 
 export interface IdentityGrpcService {
-  register(data: { email: string; password: string }): Observable<{
+  register(data: {
+    email: string;
+    password: string;
+  }, metadata?: Metadata): Observable<{
     id: string;
     email: string;
     accessToken: string;
@@ -10,7 +14,7 @@ export interface IdentityGrpcService {
     email: string;
     password: string;
     deviceInfo?: string;
-  }): Observable<{
+  }, metadata?: Metadata): Observable<{
     id: string;
     email: string;
     accessToken: string;
@@ -18,15 +22,18 @@ export interface IdentityGrpcService {
   logout(data: {
     userId: string;
     sessionId: string;
-  }): Observable<{ success: boolean }>;
+  }, metadata?: Metadata): Observable<{ success: boolean }>;
   validateSession(data: {
     userId: string;
     sessionId: string;
   }): Observable<{ active: boolean }>;
-  forgotPassword(data: { email: string; userId: string }): Observable<never>;
+  forgotPassword(
+    data: { email: string; userId: string },
+    metadata?: Metadata,
+  ): Observable<never>;
   verifyOtp(data: {
     email: string;
     otp: string;
     userId: string;
-  }): Observable<never>;
+  }, metadata?: Metadata): Observable<never>;
 }

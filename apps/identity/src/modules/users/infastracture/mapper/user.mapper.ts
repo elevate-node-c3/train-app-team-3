@@ -11,6 +11,7 @@ export class UserMapper {
       false,
       ormEntity.createdAt,
       ormEntity.updatedAt,
+      ormEntity.lang,
     );
   }
 
@@ -19,6 +20,7 @@ export class UserMapper {
     ormEntity.id = domainUser.id;
     ormEntity.email = domainUser.email;
     ormEntity.passwordHash = domainUser.getPasswordHash();
+    ormEntity.lang = domainUser.lang;
     ormEntity.createdAt = domainUser.createdAt;
     ormEntity.updatedAt = domainUser.updatedAt;
     return ormEntity;

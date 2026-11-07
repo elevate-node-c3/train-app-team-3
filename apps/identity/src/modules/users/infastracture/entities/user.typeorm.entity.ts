@@ -17,6 +17,9 @@ export class UserOrmEntity {
   @Column()
   passwordHash!: string;
 
+  @Column({ default: "ar" })
+  lang!: string;
+
   @CreateDateColumn()
   createdAt!: Date;
 

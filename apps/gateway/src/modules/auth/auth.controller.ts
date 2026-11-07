@@ -7,9 +7,10 @@ import {
   ForbiddenException,
   UnauthorizedException,
   UsePipes,
-  ValidationPipe,
 } from "@nestjs/common";
 import { ClientGrpc } from "@nestjs/microservices";
+import { Metadata } from "@grpc/grpc-js";
+import { I18nLang, I18nService, I18nValidationPipe } from "nestjs-i18n";
 import { lastValueFrom } from "rxjs";
 import { RegisterDto } from "./dtos/register.dto";
 import { LoginInDto } from "./dtos/loginin.dto";
@@ -26,6 +27,7 @@ export class AuthController implements OnModuleInit {
   private identityService!: IdentityGrpcService;
   constructor(
     @Inject("IDENTITY_PACKAGE") private readonly client: ClientGrpc,
+    private readonly i18n: I18nService,
   ) {}
 
   onModuleInit() {
@@ -34,66 +36,84 @@ export class AuthController implements OnModuleInit {
   }
 
   @Post("register")
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  async register(@Body() dto: RegisterDto) {
+  @UsePipes(new I18nValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async register(@I18nLang() lang: string, @Body() dto: RegisterDto) {
     const { email, password } = dto;
-
     return await lastValueFrom(
-      this.identityService.register({ email, password }),
+      this.identityService.register({ email, password }, this.metadataFor(lang)),
     );
   }
 
   @Throttle({ auth: { limit: 5, ttl: 60000 } })
   @Post("login")
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  async login(@Body() dto: LoginInDto) {
-    return lastValueFrom(this.identityService.login(dto));
+  @UsePipes(new I18nValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async login(@I18nLang() lang: string, @Body() dto: LoginInDto) {
+    return lastValueFrom(this.identityService.login(dto, this.metadataFor(lang)));
   }
 
   @Post("logout")
   @Authenticated()
-  async logout(@CurrentUser() user: GatewayUser) {
+  async logout(
+    @I18nLang() lang: string,
+    @CurrentUser() user: GatewayUser,
+  ) {
     if (!user.sid) {
       throw new UnauthorizedException(
-        "The access token does not include a session",
+        this.i18n.translate("auth.noSession", { lang }),
       );
     }
     return lastValueFrom(
-      this.identityService.logout({ userId: user.sub, sessionId: user.sid }),
+      this.identityService.logout(
+        { userId: user.sub, sessionId: user.sid },
+        this.metadataFor(lang),
+      ),
     );
   }
   @Throttle({ auth: { limit: 3, ttl: 60000 } })
   @Post("forgot-password")
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  @UsePipes(new I18nValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
   async forgotPassword(
+    @I18nLang() lang: string,
     @Body() dto: ForgotPasswordDto,
     @CurrentUser() user: GatewayUser,
   ) {
     if (dto.email !== user.email) {
       throw new ForbiddenException(
-        "You can only reset the password for your own account",
+        this.i18n.translate("auth.resetOwnPasswordOnly", { lang }),
       );
     }
     return lastValueFrom(
       this.identityService.forgotPassword({
         email: user.email,
         userId: user.sub,
-      }),
+      }, this.metadataFor(lang)),
     );
   }
   @Throttle({ auth: { limit: 5, ttl: 60000 } })
   @Post("verify-otp")
-  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
-  async verifyOtp(@Body() dto: VerifyOtpDto, @CurrentUser() user: GatewayUser) {
+  @UsePipes(new I18nValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  async verifyOtp(
+    @I18nLang() lang: string,
+    @Body() dto: VerifyOtpDto,
+    @CurrentUser() user: GatewayUser,
+  ) {
     if (dto.email !== user.email) {
-      throw new ForbiddenException("You can only verify your own account");
+      throw new ForbiddenException(
+        this.i18n.translate("auth.verifyOwnAccountOnly", { lang }),
+      );
     }
     return lastValueFrom(
       this.identityService.verifyOtp({
         ...dto,
         email: user.email,
         userId: user.sub,
-      }),
+      }, this.metadataFor(lang)),
     );
+  }
+
+  private metadataFor(language: string): Metadata {
+    const metadata = new Metadata();
+    metadata.set("accept-language", language);
+    return metadata;
   }
 }

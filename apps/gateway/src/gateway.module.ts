@@ -4,6 +4,7 @@ import configuration from "./config/config";
 import { configValidationSchema } from "./config/config.schema";
 import { AuthModule } from "./modules/auth/auth.module";
 import { RateLimitModule } from "./common/rate.limit/rate.limit.module";
+import { GatewayI18nModule } from "./i18n/i18n.module";
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { RateLimitModule } from "./common/rate.limit/rate.limit.module";
       load: [configuration],
       validationSchema: configValidationSchema,
     }),
+    GatewayI18nModule,
     AuthModule,
     RateLimitModule,
   ],

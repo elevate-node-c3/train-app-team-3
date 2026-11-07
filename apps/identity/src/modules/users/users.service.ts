@@ -9,6 +9,7 @@ import {
 export interface CreateUserInput {
   email: string;
   passwordHash: string;
+  lang: string;
 }
 
 @Injectable()
@@ -36,6 +37,7 @@ export class UsersService {
       false,
       now,
       now,
+      userData.lang,
     );
     await this.usersRepository.save(user);
     return user;

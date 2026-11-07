@@ -7,6 +7,7 @@ import {
   ValidatorConstraintInterface,
   Validate,
 } from "class-validator";
+import { i18nValidationMessage } from "nestjs-i18n";
 
 @ValidatorConstraint({ name: "matchesPassword", async: false })
 class MatchesPasswordConstraint implements ValidatorConstraintInterface {
@@ -15,22 +16,22 @@ class MatchesPasswordConstraint implements ValidatorConstraintInterface {
     return confirmPassword === password;
   }
 
-  defaultMessage(): string {
-    return "confirmPassword must match password";
+  defaultMessage(args: ValidationArguments): string {
+    return i18nValidationMessage("validation.passwordsMustMatch")(args);
   }
 }
 
 export class RegisterDto {
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail({}, { message: i18nValidationMessage("validation.invalidEmail") })
+  @IsNotEmpty({ message: i18nValidationMessage("validation.required") })
   email!: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: i18nValidationMessage("validation.mustBeString") })
+  @IsNotEmpty({ message: i18nValidationMessage("validation.required") })
   password!: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: i18nValidationMessage("validation.mustBeString") })
+  @IsNotEmpty({ message: i18nValidationMessage("validation.required") })
   @Validate(MatchesPasswordConstraint)
   confirmPassword!: string;
 }

@@ -1,17 +1,23 @@
 import { SessionService } from "../sessions/session.service";
 import { LogoutUseCase } from "./logout.use-case";
+import { I18nService } from "nestjs-i18n";
 
 describe("LogoutUseCase", () => {
   const sessionService = {
     isActive: jest.fn(),
     revoke: jest.fn(),
   };
+  const i18n = {
+    translate: jest.fn().mockReturnValue("الجلسة غير نشطة لهذا المستخدم"),
+  };
   const useCase = new LogoutUseCase(
     sessionService as unknown as SessionService,
+    i18n as unknown as I18nService,
   );
 
   beforeEach(() => {
     jest.clearAllMocks();
+    i18n.translate.mockReturnValue("الجلسة غير نشطة لهذا المستخدم");
     sessionService.isActive.mockResolvedValue(true);
     sessionService.revoke.mockResolvedValue(true);
   });
@@ -27,7 +33,7 @@ describe("LogoutUseCase", () => {
     sessionService.revoke.mockResolvedValue(false);
     await expect(
       useCase.execute({ userId: "other-user", sessionId: "session-id" }),
-    ).rejects.toThrow("The session is not active for this user");
+    ).rejects.toThrow("الجلسة غير نشطة لهذا المستخدم");
     expect(sessionService.revoke).toHaveBeenCalledWith(
       "session-id",
       "other-user",

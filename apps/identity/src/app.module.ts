@@ -7,6 +7,7 @@ import { UsersModule } from "./modules/users/users.module";
 import { AuthModule } from "./modules/auth/auth.module";
 import { AppConfigModule } from "./config/config.module";
 import { CacheModule } from "../../../libs/cache/src/cache.module";
+import { IdentityI18nModule } from "./i18n/i18n.module";
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { CacheModule } from "../../../libs/cache/src/cache.module";
         : {}),
     }),
     AppConfigModule,
+    IdentityI18nModule,
     DatabaseModule,
     UsersModule,
     AuthModule,

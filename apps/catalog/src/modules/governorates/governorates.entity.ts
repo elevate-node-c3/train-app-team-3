@@ -10,7 +10,10 @@ export class Governorate{
 
 
   @Column({type:'varchar' , length:100 , unique:true})
-  name!:string
+  name_ar!:string
+
+  @Column({type:'varchar' , length:100 , unique:true})
+  name_en!:string
 
 
   @OneToMany(()=>Station , (station)=>station.governorate)

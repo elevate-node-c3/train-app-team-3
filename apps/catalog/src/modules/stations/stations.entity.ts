@@ -8,8 +8,11 @@ export class Station{
   id!:string
 
 
-  @Column({type:'varchar' , length:100})
-  name!:string
+  @Column({type:'varchar' , length:100 , unique:true})
+  name_ar!:string
+
+  @Column({type:'varchar' , length:100 , unique:true})
+  name_en!:string
 
 
   @Column({type:'text'})

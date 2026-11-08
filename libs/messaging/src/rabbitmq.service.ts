@@ -1,73 +1,42 @@
-
-import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { connect, ConfirmChannel, ChannelModel, ConsumeMessage } from 'amqplib';
+import { Injectable, Logger, OnModuleDestroy } from '@nestjs/common';
+import { connect, ChannelModel, ConfirmChannel, Options } from 'amqplib';
+import { EVENTS_EXCHANGE } from '@app/contracts';
 
 @Injectable()
-export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
-  private connection!: ChannelModel;
-  private channel!: ConfirmChannel;
+export class RabbitMQService implements OnModuleDestroy {
+  private readonly logger = new Logger(RabbitMQService.name);
+  private connection?: ChannelModel;
+  private channel?: ConfirmChannel;
 
-  async onModuleInit() {
-    this.connection = await connect(
+  private async ensureConnection() {
+    if (this.channel) return;
+
+    const connection = await connect(
       process.env.RABBITMQ_URL ?? 'amqp://localhost:5672',
     );
 
-    this.channel = await this.connection.createConfirmChannel();
-
-    await this.channel.assertExchange('app.events', 'topic', { durable: true });
-    await this.channel.assertExchange('app.events.retry', 'direct', { durable: true });
-    await this.channel.assertExchange('app.events.dlx', 'direct', { durable: true });
-
-    await this.channel.assertQueue('notification.dlq', { durable: true });
-    await this.channel.bindQueue(
-      'notification.dlq',
-      'app.events.dlx',
-      'verification-code-issued',
+    connection.on('error', (err) =>
+      this.logger.error(`RabbitMQ connection error: ${err.message}`),
     );
-
-    await this.channel.assertQueue('notification.verification-code-issued', {
-      durable: true,
-      arguments: {
-        'x-dead-letter-exchange': 'app.events.dlx',
-        'x-dead-letter-routing-key': 'verification-code-issued',
-      },
+    connection.on('close', () => {
+      this.channel = undefined;
+      this.connection = undefined;
     });
 
-    await this.channel.bindQueue(
-      'notification.verification-code-issued',
-      'app.events',
-      'verification-code-issued',
-    );
+    const channel = await connection.createConfirmChannel();
+    await channel.assertExchange(EVENTS_EXCHANGE, 'topic', { durable: true });
 
-    for (const delay of [5000, 10000, 20000]) {
-      const queue = `notification.retry.${delay}`;
-
-      await this.channel.assertQueue(queue, {
-        durable: true,
-        arguments: {
-          'x-message-ttl': delay,
-          'x-dead-letter-exchange': 'app.events',
-          'x-dead-letter-routing-key': 'verification-code-issued',
-        },
-      });
-
-      await this.channel.bindQueue(queue, 'app.events.retry', String(delay));
-    }
-
-    await this.channel.prefetch(1);
+    this.connection = connection;
+    this.channel = channel;
   }
 
-  async publish(
-    exchange: string,
-    routingKey: string,
-    data: unknown,
-    headers: Record<string, unknown> = {},
-  ): Promise<void> {
+
+  async publishEvent(routingKey: string, event: unknown) {
     await this.publishRaw(
-      exchange,
+      EVENTS_EXCHANGE,
       routingKey,
-      Buffer.from(JSON.stringify(data)),
-      headers,
+      Buffer.from(JSON.stringify({ pattern: routingKey, data: event })),
+      { contentType: 'application/json' },
     );
   }
 
@@ -75,48 +44,31 @@ export class RabbitmqService implements OnModuleInit, OnModuleDestroy {
     exchange: string,
     routingKey: string,
     content: Buffer,
-    headers: Record<string, unknown> = {},
-  ): Promise<void> {
-    await new Promise<void>((resolve, reject) => {
-      this.channel.publish(
-        exchange,
-        routingKey,
-        content,
-        {
-          persistent: true,
-          contentType: 'application/json',
-          headers,
-        },
-        (error: Error | null) => {
-          if (error) reject(error);
-          else resolve();
-        },
-      );
-    });
-  }
+    options: Options.Publish = {},
+  ) {
+    try {
+      await this.ensureConnection();
 
-  async consume(
-    queue: string,
-    handler: (
-      message: ConsumeMessage,
-      channel: ConfirmChannel,
-    ) => Promise<void>,
-  ): Promise<void> {
-    await this.channel.consume(
-      queue,
-      (message) => {
-        if (!message) return;
-
-        void handler(message, this.channel).catch(() => {
-          this.channel.nack(message, false, true);
-        });
-      },
-      { noAck: false },
-    );
+      await new Promise<void>((resolve, reject) => {
+        this.channel!.publish(
+          exchange,
+          routingKey,
+          content,
+          { persistent: true, contentType: 'application/json', ...options },
+          (error) => (error ? reject(error) : resolve()),
+        );
+      });
+    } catch (error) {
+      await this.channel?.close().catch(() => {});
+      await this.connection?.close().catch(() => {});
+      this.channel = undefined;
+      this.connection = undefined;
+      throw error;
+    }
   }
 
   async onModuleDestroy() {
-    await this.channel?.close();
-    await this.connection?.close();
+    await this.channel?.close().catch(() => {});
+    await this.connection?.close().catch(() => {});
   }
 }

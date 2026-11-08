@@ -4,10 +4,11 @@ import { DataSource } from 'typeorm';
 import { createHmac, randomInt, randomUUID, timingSafeEqual } from 'node:crypto';
 import {
   VerificationPurpose,
-  VerificationCodeIssuedEvent,
-} from '../../../../../libs/contracts/src/verification-code-issued.event';
-import { OutboxEvent } from '../outbox/outbox.entity';
-import { OutboxEncryptionService } from '../outbox/outbox-encryption.service';
+  ROUTING_KEYS,
+  buildVerificationCodeIssuedEvent,
+} from '@app/contracts';
+import { OutboxEvent } from '../../../../../libs/outbox/outbox.entity';
+import { OutboxEncryptionService } from '../../../../../libs/outbox/outbox-encryption.service';
 import { VerificationRepository } from './verification.repository';
 
 @Injectable()
@@ -40,21 +41,16 @@ export class VerificationService {
     const expiresAt = new Date(now.getTime() + 10 * 60 * 1000);
     const eventId = randomUUID();
 
-    const event: VerificationCodeIssuedEvent = {
+    const event = buildVerificationCodeIssuedEvent({
       eventId,
-      type: 'verification-code-issued',
-      version: 1,
-      occurredAt: now.toISOString(),
       correlationId: input.correlationId ?? randomUUID(),
-      producer: 'identity',
-      payload: {
-        email,
-        code,
-        language: input.language ?? 'en',
-        purpose: input.purpose,
-        expiresAt: expiresAt.toISOString(),
-      },
-    };
+      occurredAt: now,
+      email,
+      code,
+      language: input.language ?? 'en',
+      purpose: input.purpose,
+      expiresAt,
+    });
 
     await this.dataSource.transaction(async (manager) => {
       await this.verificationRepository.invalidateActiveCodes(
@@ -77,6 +73,7 @@ export class VerificationService {
 
       await manager.save(OutboxEvent, {
         eventId,
+        eventType: ROUTING_KEYS.VERIFICATION_CODE_ISSUED,
         payload: this.outboxEncryptionService.encryptPayload(event),
         sentAt: null,
       });
@@ -118,5 +115,4 @@ export class VerificationService {
       return true;
     });
   }
-  
 }

@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 import { UsersService } from "../../users/users.service";
 import { CreateSessionUseCase } from "./create-session.use-case";
 import { RegisterUseCase } from "./register.use-case";
@@ -11,6 +12,14 @@ describe("RegisterUseCase", () => {
   const i18n = {
     translate: jest.fn((key: string) => translations[key]),
   };
+=======
+import { RpcException } from "@nestjs/microservices";
+import { UsersService } from "../../users/users.service";
+import { CreateSessionUseCase } from "./create-session.use-case";
+import { RegisterUseCase } from "./register.use-case";
+
+describe("RegisterUseCase", () => {
+>>>>>>> Stashed changes
   const usersService = {
     findByEmail: jest.fn(),
     create: jest.fn(),
@@ -21,6 +30,7 @@ describe("RegisterUseCase", () => {
   const useCase = new RegisterUseCase(
     usersService as unknown as UsersService,
     createSessionUseCase as unknown as CreateSessionUseCase,
+<<<<<<< Updated upstream
     i18n as unknown as I18nService,
   );
 
@@ -68,5 +78,50 @@ describe("RegisterUseCase", () => {
     ).rejects.toMatchObject({
       message: "هذا البريد الإلكتروني مسجل بالفعل",
     });
+=======
+  );
+  const user = { id: "user-id", email: "traveler@example.com" };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    usersService.findByEmail.mockResolvedValue(null);
+    usersService.create.mockResolvedValue(user);
+    createSessionUseCase.execute.mockResolvedValue({
+      accessToken: "access-token",
+    });
+  });
+
+  it("returns exactly the RegisterResponse fields", async () => {
+    await expect(
+      useCase.execute({
+        email: user.email,
+        password: "secret",
+      }),
+    ).resolves.toEqual({
+      id: user.id,
+      email: user.email,
+      accessToken: "access-token",
+    });
+
+    expect(usersService.create).toHaveBeenCalledWith({
+      email: user.email,
+      passwordHash: expect.any(String),
+    });
+    expect(createSessionUseCase.execute).toHaveBeenCalledWith({
+      userId: user.id,
+      email: user.email,
+      deviceInfo: null,
+    });
+  });
+
+  it("rejects an existing email without creating a session", async () => {
+    usersService.findByEmail.mockResolvedValue(user);
+
+    await expect(
+      useCase.execute({ email: user.email, password: "secret" }),
+    ).rejects.toBeInstanceOf(RpcException);
+    expect(usersService.create).not.toHaveBeenCalled();
+    expect(createSessionUseCase.execute).not.toHaveBeenCalled();
+>>>>>>> Stashed changes
   });
 });

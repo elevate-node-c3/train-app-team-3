@@ -7,10 +7,15 @@ import { LogoutUseCase } from "./use-cases/logout.use-case";
 import { RpcException } from "@nestjs/microservices";
 import { status } from "@grpc/grpc-js";
 import { OtpService } from "../../../../../libs/auth/otp/otp.service";
+<<<<<<< Updated upstream
 import { I18nService } from "nestjs-i18n";
 import {
   AuthLanguage,
 } from "../../i18n/grpc-language";
+=======
+import { CompleteProfileUseCase } from "./use-cases/complete-profile.use-case";
+import { CompleteProfileDto } from "../users/applicatoin/dtos/complete-profile.dto";
+>>>>>>> Stashed changes
 
 @Injectable()
 export class AuthService {
@@ -19,7 +24,11 @@ export class AuthService {
     private readonly loginUseCase: LoginUseCase,
     private readonly logoutUseCase: LogoutUseCase,
     private readonly otpService: OtpService,
+<<<<<<< Updated upstream
     private readonly i18n: I18nService,
+=======
+    private readonly completeProfileUseCase: CompleteProfileUseCase,
+>>>>>>> Stashed changes
   ) {}
 
   async register(dto: RegisterDto, language: AuthLanguage = "ar") {
@@ -46,10 +55,14 @@ export class AuthService {
     return { success: true };
   }
 
+<<<<<<< Updated upstream
   async verifyOtp(
     input: { email: string; otp: string; userId: string },
     language: AuthLanguage = "ar",
   ) {
+=======
+  async verifyOtp(input: { email: string; otp: string; userId: string }) {
+>>>>>>> Stashed changes
     const valid = await this.otpService.verifyUserOtp(
       input.userId,
       "forgot-password",
@@ -66,5 +79,9 @@ export class AuthService {
     }
 
     return { success: true };
+  }
+
+  async completeProfile(dto: CompleteProfileDto) {
+    return this.completeProfileUseCase.execute(dto);
   }
 }

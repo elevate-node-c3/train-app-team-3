@@ -27,7 +27,12 @@ import { LogoutUseCase } from "./use-cases/logout.use-case";
     }),
   ],
   controllers: [AuthController],
-  providers: [...AUTH_USE_CASES, LogoutUseCase, AuthService, TokenService],
+  providers: [
+    ...AUTH_USE_CASES,
+    LogoutUseCase,
+    AuthService,
+    TokenService,
+  ],
   exports: [AuthService, OtpModule, TokenService],
 })
 export class AuthModule {}

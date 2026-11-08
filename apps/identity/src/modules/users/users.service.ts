@@ -3,6 +3,7 @@ import { randomUUID } from "crypto";
 import { User } from "./domain/entities/user.model.entity";
 import {
   USER_REPOSITORY,
+  CompleteUserProfile,
   UserRepository,
 } from "./domain/repositories/user.repo";
 
@@ -41,5 +42,16 @@ export class UsersService {
     );
     await this.usersRepository.save(user);
     return user;
+  }
+
+  async save(user: User): Promise<void> {
+    await this.usersRepository.save(user);
+  }
+
+  async completeProfile(
+    email: string,
+    profile: CompleteUserProfile,
+  ): Promise<User | null> {
+    return this.usersRepository.completeProfile(email, profile);
   }
 }

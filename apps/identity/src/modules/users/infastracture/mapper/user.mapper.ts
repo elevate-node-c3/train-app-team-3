@@ -11,7 +11,16 @@ export class UserMapper {
       false,
       ormEntity.createdAt,
       ormEntity.updatedAt,
+<<<<<<< Updated upstream
       ormEntity.lang,
+=======
+      ormEntity.fullName,
+      ormEntity.nationalId,
+      ormEntity.phone,
+      ormEntity.profileType,
+      ormEntity.nationality,
+      ormEntity.isProfileCompleted,
+>>>>>>> Stashed changes
     );
   }
 
@@ -20,7 +29,16 @@ export class UserMapper {
     ormEntity.id = domainUser.id;
     ormEntity.email = domainUser.email;
     ormEntity.passwordHash = domainUser.getPasswordHash();
+<<<<<<< Updated upstream
     ormEntity.lang = domainUser.lang;
+=======
+    ormEntity.fullName = domainUser.fullName;
+    ormEntity.nationalId = domainUser.nationalId;
+    ormEntity.phone = domainUser.phone;
+    ormEntity.profileType = domainUser.profileType;
+    ormEntity.nationality = domainUser.nationality;
+    ormEntity.isProfileCompleted = domainUser.isProfileCompleted;
+>>>>>>> Stashed changes
     ormEntity.createdAt = domainUser.createdAt;
     ormEntity.updatedAt = domainUser.updatedAt;
     return ormEntity;

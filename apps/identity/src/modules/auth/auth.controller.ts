@@ -4,7 +4,11 @@ import { Metadata } from "@grpc/grpc-js";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "../users/applicatoin/dtos/register.dto";
 import { LoginDto } from "../users/applicatoin/dtos/login.dto";
+<<<<<<< Updated upstream
 import { getAuthLanguage } from "../../i18n/grpc-language";
+=======
+import { CompleteProfileDto } from "../users/applicatoin/dtos/complete-profile.dto";
+>>>>>>> Stashed changes
 
 @Controller()
 export class AuthController {
@@ -44,5 +48,10 @@ export class AuthController {
     metadata: Metadata,
   ) {
     return this.authService.verifyOtp(data, getAuthLanguage(metadata));
+  }
+
+  @GrpcMethod("IdentityService", "CompleteProfile")
+  async completeProfile(data: CompleteProfileDto) {
+    return this.authService.completeProfile(data);
   }
 }

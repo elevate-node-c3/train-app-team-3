@@ -2,7 +2,10 @@ import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Repository } from "typeorm";
 import { User } from "../../domain/entities/user.model.entity";
-import { UserRepository } from "../../domain/repositories/user.repo";
+import {
+  CompleteUserProfile,
+  UserRepository,
+} from "../../domain/repositories/user.repo";
 import { UserOrmEntity } from "../entities/user.typeorm.entity";
 import { UserMapper } from "../mapper/user.mapper";
 
@@ -36,5 +39,22 @@ export class TypeOrmUserRepository implements UserRepository {
   async save(user: User): Promise<void> {
     const ormEntity = UserMapper.toOrmEntity(user);
     await this.ormRepo.save(ormEntity);
+  }
+
+  async completeProfile(
+    email: string,
+    profile: CompleteUserProfile,
+  ): Promise<User | null> {
+    const result = await this.ormRepo.update(
+      { email },
+      { ...profile, isProfileCompleted: true },
+    );
+
+    if (!result.affected) {
+      return null;
+    }
+
+    const ormEntity = await this.ormRepo.findOneBy({ email });
+    return ormEntity ? UserMapper.toDomain(ormEntity) : null;
   }
 }

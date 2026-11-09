@@ -45,6 +45,7 @@ describe("LoginUseCase", () => {
     usersService.findByEmail.mockResolvedValue(user);
     createSessionUseCase.execute.mockResolvedValue({
       accessToken: "signed-access-token",
+      refreshToken: "signed-refresh-token",
     });
   });
 
@@ -59,6 +60,7 @@ describe("LoginUseCase", () => {
       id: user.id,
       email: user.email,
       accessToken: "signed-access-token",
+      refreshToken: "signed-refresh-token",
     });
 
     expect(createSessionUseCase.execute).toHaveBeenCalledWith({

@@ -45,6 +45,7 @@ export class LoginUseCase {
       id: user.id,
       email: user.email,
       accessToken: session.accessToken,
+      refreshToken: session.refreshToken,
     };
   }
 }

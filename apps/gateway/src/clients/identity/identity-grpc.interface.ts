@@ -9,6 +9,7 @@ export interface IdentityGrpcService {
     id: string;
     email: string;
     accessToken: string;
+    refreshToken: string;
   }>;
   login(data: {
     email: string;
@@ -18,6 +19,7 @@ export interface IdentityGrpcService {
     id: string;
     email: string;
     accessToken: string;
+    refreshToken: string;
   }>;
   logout(data: {
     userId: string;
@@ -30,10 +32,27 @@ export interface IdentityGrpcService {
   forgotPassword(
     data: { email: string; userId: string },
     metadata?: Metadata,
-  ): Observable<never>;
+  ): Observable<{ success: boolean }>;
   verifyOtp(data: {
     email: string;
     otp: string;
     userId: string;
-  }, metadata?: Metadata): Observable<never>;
+  }, metadata?: Metadata): Observable<{ success: boolean }>;
+  completeProfile(
+    data: {
+      email: string;
+      fullName: string;
+      phone: string;
+      nationalId: string;
+      profileType: string;
+      nationality: string;
+    },
+    metadata?: Metadata,
+  ): Observable<{
+    userId: string;
+    fullName: string;
+    egyptianMobileNumber: string;
+    nationalId: string;
+    complete: boolean;
+  }>;
 }

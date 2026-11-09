@@ -3,7 +3,6 @@ import { randomUUID } from "crypto";
 import { User } from "./domain/entities/user.model.entity";
 import {
   USER_REPOSITORY,
-  CompleteUserProfile,
   UserRepository,
 } from "./domain/repositories/user.repo";
 
@@ -28,6 +27,17 @@ export class UsersService {
     return this.usersRepository.findById(id);
   }
 
+  async isNationalIdUsed(
+    nationalId: string,
+    exceptUserId: string,
+  ): Promise<boolean> {
+    return this.usersRepository.isNationalIdUsed(nationalId, exceptUserId);
+  }
+
+  async isPhoneUsed(phone: string, exceptUserId: string): Promise<boolean> {
+    return this.usersRepository.isPhoneUsed(phone, exceptUserId);
+  }
+
   async create(userData: CreateUserInput): Promise<User> {
     const now = new Date();
     const user = new User(
@@ -46,12 +56,5 @@ export class UsersService {
 
   async save(user: User): Promise<void> {
     await this.usersRepository.save(user);
-  }
-
-  async completeProfile(
-    email: string,
-    profile: CompleteUserProfile,
-  ): Promise<User | null> {
-    return this.usersRepository.completeProfile(email, profile);
   }
 }

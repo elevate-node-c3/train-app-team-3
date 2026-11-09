@@ -7,11 +7,13 @@ export interface IdentityGrpcService {
     id: string;
     email: string;
     accessToken: string;
+    refreshToken: string;
   }>;
   login(data: LoginDto): Observable<{
     id: string;
     email: string;
     accessToken: string;
+    refreshToken: string;
   }>;
   logout(data: {
     userId: string;
@@ -38,9 +40,10 @@ export interface IdentityGrpcService {
     phone: string;
     email: string;
   }): Observable<{
-    id: string;
-    email: string;
-    isProfileCompleted: boolean;
-    accessToken: string;
+    userId: string;
+    fullName: string;
+    egyptianMobileNumber: string;
+    nationalId: string;
+    complete: boolean;
   }>;
 }

@@ -9,7 +9,6 @@ service IdentityService {
   rpc ValidateSession (LogoutRequest) returns (SessionStatusResponse);
   rpc ForgotPassword (ForgotPasswordRequest) returns (OperationResponse);
   rpc VerifyOtp (VerifyOtpRequest) returns (OperationResponse);
-<<<<<<< Updated upstream
   rpc VerifyEmail (VerifyEmailRequest) returns (OperationResponse);
   rpc ResendVerificationCode (ResendVerificationCodeRequest) returns (OperationResponse);
   rpc RefreshSession (RefreshSessionRequest) returns (LoginResponse);
@@ -21,9 +20,6 @@ service IdentityService {
   rpc ListPassengers (ListPassengersRequest) returns (ListPassengersResponse);
   rpc SavePassenger (SavePassengerRequest) returns (PassengerResponse);
   rpc DeletePassenger (DeletePassengerRequest) returns (OperationResponse);
-=======
-  rpc CompleteProfile (CompleteProfileRequest) returns (CompleteProfileResponse);
->>>>>>> Stashed changes
 }
 
 message RegisterRequest {
@@ -78,7 +74,6 @@ message SessionStatusResponse {
   bool active = 1;
 }
 
-<<<<<<< Updated upstream
 enum OtpPurpose {
   OTP_PURPOSE_UNSPECIFIED = 0;
   OTP_PURPOSE_EMAIL_VERIFICATION = 1;
@@ -119,8 +114,11 @@ message GetProfileRequest {
 
 message CompleteProfileRequest {
   string full_name = 1;
-  string egyptian_mobile_number = 2;
+  string phone = 2;
   string national_id = 3;
+  string profile_type = 4;
+  string nationality = 5;
+  string email = 6;
 }
 
 message ProfileResponse {
@@ -160,20 +158,4 @@ message DeletePassengerRequest {
 enum PassengerType {
   PASSENGER_TYPE_UNSPECIFIED = 0;
   PASSENGER_TYPE_REGULAR = 1;
-=======
-message CompleteProfileRequest {
-  string email = 1;
-  string fullName = 2;
-  string nationalId = 3;
-  string phone = 4;
-  string profileType = 5;
-  string nationality = 6;
-}
-
-message CompleteProfileResponse {
-  string id = 1;
-  string email = 2;
-  bool isProfileCompleted = 3;
-  string accessToken = 4;
->>>>>>> Stashed changes
 }

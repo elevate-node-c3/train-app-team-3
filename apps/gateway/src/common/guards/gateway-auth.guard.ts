@@ -60,7 +60,9 @@ export class GatewayAuthGuard implements CanActivate, OnModuleInit {
         algorithms: ["HS256"],
       });
     } catch (error) {
-      throw new UnauthorizedException(this.translate("auth.tokenInvalidOrExpired"));
+      throw new UnauthorizedException(
+        this.translate("auth.tokenInvalidOrExpired"),
+      );
     }
 
     if (
@@ -82,9 +84,7 @@ export class GatewayAuthGuard implements CanActivate, OnModuleInit {
       }),
     );
     if (!session.active) {
-      throw new UnauthorizedException(
-        this.translate("auth.sessionInactive"),
-      );
+      throw new UnauthorizedException(this.translate("auth.sessionInactive"));
     }
 
     request.user = user;

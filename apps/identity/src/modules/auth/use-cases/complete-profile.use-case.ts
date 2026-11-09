@@ -1,25 +1,27 @@
 import { status } from "@grpc/grpc-js";
 import { Injectable } from "@nestjs/common";
 import { RpcException } from "@nestjs/microservices";
+import { validateSync } from "class-validator";
 import { CompleteProfileDto } from "../../users/applicatoin/dtos/complete-profile.dto";
 import { UsersService } from "../../users/users.service";
-import { CreateSessionUseCase } from "./create-session.use-case";
 
 @Injectable()
 export class CompleteProfileUseCase {
-  constructor(
-    private readonly usersService: UsersService,
-    private readonly createSessionUseCase: CreateSessionUseCase,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   async execute(dto: CompleteProfileDto) {
-    const user = await this.usersService.completeProfile(dto.email, {
-      fullName: dto.fullName,
-      nationalId: dto.nationalId,
-      phone: dto.phone,
-      profileType: dto.profileType,
-      nationality: dto.nationality,
-    });
+    const validationErrors = validateSync(
+      Object.assign(new CompleteProfileDto(), dto),
+      { whitelist: true, forbidNonWhitelisted: true },
+    );
+    if (validationErrors.length > 0) {
+      throw new RpcException({
+        code: status.INVALID_ARGUMENT,
+        message: "Invalid profile data",
+      });
+    }
+
+    const user = await this.usersService.findByEmail(dto.email);
     if (!user) {
       throw new RpcException({
         code: status.NOT_FOUND,
@@ -27,16 +29,66 @@ export class CompleteProfileUseCase {
       });
     }
 
-    const session = await this.createSessionUseCase.execute({
-      userId: user.id,
-      email: user.email,
+    if (!user.isVerified) {
+      throw new RpcException({
+        code: status.PERMISSION_DENIED,
+        message: "User must be verified to complete profile",
+      });
+    }
+    if (user.isProfileCompleted) {
+      throw new RpcException({
+        code: status.FAILED_PRECONDITION,
+        message: "User profile is already complete",
+      });
+    }
+
+    const fullName = dto.fullName.trim();
+    const nationalId = dto.nationalId.trim();
+    const profileType = dto.profileType.trim();
+    const nationality = dto.nationality.trim();
+    const phone = this.normalizeEgyptianPhone(dto.phone.trim());
+
+    if (await this.usersService.isNationalIdUsed(nationalId, user.id)) {
+      throw new RpcException({
+        code: status.ALREADY_EXISTS,
+        message: "National ID is already in use",
+      });
+    }
+    if (await this.usersService.isPhoneUsed(phone, user.id)) {
+      throw new RpcException({
+        code: status.ALREADY_EXISTS,
+        message: "Phone number is already in use",
+      });
+    }
+
+    user.completeProfile({
+      fullName,
+      nationalId,
+      phone,
+      profileType,
+      nationality,
     });
+    await this.usersService.save(user);
 
     return {
-      id: user.id,
-      email: user.email,
-      isProfileCompleted: user.isProfileCompleted,
-      accessToken: session.accessToken,
+      userId: user.id,
+      fullName: user.fullName ?? "",
+      egyptianMobileNumber: user.phone ?? "",
+      nationalId: user.nationalId ?? "",
+      complete: user.isProfileCompleted ?? false,
     };
+  }
+
+  private normalizeEgyptianPhone(phone: string): string {
+    if (phone.startsWith("+20")) {
+      return phone;
+    }
+    if (phone.startsWith("0020")) {
+      return `+${phone.slice(2)}`;
+    }
+    if (phone.startsWith("0")) {
+      return `+20${phone.slice(1)}`;
+    }
+    return `+20${phone}`;
   }
 }

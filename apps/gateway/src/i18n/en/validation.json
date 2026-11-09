@@ -2,6 +2,7 @@
   "invalidEmail": "Please provide a valid email address",
   "required": "This field is required",
   "mustBeString": "This field must be a string",
+  "invalidEgyptianPhone": "Please provide a valid Egyptian mobile number",
   "passwordsMustMatch": "Confirmation must match the password",
   "otpInvalid": "The code must contain exactly 6 digits",
   "maxLength": "This field exceeds the maximum length"

@@ -6,20 +6,6 @@ describe("OtpService", () => {
     del: jest.fn(),
     exec: jest.fn(),
   };
-<<<<<<< Updated upstream
-  const redis = {
-    multi: jest.fn(() => ({
-      set: jest.fn(),
-      del: jest.fn(),
-      exec: jest.fn().mockResolvedValue([[null, "OK"], [null, 1]]),
-    })),
-    eval: jest.fn(),
-    del: jest.fn(),
-    get: jest.fn(),
-    set: jest.fn(),
-    ttl: jest.fn(),
-  } as unknown as Redis;
-=======
   const redis: RedisLike = {
     multi: jest.fn(),
     eval: jest.fn(),
@@ -28,7 +14,6 @@ describe("OtpService", () => {
     get: jest.fn(),
     ttl: jest.fn(),
   };
->>>>>>> Stashed changes
 
   let service: OtpService;
 

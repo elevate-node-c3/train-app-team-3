@@ -1,11 +1,8 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, Not, Repository } from "typeorm";
 import { User } from "../../domain/entities/user.model.entity";
-import {
-  CompleteUserProfile,
-  UserRepository,
-} from "../../domain/repositories/user.repo";
+import { UserRepository } from "../../domain/repositories/user.repo";
 import { UserOrmEntity } from "../entities/user.typeorm.entity";
 import { UserMapper } from "../mapper/user.mapper";
 
@@ -25,6 +22,32 @@ export class TypeOrmUserRepository implements UserRepository {
     return ormEntity ? UserMapper.toDomain(ormEntity) : null;
   }
 
+  async isNationalIdUsed(
+    nationalId: string,
+    exceptUserId: string,
+  ): Promise<boolean> {
+    return this.ormRepo.exist({
+      where: { nationalId, id: Not(exceptUserId) },
+    });
+  }
+
+  async isPhoneUsed(phone: string, exceptUserId: string): Promise<boolean> {
+    const localPhone = phone.replace(/^\+20/, "0");
+    const phoneWithoutCountryCode = phone.replace(/^\+20/, "");
+    const internationalPhone = phone.replace(/^\+/, "00");
+    return this.ormRepo.exist({
+      where: {
+        phone: In([
+          phone,
+          localPhone,
+          phoneWithoutCountryCode,
+          internationalPhone,
+        ]),
+        id: Not(exceptUserId),
+      },
+    });
+  }
+
   async findAll(page: number, limit: number): Promise<[User[], number]> {
     const [ormEntities, count] = await this.ormRepo.findAndCount({
       skip: (page - 1) * limit,
@@ -39,22 +62,5 @@ export class TypeOrmUserRepository implements UserRepository {
   async save(user: User): Promise<void> {
     const ormEntity = UserMapper.toOrmEntity(user);
     await this.ormRepo.save(ormEntity);
-  }
-
-  async completeProfile(
-    email: string,
-    profile: CompleteUserProfile,
-  ): Promise<User | null> {
-    const result = await this.ormRepo.update(
-      { email },
-      { ...profile, isProfileCompleted: true },
-    );
-
-    if (!result.affected) {
-      return null;
-    }
-
-    const ormEntity = await this.ormRepo.findOneBy({ email });
-    return ormEntity ? UserMapper.toDomain(ormEntity) : null;
   }
 }

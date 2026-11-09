@@ -17,10 +17,12 @@ export class UserOrmEntity {
   @Column()
   passwordHash!: string;
 
-<<<<<<< Updated upstream
   @Column({ default: "ar" })
   lang!: string;
-=======
+
+  @Column({ default: false })
+  isVerified!: boolean;
+
   @Column({ nullable: true })
   fullName!: string | null;
 
@@ -38,7 +40,6 @@ export class UserOrmEntity {
 
   @Column({ default: false })
   isProfileCompleted!: boolean;
->>>>>>> Stashed changes
 
   @CreateDateColumn()
   createdAt!: Date;

@@ -1,19 +1,13 @@
 import { CreateUsersTable1710000000000 } from "./1710000000000-CreateUsersTable";
 import { CreateSessionsTable1720000000000 } from "./1720000000000-CreateSessionsTable";
-<<<<<<< Updated upstream
+import { AddUserProfileFields1730000000000 } from "./1730000000000-AddUserProfileFields";
 import { AddUserLanguage1794086400000 } from "./1794086400000-AddUserLanguage";
+import { AddUserVerificationAndProfileUniqueness1794246600000 } from "./1794246600000-AddUserVerificationAndProfileUniqueness";
 
 export const migrations = [
   CreateUsersTable1710000000000,
   CreateSessionsTable1720000000000,
+  AddUserProfileFields1730000000000,
   AddUserLanguage1794086400000,
+  AddUserVerificationAndProfileUniqueness1794246600000,
 ];
-=======
-import { AddUserProfileFields1730000000000 } from "./1730000000000-AddUserProfileFields";
-
-export const migrations = [
-    CreateUsersTable1710000000000,
-    CreateSessionsTable1720000000000,
-    AddUserProfileFields1730000000000,
-];
->>>>>>> Stashed changes

@@ -1,7 +1,10 @@
+import { Metadata } from "@grpc/grpc-js";
 import { AuthController } from "./auth.controller";
 import { AuthService } from "./auth.service";
 
 describe("AuthController gRPC contract", () => {
+  const metadata = new Metadata();
+  metadata.set("accept-language", "en");
   const authService = {
     register: jest.fn(),
     login: jest.fn(),
@@ -26,8 +29,8 @@ describe("AuthController gRPC contract", () => {
     };
     authService.register.mockResolvedValue(response);
 
-    await expect(controller.register(request)).resolves.toEqual(response);
-    expect(authService.register).toHaveBeenCalledWith(request);
+    await expect(controller.register(request, metadata)).resolves.toEqual(response);
+    expect(authService.register).toHaveBeenCalledWith(request, "en");
   });
 
   it("returns the LoginResponse contract", async () => {
@@ -43,18 +46,18 @@ describe("AuthController gRPC contract", () => {
     };
     authService.login.mockResolvedValue(response);
 
-    await expect(controller.login(request)).resolves.toEqual(response);
-    expect(authService.login).toHaveBeenCalledWith(request);
+    await expect(controller.login(request, metadata)).resolves.toEqual(response);
+    expect(authService.login).toHaveBeenCalledWith(request, "en");
   });
 
   it("returns OperationResponse for Logout", async () => {
     const request = { userId: "user-id", sessionId: "session-id" };
     authService.logout.mockResolvedValue({ success: true });
 
-    await expect(controller.logout(request)).resolves.toEqual({
+    await expect(controller.logout(request, metadata)).resolves.toEqual({
       success: true,
     });
-    expect(authService.logout).toHaveBeenCalledWith(request);
+    expect(authService.logout).toHaveBeenCalledWith(request, "en");
   });
 
   it("returns SessionStatusResponse for ValidateSession", async () => {
@@ -85,10 +88,10 @@ describe("AuthController gRPC contract", () => {
     };
     authService.verifyOtp.mockResolvedValue({ success: true });
 
-    await expect(controller.verifyOtp(request)).resolves.toEqual({
+    await expect(controller.verifyOtp(request, metadata)).resolves.toEqual({
       success: true,
     });
-    expect(authService.verifyOtp).toHaveBeenCalledWith(request);
+    expect(authService.verifyOtp).toHaveBeenCalledWith(request, "en");
   });
 
   it("returns CompleteProfileResponse", async () => {
@@ -96,15 +99,16 @@ describe("AuthController gRPC contract", () => {
       email: "traveler@example.com",
       fullName: "Traveler Name",
       nationalId: "national-id",
-      phone: "+123456789",
+      phone: "+201012345678",
       profileType: "traveler",
       nationality: "Example",
     };
     const response = {
-      id: "user-id",
-      email: request.email,
-      isProfileCompleted: true,
-      accessToken: "access-token",
+      userId: "user-id",
+      fullName: request.fullName,
+      egyptianMobileNumber: request.phone,
+      nationalId: request.nationalId,
+      complete: true,
     };
     authService.completeProfile.mockResolvedValue(response);
 

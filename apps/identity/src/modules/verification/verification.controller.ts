@@ -1,13 +1,14 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
+import { GrpcMethod, Payload } from '@nestjs/microservices';
 import { VerificationService } from './verification.service';
 import { VerifyDto } from './dto/verify.dto';
 
-@Controller('verification')
+@Controller()
 export class VerificationController {
   constructor(private readonly verificationService: VerificationService) {}
 
-  @Post('verify')
-  verify(@Body() body:VerifyDto) {
-    return this.verificationService.verifyCode(body);
+  @GrpcMethod('IdentityService', 'Verify')
+  verify(@Payload() data: VerifyDto) {
+    return this.verificationService.verifyCode(data);
   }
 }

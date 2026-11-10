@@ -35,6 +35,9 @@ export class GrpcExceptionFilter implements ExceptionFilter {
             case status.UNIMPLEMENTED:
                 httpStatus = HttpStatus.NOT_IMPLEMENTED;
                 break;
+            case status.UNAVAILABLE:
+              httpStatus = HttpStatus.SERVICE_UNAVAILABLE;
+              break;      
             default:
                 if (exception.status && typeof exception.status === 'number') {
                     httpStatus = exception.status;

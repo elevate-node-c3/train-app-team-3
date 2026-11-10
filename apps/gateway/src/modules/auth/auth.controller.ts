@@ -21,12 +21,35 @@ import { CurrentUser } from "../../common/decorators/current-user.decorator";
 import { GatewayUser } from "../../common/guards/gateway-auth.guard";
 import { Throttle } from "@nestjs/throttler";
 
+<<<<<<< HEAD
 @Controller("auth")
 export class AuthController implements OnModuleInit {
   constructor(
     @Inject("IDENTITY_PACKAGE") private readonly client: ClientGrpc,
     private identityService: IdentityGrpcService,
   ) {}
+=======
+// جديد (1): شكل الـ body بتاع verify
+interface VerifyBody {
+    email: string;
+    code: string;
+    purpose: string;
+}
+
+interface IdentityGrpcService {
+    register(data: SignUpDto): Observable<{
+        id: string;
+        email: string;
+        accessToken: string;
+    }>;
+
+    verify(data: VerifyBody): Observable<{ verified: boolean }>;
+}
+
+@Controller('auth')
+export class AuthController implements OnModuleInit {
+    private identityService:IdentityGrpcService;
+>>>>>>> feat/stations-catalog-service
 
   onModuleInit() {
     this.identityService =
@@ -74,6 +97,7 @@ export class AuthController implements OnModuleInit {
         "You can only reset the password for your own account",
       );
     }
+<<<<<<< HEAD
     return lastValueFrom(
       this.identityService.forgotPassword({
         email: user.email,
@@ -97,3 +121,11 @@ export class AuthController implements OnModuleInit {
     );
   }
 }
+=======
+
+    @Post('verify')
+    async verify(@Body() body: VerifyBody) {
+        return await lastValueFrom(this.identityService.verify(body));
+    }
+}
+>>>>>>> feat/stations-catalog-service

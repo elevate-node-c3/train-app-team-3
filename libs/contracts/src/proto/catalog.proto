@@ -2,6 +2,10 @@ syntax = "proto3";
 
 package catalog;
 
+// -----------------------------------------------------------------------------
+// Services
+// -----------------------------------------------------------------------------
+
 service CatalogService {
   rpc SearchStations (SearchStationsRequest) returns (SearchStationsResponse);
   rpc SearchTrips (SearchTripsRequest) returns (SearchTripsResponse);
@@ -14,6 +18,26 @@ service CatalogService {
   rpc DelayTrip (DelayTripRequest) returns (OperationResponse);
   rpc CancelTrip (CancelTripRequest) returns (OperationResponse);
 }
+
+service StationService {
+  rpc CreateStation (CreateStationRequest) returns (StationResponse);
+  rpc GetStations (EmptyRequest) returns (GroupedStationListResponse);
+  rpc SearchStationsAdmin (SearchStationRequest) returns (StationListResponse);
+  rpc UpdateStation (UpdateStationRequest) returns (StationResponse);
+  rpc UpdateAlternativeNames (UpdateAlternativeNamesRequest) returns (StationResponse);
+  rpc UpdateStationStatus (UpdateStationStatusRequest) returns (StationResponse);
+}
+
+service GovernorateService {
+  rpc CreateGovernorate (CreateGovernorateRequest) returns (GovernorateResponse);
+  rpc GetGovernorates (EmptyRequest) returns (GovernorateListResponse);
+  rpc GetGovernorateById (GetGovernorateByIdRequest) returns (GovernorateResponse);
+  rpc UpdateGovernorate (UpdateGovernorateRequest) returns (GovernorateResponse);
+}
+
+// -----------------------------------------------------------------------------
+// Catalog & Trips Messages (HEAD)
+// -----------------------------------------------------------------------------
 
 message SearchStationsRequest {
   string query = 1;
@@ -147,3 +171,86 @@ message CancelTripRequest {
 message OperationResponse {
   bool success = 1;
 }
+
+// -----------------------------------------------------------------------------
+// Stations & Governorates Admin Messages (feat/stations-catalog-service)
+// -----------------------------------------------------------------------------
+
+message StationResponse {
+  string id = 1;
+  string name = 2;
+  string address = 3;
+  bool is_active = 4;
+  string governorate_id = 5;
+  repeated string alternative_names = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message StationListResponse {
+  repeated StationResponse stations = 1;
+}
+
+message GroupedStationResponse {
+  string id = 1;
+  string name = 2;
+  repeated StationResponse stations = 3;
+}
+
+message GroupedStationListResponse {
+  repeated GroupedStationResponse governorates = 1;
+}
+
+message CreateStationRequest {
+  string name = 1;
+  string address = 2;
+  string governorate_id = 3;
+  repeated string alternative_names = 4;
+}
+
+message UpdateStationRequest {
+  string id = 1;
+  string name = 2;
+  string address = 3;
+  string governorate_id = 4;
+}
+
+message UpdateAlternativeNamesRequest {
+  string id = 1;
+  repeated string alternative_names = 2;
+}
+
+message UpdateStationStatusRequest {
+  string id = 1;
+  bool is_active = 2;
+}
+
+message SearchStationRequest {
+  string q = 1;
+}
+
+message GovernorateResponse {
+  string id = 1;
+  string name = 2;
+  string created_at = 3;
+  string updated_at = 4;
+}
+
+message GovernorateListResponse {
+  repeated GovernorateResponse governorates = 1;
+}
+
+message CreateGovernorateRequest {
+  string name = 1;
+}
+
+message GetGovernorateByIdRequest {
+  string id = 1;
+}
+
+message UpdateGovernorateRequest {
+  string id = 1;
+  string name = 2;
+}
+
+message EmptyRequest {}

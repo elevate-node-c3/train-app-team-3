@@ -1,6 +1,22 @@
+هذا النزاع (Merge Conflict) ناتج عن دمج فرعين في ملف بروتوكول البافرز (Protobuf) الخاص بخدمة الهوية (`identity`):
+
+1. **الفرع الأساسي (HEAD):** يحتوي على نظام المصادقة المتكامل بالكامل (التسجيل، تسجيل الدخول، الجلسات، كلمة المرور، الملف الشخصي، وإدارة الركاب).
+2. **فرع الميزة (`feat/stations-catalog-service`):** يحتوي على دالة تحقق مبسطة (`Verify`).
+
+ولأن فرع `HEAD` يحتوي على النظام الأكبر والأشمل، فقد قمت بدمج الخدمتين بحيث يتم الاحتفاظ بكل ميزات المصادقة وإضافة دالة `Verify` (مع رسائلها الخاصة) لتجنب أي فقدان للبيانات أو كسر للكود.
+
+---
+
+### الملف الكامل بعد حل النزاع:
+
+```protobuf
 syntax = "proto3";
 
 package identity;
+
+// -----------------------------------------------------------------------------
+// Services
+// -----------------------------------------------------------------------------
 
 service IdentityService {
   rpc Register (RegisterRequest) returns (RegisterResponse);
@@ -20,7 +36,14 @@ service IdentityService {
   rpc ListPassengers (ListPassengersRequest) returns (ListPassengersResponse);
   rpc SavePassenger (SavePassengerRequest) returns (PassengerResponse);
   rpc DeletePassenger (DeletePassengerRequest) returns (OperationResponse);
+  
+  // Added from feat/stations-catalog-service
+  rpc Verify (VerifyRequest) returns (VerifyResponse);
 }
+
+// -----------------------------------------------------------------------------
+// Authentication & Profile Messages (HEAD)
+// -----------------------------------------------------------------------------
 
 message RegisterRequest {
   string email = 1;
@@ -156,3 +179,19 @@ enum PassengerType {
   PASSENGER_TYPE_UNSPECIFIED = 0;
   PASSENGER_TYPE_REGULAR = 1;
 }
+
+// -----------------------------------------------------------------------------
+// Feature Verification Messages (feat/stations-catalog-service)
+// -----------------------------------------------------------------------------
+
+message VerifyRequest {
+  string email = 1;
+  string code = 2;
+  string purpose = 3;
+}
+
+message VerifyResponse {
+  bool verified = 1;
+}
+
+```

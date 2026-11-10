@@ -4,6 +4,7 @@ import configuration from "./config/config";
 import { configValidationSchema } from "./config/config.schema";
 import { AuthModule } from "./modules/auth/auth.module";
 import { RateLimitModule } from "./common/rate.limit/rate.limit.module";
+import { CatalogModule } from './modules/Catalog/catalog.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { RateLimitModule } from "./common/rate.limit/rate.limit.module";
     }),
     AuthModule,
     RateLimitModule,
+    CatalogModule,
   ],
 })
 export class GatewayModule {}

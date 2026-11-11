@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { In, Not, Repository } from "typeorm";
 import { User } from "../../domain/entities/user.model.entity";
 import { UserRepository } from "../../domain/repositories/user.repo";
+import { nationalIdVariants } from "../../domain/utils/national-id";
 import { UserOrmEntity } from "../entities/user.typeorm.entity";
 import { UserMapper } from "../mapper/user.mapper";
 
@@ -27,7 +28,10 @@ export class TypeOrmUserRepository implements UserRepository {
     exceptUserId: string,
   ): Promise<boolean> {
     return this.ormRepo.exist({
-      where: { nationalId, id: Not(exceptUserId) },
+      where: nationalIdVariants(nationalId).map((value) => ({
+        nationalId: value,
+        id: Not(exceptUserId),
+      })),
     });
   }
 

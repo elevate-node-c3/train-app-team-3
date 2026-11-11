@@ -2,29 +2,38 @@ import { Observable } from "rxjs";
 import { Metadata } from "@grpc/grpc-js";
 
 export interface IdentityGrpcService {
-  register(data: {
-    email: string;
-    password: string;
-  }, metadata?: Metadata): Observable<{
+  register(
+    data: {
+      email: string;
+      password: string;
+    },
+    metadata?: Metadata,
+  ): Observable<{
     id: string;
     email: string;
     accessToken: string;
     refreshToken: string;
   }>;
-  login(data: {
-    email: string;
-    password: string;
-    deviceInfo?: string;
-  }, metadata?: Metadata): Observable<{
+  login(
+    data: {
+      email: string;
+      password: string;
+      deviceInfo?: string;
+    },
+    metadata?: Metadata,
+  ): Observable<{
     id: string;
     email: string;
     accessToken: string;
     refreshToken: string;
   }>;
-  logout(data: {
-    userId: string;
-    sessionId: string;
-  }, metadata?: Metadata): Observable<{ success: boolean }>;
+  logout(
+    data: {
+      userId: string;
+      sessionId: string;
+    },
+    metadata?: Metadata,
+  ): Observable<{ success: boolean }>;
   validateSession(data: {
     userId: string;
     sessionId: string;
@@ -33,11 +42,14 @@ export interface IdentityGrpcService {
     data: { email: string; userId: string },
     metadata?: Metadata,
   ): Observable<{ success: boolean }>;
-  verifyOtp(data: {
-    email: string;
-    otp: string;
-    userId: string;
-  }, metadata?: Metadata): Observable<{ success: boolean }>;
+  verifyOtp(
+    data: {
+      email: string;
+      otp: string;
+      userId: string;
+    },
+    metadata?: Metadata,
+  ): Observable<{ success: boolean }>;
   completeProfile(
     data: {
       email: string;
@@ -55,4 +67,70 @@ export interface IdentityGrpcService {
     nationalId: string;
     complete: boolean;
   }>;
+  listPassengers(
+    data: {
+      userId: string;
+    },
+    metadata?: Metadata,
+  ): Observable<{
+    passengers: Array<{
+      passengerId: string;
+      fullName: string;
+      nationalId: string;
+      type: number;
+      isSelf: boolean;
+    }>;
+  }>;
+  create(
+    data: {
+      passengerId: string;
+      fullName: string;
+      nationalId: string;
+      type: number;
+      userId: string;
+    },
+    metadata?: Metadata,
+  ): Observable<{
+    passengerId: string;
+    fullName: string;
+    nationalId: string;
+    type: number;
+    isSelf: boolean;
+  }>;
+  getPassenger(
+    data: {
+      passengerId: string;
+      userId: string;
+    },
+    metadata?: Metadata,
+  ): Observable<{
+    passengerId: string;
+    fullName: string;
+    nationalId: string;
+    type: number;
+    isSelf: boolean;
+  }>;
+  updatePassenger(
+    data: {
+      passengerId: string;
+      userId: string;
+      fullName: string;
+      nationalId: string;
+      type: number;
+    },
+    metadata?: Metadata,
+  ): Observable<{
+    passengerId: string;
+    fullName: string;
+    nationalId: string;
+    type: number;
+    isSelf: boolean;
+  }>;
+  deletePassenger(
+    data: {
+      passengerId: string;
+      userId: string;
+    },
+    metadata?: Metadata,
+  ): Observable<{ success: boolean }>;
 }

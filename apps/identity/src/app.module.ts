@@ -8,6 +8,7 @@ import { AuthModule } from "./modules/auth/auth.module";
 import { AppConfigModule } from "./config/config.module";
 import { CacheModule } from "../../../libs/cache/src/cache.module";
 import { IdentityI18nModule } from "./i18n/i18n.module";
+import { PassengersModule } from "./modules/passengers/passengers.module";
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { IdentityI18nModule } from "./i18n/i18n.module";
     IdentityI18nModule,
     DatabaseModule,
     UsersModule,
+    PassengersModule,
     AuthModule,
   ],
 })

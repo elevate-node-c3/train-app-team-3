@@ -5,5 +5,8 @@
   "invalidEgyptianPhone": "يرجى إدخال رقم هاتف محمول مصري صالح",
   "passwordsMustMatch": "يجب أن تتطابق قيمة التأكيد مع كلمة المرور",
   "otpInvalid": "يجب أن يتكون الرمز من 6 أرقام",
-  "maxLength": "تجاوز هذا الحقل الحد الأقصى للطول"
+  "maxLength": "تجاوز هذا الحقل الحد الأقصى للطول",
+  "invalidNationalId": "يجب أن يتكون رقم الهوية من 14 رقمًا بالضبط",
+  "invalidPassengerType": "نوع المسافر يجب أن يكون REGULAR",
+  "invalidUuid": "معرّف المسافر يجب أن يكون UUID صالحًا"
 }

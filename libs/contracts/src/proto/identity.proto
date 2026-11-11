@@ -18,7 +18,9 @@ service IdentityService {
   rpc GetProfile (GetProfileRequest) returns (ProfileResponse);
   rpc CompleteProfile (CompleteProfileRequest) returns (ProfileResponse);
   rpc ListPassengers (ListPassengersRequest) returns (ListPassengersResponse);
-  rpc SavePassenger (SavePassengerRequest) returns (PassengerResponse);
+  rpc create (SavePassengerRequest) returns (PassengerResponse);
+  rpc GetPassenger (GetPassengerRequest) returns (PassengerResponse);
+  rpc UpdatePassenger (UpdatePassengerRequest) returns (PassengerResponse);
   rpc DeletePassenger (DeletePassengerRequest) returns (OperationResponse);
 }
 
@@ -130,6 +132,7 @@ message ProfileResponse {
 }
 
 message ListPassengersRequest {
+  string user_id = 1;
 }
 
 message SavePassengerRequest {
@@ -137,6 +140,7 @@ message SavePassengerRequest {
   string full_name = 2;
   string national_id = 3;
   PassengerType type = 4;
+  string user_id = 5;
 }
 
 message PassengerResponse {
@@ -147,15 +151,24 @@ message PassengerResponse {
   bool is_self = 5;
 }
 
+message GetPassengerRequest {
+  string passenger_id = 1;
+  string user_id = 2;
+}
+
+message UpdatePassengerRequest {
+  string passenger_id = 1;
+  string user_id = 2;
+  string full_name = 3;
+  string national_id = 4;
+  PassengerType type = 5;
+}
+
 message ListPassengersResponse {
   repeated PassengerResponse passengers = 1;
 }
 
 message DeletePassengerRequest {
   string passenger_id = 1;
-}
-
-enum PassengerType {
-  PASSENGER_TYPE_UNSPECIFIED = 0;
-  PASSENGER_TYPE_REGULAR = 1;
+  string user_id = 2;
 }

@@ -1,9 +1,9 @@
 import { Observable } from "rxjs";
-import { SignUpDto } from "../dtos/signup.dto";
 import { LoginDto } from "../dtos/login.dto";
+import { RegisterDto } from "../dtos/register.dto";
 
 export interface IdentityGrpcService {
-  register(data: SignUpDto): Observable<{
+  register(data: RegisterDto): Observable<{
     id: string;
     email: string;
     accessToken: string;

@@ -1,4 +1,3 @@
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -13,8 +12,9 @@ export class StationsRepository {
     private readonly repository: Repository<Station>,
   ) {}
 
-  create(data: CreateStationDto) {
-    return this.repository.save(data);
+  async create(data: CreateStationDto) {
+    const station = this.repository.create(data);
+    return this.repository.save(station);
   }
 
   updateStation(id: string, data: UpdateStationDto) {
@@ -33,27 +33,29 @@ export class StationsRepository {
     return this.repository.findOneBy({ id });
   }
 
-  findByName(name: string) {
+  async findByName(name: string) {
+    const searchTerm = `%${name}%`;
+    
     return this.repository
       .createQueryBuilder('station')
-      .where('station.name LIKE :name', { name: `%${name}%` })
-      .orWhere('station.alternativeNames LIKE :name', { name: `%${name}%` })
+      .where('station.name LIKE :name', { name: searchTerm })
+      .orWhere(':nameAny = ANY(station.alternativeNames)', { nameAny: name })
       .getMany();
   }
 
   async getAllGroupedByGovernorate() {
-    const stations = await this.repository.find({
-      where: { isActive: true },
-      relations: { governorate: true },
-      order: {
-        governorate: { name: 'ASC' },
-        name: 'ASC',
-      },
-    });
+    const stations = await this.repository
+      .createQueryBuilder('station')
+      .innerJoinAndSelect('station.governorate', 'governorate')
+      .where('station.isActive = :isActive', { isActive: true })
+      .orderBy('governorate.name_ar', 'ASC')
+      .addOrderBy('station.name', 'ASC')
+      .getMany();
 
     const grouped = new Map<string, {
       id: string;
-      name: string;
+      name_ar: string;
+      name_en: string;
       stations: Omit<Station, 'governorate'>[];
     }>();
 
@@ -63,7 +65,8 @@ export class StationsRepository {
       if (!grouped.has(governorate.id)) {
         grouped.set(governorate.id, {
           id: governorate.id,
-          name: governorate.name,
+          name_ar: governorate.name_ar,
+          name_en: governorate.name_en,
           stations: [],
         });
       }
@@ -73,5 +76,4 @@ export class StationsRepository {
 
     return Array.from(grouped.values());
   }
-  
 }

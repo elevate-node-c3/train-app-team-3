@@ -15,4 +15,4 @@ import { StationsService } from './stations.service';
     StationsService
   ]
 })
-export class GovernoratesModule { }
+export class StationsModule { }

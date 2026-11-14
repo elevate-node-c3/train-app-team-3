@@ -29,8 +29,7 @@ export class OutboxRelayService implements OnModuleInit, OnModuleDestroy {
 
       for (const event of events) {
         const payload = this.outboxEncryptionService.decryptPayload(event.payload);
-
-        await this.rabbitMQService.publishEvent(payload);
+        await this.rabbitMQService.publishEvent(event.routingKey, payload);
         await this.outbox.markAsSent(event.eventId);
       }
     } catch (error) {

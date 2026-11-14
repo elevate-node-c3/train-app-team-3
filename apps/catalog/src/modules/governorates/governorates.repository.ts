@@ -1,4 +1,3 @@
-
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ILike, Repository } from 'typeorm';
@@ -14,12 +13,13 @@ export class GovernoratesRepository {
   ) {}
 
   create(data: CreateGovernorateDto) {
-    return this.repository.save(data);
+    const governorate = this.repository.create(data);
+    return this.repository.save(governorate);
   }
 
   findAll() {
     return this.repository.find({
-      order: { name: 'ASC' },
+      order: { name_ar: 'ASC' },
     });
   }
 
@@ -29,7 +29,10 @@ export class GovernoratesRepository {
 
   findByName(name: string) {
     return this.repository.findOne({
-      where: { name: ILike(name) },
+      where: [
+        { name_ar: ILike(`%${name}%`) },
+        { name_en: ILike(`%${name}%`) },
+      ],
     });
   }
 

@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn , CreateDateColumn, ManyToOne , JoinColumn  } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, UpdateDateColumn , CreateDateColumn, ManyToOne , JoinColumn, OneToMany  } from 'typeorm';
 import { Governorate } from '../governorates/governorates.entity';
+import { TimeTableStop } from '../timetableStops/TimetableStop.entitiy';
 
 @Entity('station')
 export class Station{
@@ -31,6 +32,9 @@ export class Station{
   governorate!: Governorate;
 
 
+  @OneToMany(() => TimeTableStop, (timeTableStop) => timeTableStop.station)
+  timeTableStops!: TimeTableStop[];
+
 
   @Column({type:'simple-array' , nullable:true})
   alternativeNames!:string[]
@@ -42,7 +46,5 @@ export class Station{
 
   @UpdateDateColumn()
   updatedAt!:Date
-
-
 
 }

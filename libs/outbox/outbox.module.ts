@@ -15,5 +15,10 @@ import { RabbitMQService } from './rabbitmq.service';
     OutboxEncryptionService,
     RabbitMQService,
   ],
+  exports: [
+    OutboxRepository,
+    OutboxEncryptionService,
+    RabbitMQService,
+  ],
 })
 export class OutboxModule {}

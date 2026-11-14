@@ -8,7 +8,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { AppConfigModule } from './config/config.module';
 import { CacheModule } from '../../../libs/cache/src/cache.module';
 import { VerificationModule } from './modules/verification/verification.module';
-import { OutboxModule } from './modules/outbox/outbox.module';
+import { OutboxModule } from '../../../libs/outbox/outbox.module';
 
 @Module({
   imports: [

@@ -1,5 +1,6 @@
 export const VERIFICATION_CODE_ISSUED_EVENT_KEY =
   "verification-code-issued" as const;
+export const NOTIFICATION_EVENTS_QUEUE = "notification.events" as const;
 
 export type VerificationPurpose = "email-verification" | "password-reset";
 

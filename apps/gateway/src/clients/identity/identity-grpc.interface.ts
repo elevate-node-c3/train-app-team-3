@@ -1,12 +1,11 @@
 import { Observable } from "rxjs";
+import { RegisterDto } from "../../modules/auth/dtos/register.dto";
+import { LoginDto } from "../../modules/auth/dtos/login.dto";
 import { Metadata } from "@grpc/grpc-js";
 
 export interface IdentityGrpcService {
   register(
-    data: {
-      email: string;
-      password: string;
-    },
+    data: RegisterDto,
     metadata?: Metadata,
   ): Observable<{
     id: string;
@@ -15,11 +14,7 @@ export interface IdentityGrpcService {
     refreshToken: string;
   }>;
   login(
-    data: {
-      email: string;
-      password: string;
-      deviceInfo?: string;
-    },
+    data: LoginDto,
     metadata?: Metadata,
   ): Observable<{
     id: string;
@@ -39,7 +34,7 @@ export interface IdentityGrpcService {
     sessionId: string;
   }): Observable<{ active: boolean }>;
   forgotPassword(
-    data: { email: string; userId: string },
+    email: string,
     metadata?: Metadata,
   ): Observable<{ success: boolean }>;
   verifyOtp(
@@ -52,12 +47,12 @@ export interface IdentityGrpcService {
   ): Observable<{ success: boolean }>;
   completeProfile(
     data: {
-      email: string;
       fullName: string;
-      phone: string;
       nationalId: string;
       profileType: string;
       nationality: string;
+      phone: string;
+      email: string;
     },
     metadata?: Metadata,
   ): Observable<{
@@ -67,70 +62,4 @@ export interface IdentityGrpcService {
     nationalId: string;
     complete: boolean;
   }>;
-  listPassengers(
-    data: {
-      userId: string;
-    },
-    metadata?: Metadata,
-  ): Observable<{
-    passengers: Array<{
-      passengerId: string;
-      fullName: string;
-      nationalId: string;
-      type: number;
-      isSelf: boolean;
-    }>;
-  }>;
-  create(
-    data: {
-      passengerId: string;
-      fullName: string;
-      nationalId: string;
-      type: number;
-      userId: string;
-    },
-    metadata?: Metadata,
-  ): Observable<{
-    passengerId: string;
-    fullName: string;
-    nationalId: string;
-    type: number;
-    isSelf: boolean;
-  }>;
-  getPassenger(
-    data: {
-      passengerId: string;
-      userId: string;
-    },
-    metadata?: Metadata,
-  ): Observable<{
-    passengerId: string;
-    fullName: string;
-    nationalId: string;
-    type: number;
-    isSelf: boolean;
-  }>;
-  updatePassenger(
-    data: {
-      passengerId: string;
-      userId: string;
-      fullName: string;
-      nationalId: string;
-      type: number;
-    },
-    metadata?: Metadata,
-  ): Observable<{
-    passengerId: string;
-    fullName: string;
-    nationalId: string;
-    type: number;
-    isSelf: boolean;
-  }>;
-  deletePassenger(
-    data: {
-      passengerId: string;
-      userId: string;
-    },
-    metadata?: Metadata,
-  ): Observable<{ success: boolean }>;
 }

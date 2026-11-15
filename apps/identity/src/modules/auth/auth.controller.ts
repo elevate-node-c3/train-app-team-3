@@ -35,8 +35,8 @@ export class AuthController {
   }
 
   @GrpcMethod("IdentityService", "ForgotPassword")
-  async forgotPassword(data: { email: string; userId: string }) {
-    return this.authService.forgotPassword(data);
+  async forgotPassword(email: string, metadata: Metadata) {
+    return this.authService.forgotPassword(email, getAuthLanguage(metadata));
   }
 
   @GrpcMethod("IdentityService", "VerifyOtp")

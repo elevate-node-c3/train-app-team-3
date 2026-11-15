@@ -11,8 +11,8 @@ import { JwtService } from "@nestjs/jwt";
 import { ClientGrpc } from "@nestjs/microservices";
 import { Request } from "express";
 import { lastValueFrom } from "rxjs";
-import { IdentityGrpcService } from "../../clients/identity/identity-grpc.interface";
 import { I18nContext, I18nService } from "nestjs-i18n";
+import { IdentityGrpcService } from "../../clients/identity/identity-grpc.interface";
 
 export interface GatewayUser {
   sub: string;

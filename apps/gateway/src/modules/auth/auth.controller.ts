@@ -17,11 +17,11 @@ import { LoginInDto } from "./dtos/loginin.dto";
 import { ForgotPasswordDto } from "./dtos/forgot-password.dto";
 import { VerifyOtpDto } from "./dtos/verify-otp.dto";
 import { CompleteProfileDto } from "./dtos/complete-profile.dto";
-import { IdentityGrpcService } from "../../clients/identity/identity-grpc.interface";
 import { Authenticated } from "../../common/decorators/authenticated.decorator";
 import { CurrentUser } from "../../common/decorators/current-user.decorator";
 import { GatewayUser } from "../../common/guards/gateway-auth.guard";
 import { Throttle } from "@nestjs/throttler";
+import { IdentityGrpcService } from "../../clients/identity/identity-grpc.interface";
 
 @Controller("auth")
 export class AuthController implements OnModuleInit {
@@ -42,10 +42,10 @@ export class AuthController implements OnModuleInit {
     new I18nValidationPipe({ whitelist: true, forbidNonWhitelisted: true }),
   )
   async register(@I18nLang() lang: string, @Body() dto: RegisterDto) {
-    const { email, password } = dto;
+    const { email, password, confirmPassword } = dto;
     return await lastValueFrom(
       this.identityService.register(
-        { email, password },
+        { email, password, confirmPassword },
         this.metadataFor(lang),
       ),
     );
@@ -87,22 +87,10 @@ export class AuthController implements OnModuleInit {
   async forgotPassword(
     @I18nLang() lang: string,
     @Body() dto: ForgotPasswordDto,
-    @CurrentUser() user: GatewayUser,
   ) {
-    if (dto.email !== user.email) {
-      throw new ForbiddenException(
-        this.i18n.translate("auth.resetOwnPasswordOnly", { lang }),
-      );
-    }
-
+    const email: string = dto.email;
     return lastValueFrom(
-      this.identityService.forgotPassword(
-        {
-          email: user.email,
-          userId: user.sub,
-        },
-        this.metadataFor(lang),
-      ),
+      this.identityService.forgotPassword(email, this.metadataFor(lang)),
     );
   }
 

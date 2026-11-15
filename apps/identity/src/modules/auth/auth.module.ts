@@ -9,12 +9,18 @@ import { OtpModule } from "../../../../../libs/auth/otp/otp.module";
 import { TokenService } from "../../../../../libs/auth/token/jwt.services";
 import { SessionsModule } from "./sessions/sessions.module";
 import { LogoutUseCase } from "./use-cases/logout.use-case";
+import { MessagingModule } from "../../../../../infra/broker.messaging/messaging.module";
+import { NOTIFICATION_EVENTS_QUEUE } from "../../../../../libs/contracts/src/events.interfaces/verification-code-issued.event";
 
 @Module({
   imports: [
     UsersModule,
     OtpModule,
     SessionsModule,
+    MessagingModule.register({
+      url: process.env.RABBITMQ_URL ?? "amqp://localhost:5672",
+      queue: NOTIFICATION_EVENTS_QUEUE,
+    }),
     JwtModule.registerAsync({
       inject: [ConfigService],
       useFactory: (config: ConfigService) => ({

@@ -2,6 +2,7 @@ import { RpcException } from "@nestjs/microservices";
 import { CompleteProfileUseCase } from "./use-cases/complete-profile.use-case";
 import { LoginUseCase } from "./use-cases/login.use-case";
 import { LogoutUseCase } from "./use-cases/logout.use-case";
+import { ForgetPasswordUseCase } from "./use-cases/forget-password.use-case";
 import { RegisterUseCase } from "./use-cases/register.use-case";
 import { AuthService } from "./auth.service";
 import { OtpService } from "../../../../../libs/auth/otp/otp.service";
@@ -11,6 +12,7 @@ describe("AuthService gRPC response contracts", () => {
   const registerUseCase = { execute: jest.fn() };
   const loginUseCase = { execute: jest.fn() };
   const logoutUseCase = { execute: jest.fn(), isActive: jest.fn() };
+  const forgetPasswordUseCase = { execute: jest.fn() };
   const otpService = { create: jest.fn(), verifyUserOtp: jest.fn() };
   const i18n = { translate: jest.fn().mockReturnValue("Invalid OTP") };
   const completeProfileUseCase = { execute: jest.fn() };
@@ -18,6 +20,7 @@ describe("AuthService gRPC response contracts", () => {
     registerUseCase as unknown as RegisterUseCase,
     loginUseCase as unknown as LoginUseCase,
     logoutUseCase as unknown as LogoutUseCase,
+    forgetPasswordUseCase as unknown as ForgetPasswordUseCase,
     otpService as unknown as OtpService,
     i18n as unknown as I18nService,
     completeProfileUseCase as unknown as CompleteProfileUseCase,
@@ -83,18 +86,14 @@ describe("AuthService gRPC response contracts", () => {
     ).resolves.toEqual({ active: false });
   });
 
-  it("returns OperationResponse after creating a password-reset OTP", async () => {
-    otpService.create.mockResolvedValue("123456");
+  it("delegates forgot-password requests to the use case", async () => {
+    forgetPasswordUseCase.execute.mockResolvedValue({ success: true });
 
     await expect(
-      service.forgotPassword({
-        email: "traveler@example.com",
-        userId: "user-id",
-      }),
+      service.forgotPassword("traveler@example.com", "en"),
     ).resolves.toEqual({ success: true });
-    expect(otpService.create).toHaveBeenCalledWith(
-      "user-id",
-      "forgot-password",
+    expect(forgetPasswordUseCase.execute).toHaveBeenCalledWith(
+      "traveler@example.com",
     );
   });
 

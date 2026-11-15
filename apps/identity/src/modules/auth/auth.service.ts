@@ -4,6 +4,7 @@ import { LoginUseCase } from "./use-cases/login.use-case";
 import { RegisterDto } from "../users/applicatoin/dtos/register.dto";
 import { LoginDto } from "../users/applicatoin/dtos/login.dto";
 import { LogoutUseCase } from "./use-cases/logout.use-case";
+import { ForgetPasswordUseCase } from "./use-cases/forget-password.use-case";
 import { RpcException } from "@nestjs/microservices";
 import { status } from "@grpc/grpc-js";
 import { OtpService } from "../../../../../libs/auth/otp/otp.service";
@@ -18,6 +19,7 @@ export class AuthService {
     private readonly registerUseCase: RegisterUseCase,
     private readonly loginUseCase: LoginUseCase,
     private readonly logoutUseCase: LogoutUseCase,
+    private readonly forgetPasswordUseCase: ForgetPasswordUseCase,
     private readonly otpService: OtpService,
     private readonly i18n: I18nService,
     private readonly completeProfileUseCase: CompleteProfileUseCase,
@@ -42,9 +44,8 @@ export class AuthService {
     return { active: await this.logoutUseCase.isActive(input) };
   }
 
-  async forgotPassword(input: { email: string; userId: string }) {
-    await this.otpService.create(input.userId, "forgot-password");
-    return { success: true };
+  async forgotPassword(email: string, _language: AuthLanguage = "ar") {
+    return this.forgetPasswordUseCase.execute(email);
   }
 
   async verifyOtp(

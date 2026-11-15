@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package identity;
 
-service IdentityService {
+ service IdentityService {
   rpc Register (RegisterRequest) returns (RegisterResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
   rpc Logout (LogoutRequest) returns (OperationResponse);
@@ -58,7 +58,7 @@ message LogoutRequest {
 
 message ForgotPasswordRequest {
   string email = 1;
-  string userId = 2;
+ 
 }
 
 message VerifyOtpRequest {

@@ -1,4 +1,4 @@
-import { Controller } from "@nestjs/common";
+import { Controller, UsePipes, ValidationPipe } from "@nestjs/common";
 import { GrpcMethod } from "@nestjs/microservices";
 import { Metadata } from "@grpc/grpc-js";
 import { AuthService } from "./auth.service";
@@ -12,11 +12,13 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @GrpcMethod("IdentityService", "Register")
+  @UsePipes(new ValidationPipe())
   async register(data: RegisterDto, metadata: Metadata) {
     return this.authService.register(data, getAuthLanguage(metadata));
   }
 
   @GrpcMethod("IdentityService", "Login")
+  @UsePipes(new ValidationPipe())
   async login(data: LoginDto, metadata: Metadata) {
     return this.authService.login(data, getAuthLanguage(metadata));
   }

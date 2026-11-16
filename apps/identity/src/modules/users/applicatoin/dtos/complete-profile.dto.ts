@@ -4,6 +4,7 @@ import {
   IsString,
   Matches,
   MaxLength,
+  MinLength,
 } from "class-validator";
 
 const EGYPTIAN_PHONE_PATTERN = /^(?:(?:\+20|0020)|0)?1[0125]\d{8}$/;
@@ -11,6 +12,8 @@ const EGYPTIAN_PHONE_PATTERN = /^(?:(?:\+20|0020)|0)?1[0125]\d{8}$/;
 export class CompleteProfileDto {
   @IsEmail()
   @IsNotEmpty()
+  @MinLength(10)
+  @MaxLength(254)
   email!: string;
 
   @IsString()

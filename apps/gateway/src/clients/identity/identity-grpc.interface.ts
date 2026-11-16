@@ -3,40 +3,53 @@ import { RegisterDto } from "../../modules/auth/dtos/register.dto";
 import { LoginDto } from "../../modules/auth/dtos/login.dto";
 import { Metadata } from "@grpc/grpc-js";
 
+export interface IdentityAuthResponse {
+  id: string;
+  email: string;
+  accessToken: string;
+  refreshToken: string;
+}
+
+export interface IdentityOperationResponse {
+  success: boolean;
+}
+
+export interface IdentitySessionStatusResponse {
+  active: boolean;
+}
+
+export interface IdentityCompleteProfileResponse {
+  userId: string;
+  fullName: string;
+  egyptianMobileNumber: string;
+  nationalId: string;
+  complete: boolean;
+}
+
 export interface IdentityGrpcService {
   register(
     data: RegisterDto,
     metadata?: Metadata,
-  ): Observable<{
-    id: string;
-    email: string;
-    accessToken: string;
-    refreshToken: string;
-  }>;
+  ): Observable<IdentityAuthResponse>;
   login(
     data: LoginDto,
     metadata?: Metadata,
-  ): Observable<{
-    id: string;
-    email: string;
-    accessToken: string;
-    refreshToken: string;
-  }>;
+  ): Observable<IdentityAuthResponse>;
   logout(
     data: {
       userId: string;
       sessionId: string;
     },
     metadata?: Metadata,
-  ): Observable<{ success: boolean }>;
+  ): Observable<IdentityOperationResponse>;
   validateSession(data: {
     userId: string;
     sessionId: string;
-  }): Observable<{ active: boolean }>;
+  }): Observable<IdentitySessionStatusResponse>;
   forgotPassword(
     email: string,
     metadata?: Metadata,
-  ): Observable<{ success: boolean }>;
+  ): Observable<IdentityOperationResponse>;
   verifyOtp(
     data: {
       email: string;
@@ -44,7 +57,7 @@ export interface IdentityGrpcService {
       userId: string;
     },
     metadata?: Metadata,
-  ): Observable<{ success: boolean }>;
+  ): Observable<IdentityOperationResponse>;
   completeProfile(
     data: {
       fullName: string;
@@ -55,11 +68,5 @@ export interface IdentityGrpcService {
       email: string;
     },
     metadata?: Metadata,
-  ): Observable<{
-    userId: string;
-    fullName: string;
-    egyptianMobileNumber: string;
-    nationalId: string;
-    complete: boolean;
-  }>;
+  ): Observable<IdentityCompleteProfileResponse>;
 }

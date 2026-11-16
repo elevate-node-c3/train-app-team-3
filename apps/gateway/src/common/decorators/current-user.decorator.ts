@@ -3,6 +3,7 @@ import {
     ExecutionContext,
     UnauthorizedException,
 } from '@nestjs/common';
+import { I18nContext } from 'nestjs-i18n';
 import { Request } from 'express';
 import type { GatewayUser } from '../guards/gateway-auth.guard';
 
@@ -14,7 +15,10 @@ export const CurrentUser = createParamDecorator(
     (_data: unknown, context: ExecutionContext): GatewayUser => {
         const user = context.switchToHttp().getRequest<AuthenticatedRequest>().user;
         if (!user) {
-            throw new UnauthorizedException('Authenticated user is unavailable');
+            throw new UnauthorizedException(
+                I18nContext.current()?.translate('auth.userUnavailable') ??
+                    'بيانات المستخدم المصادق عليه غير متاحة',
+            );
         }
         return user;
     },

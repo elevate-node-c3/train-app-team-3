@@ -3,6 +3,8 @@ import { User } from "../entities/user.model.entity";
 export interface UserRepository {
   findById(id: string): Promise<User | null>;
   findByEmail(email: string): Promise<User | null>;
+  isNationalIdUsed(nationalId: string, exceptUserId: string): Promise<boolean>;
+  isPhoneUsed(phone: string, exceptUserId: string): Promise<boolean>;
   findAll(page: number, limit: number): Promise<[User[], number]>;
   save(user: User): Promise<void>;
 }

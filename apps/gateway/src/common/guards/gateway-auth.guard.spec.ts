@@ -2,6 +2,7 @@ import { ExecutionContext, UnauthorizedException } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { ClientGrpc } from "@nestjs/microservices";
+import { I18nService } from "nestjs-i18n";
 import { of } from "rxjs";
 import { GatewayAuthGuard } from "./gateway-auth.guard";
 
@@ -18,10 +19,14 @@ describe("GatewayAuthGuard", () => {
   const configService = {
     getOrThrow: jest.fn().mockReturnValue("access-secret"),
   };
+  const i18n = {
+    translate: jest.fn((key: string) => key),
+  };
   const guard = new GatewayAuthGuard(
     jwtService as unknown as JwtService,
     configService as unknown as ConfigService,
     identityClient as unknown as ClientGrpc,
+    i18n as unknown as I18nService,
   );
 
   const contextFor = (authorization?: string) => {

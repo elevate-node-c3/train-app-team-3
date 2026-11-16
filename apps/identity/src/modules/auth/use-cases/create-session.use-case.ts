@@ -20,7 +20,9 @@ export class CreateSessionUseCase {
     private readonly cacheService: CacheService,
   ) {}
 
-  async execute(input: CreateSessionInput): Promise<{ accessToken: string }> {
+  async execute(
+    input: CreateSessionInput,
+  ): Promise<{ accessToken: string; refreshToken: string }> {
     const sessionId = randomUUID();
     const signedAccessToken = await this.tokenService.sign(
       {
@@ -68,6 +70,9 @@ export class CreateSessionUseCase {
       ttlSeconds,
     );
 
-    return { accessToken: signedAccessToken.token };
+    return {
+      accessToken: signedAccessToken.token,
+      refreshToken: signedRefreshToken.token,
+    };
   }
 }

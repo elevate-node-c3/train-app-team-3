@@ -1,8 +1,9 @@
 import { Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
+import { In, Not, Repository } from "typeorm";
 import { User } from "../../domain/entities/user.model.entity";
 import { UserRepository } from "../../domain/repositories/user.repo";
+import { nationalIdVariants } from "../../domain/utils/national-id";
 import { UserOrmEntity } from "../entities/user.typeorm.entity";
 import { UserMapper } from "../mapper/user.mapper";
 
@@ -20,6 +21,35 @@ export class TypeOrmUserRepository implements UserRepository {
   async findByEmail(email: string): Promise<User | null> {
     const ormEntity = await this.ormRepo.findOneBy({ email });
     return ormEntity ? UserMapper.toDomain(ormEntity) : null;
+  }
+
+  async isNationalIdUsed(
+    nationalId: string,
+    exceptUserId: string,
+  ): Promise<boolean> {
+    return this.ormRepo.exist({
+      where: nationalIdVariants(nationalId).map((value) => ({
+        nationalId: value,
+        id: Not(exceptUserId),
+      })),
+    });
+  }
+
+  async isPhoneUsed(phone: string, exceptUserId: string): Promise<boolean> {
+    const localPhone = phone.replace(/^\+20/, "0");
+    const phoneWithoutCountryCode = phone.replace(/^\+20/, "");
+    const internationalPhone = phone.replace(/^\+/, "00");
+    return this.ormRepo.exist({
+      where: {
+        phone: In([
+          phone,
+          localPhone,
+          phoneWithoutCountryCode,
+          internationalPhone,
+        ]),
+        id: Not(exceptUserId),
+      },
+    });
   }
 
   async findAll(page: number, limit: number): Promise<[User[], number]> {

@@ -1,4 +1,10 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Post,
+  UsePipes,
+  ValidationPipe,
+} from '@nestjs/common';
 import { VerificationService } from './verification.service';
 import { VerifyDto } from './dto/verify.dto';
 
@@ -7,7 +13,8 @@ export class VerificationController {
   constructor(private readonly verificationService: VerificationService) {}
 
   @Post('verify')
-  verify(@Body() body:VerifyDto) {
+  @UsePipes(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true }))
+  verify(@Body() body: VerifyDto) {
     return this.verificationService.verifyCode(body);
   }
 }

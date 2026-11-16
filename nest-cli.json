@@ -15,7 +15,9 @@
       "entryFile": "main",
       "sourceRoot": "apps/gateway/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/gateway/tsconfig.app.json"
+        "tsConfigPath": "apps/gateway/tsconfig.app.json",
+        "assets": [{ "include": "i18n/**/*.json", "outDir": "dist/apps/gateway" }],
+        "watchAssets": true
       }
     },
     "identity": {
@@ -24,7 +26,18 @@
       "entryFile": "main",
       "sourceRoot": "apps/identity/src",
       "compilerOptions": {
-        "tsConfigPath": "apps/identity/tsconfig.app.json"
+        "tsConfigPath": "apps/identity/tsconfig.app.json",
+        "assets": [{ "include": "i18n/**/*.json", "outDir": "dist/apps/identity" }],
+        "watchAssets": true
+      }
+    },
+    "notification": {
+      "type": "application",
+      "root": "apps/notification",
+      "entryFile": "main",
+      "sourceRoot": "apps/notification/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/notification/tsconfig.app.json"
       }
     },
     "contracts": {

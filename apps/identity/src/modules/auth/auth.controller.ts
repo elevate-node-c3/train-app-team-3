@@ -1,26 +1,34 @@
-import { Controller } from "@nestjs/common";
+import { Controller, UsePipes, ValidationPipe } from "@nestjs/common";
 import { GrpcMethod } from "@nestjs/microservices";
+import { Metadata } from "@grpc/grpc-js";
 import { AuthService } from "./auth.service";
 import { RegisterDto } from "../users/applicatoin/dtos/register.dto";
 import { LoginDto } from "../users/applicatoin/dtos/login.dto";
+import { getAuthLanguage } from "../../i18n/grpc-language";
+import { CompleteProfileDto } from "../users/applicatoin/dtos/complete-profile.dto";
 
 @Controller()
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @GrpcMethod("IdentityService", "Register")
-  async register(data: RegisterDto) {
-    return this.authService.register(data);
+  @UsePipes(new ValidationPipe())
+  async register(data: RegisterDto, metadata: Metadata) {
+    return this.authService.register(data, getAuthLanguage(metadata));
   }
 
   @GrpcMethod("IdentityService", "Login")
-  async login(data: LoginDto) {
-    return this.authService.login(data);
+  @UsePipes(new ValidationPipe())
+  async login(data: LoginDto, metadata: Metadata) {
+    return this.authService.login(data, getAuthLanguage(metadata));
   }
 
   @GrpcMethod("IdentityService", "Logout")
-  async logout(data: { userId: string; sessionId: string }) {
-    return this.authService.logout(data);
+  async logout(
+    data: { userId: string; sessionId: string },
+    metadata: Metadata,
+  ) {
+    return this.authService.logout(data, getAuthLanguage(metadata));
   }
 
   @GrpcMethod("IdentityService", "ValidateSession")
@@ -29,12 +37,20 @@ export class AuthController {
   }
 
   @GrpcMethod("IdentityService", "ForgotPassword")
-  async forgotPassword(data: { email: string; userId: string }) {
-    return this.authService.forgotPassword(data);
+  async forgotPassword(email: string, metadata: Metadata) {
+    return this.authService.forgotPassword(email, getAuthLanguage(metadata));
   }
 
   @GrpcMethod("IdentityService", "VerifyOtp")
-  async verifyOtp(data: { email: string; otp: string; userId: string }) {
-    return this.authService.verifyOtp(data);
+  async verifyOtp(
+    data: { email: string; otp: string; userId: string },
+    metadata: Metadata,
+  ) {
+    return this.authService.verifyOtp(data, getAuthLanguage(metadata));
+  }
+
+  @GrpcMethod("IdentityService", "CompleteProfile")
+  async completeProfile(data: CompleteProfileDto) {
+    return this.authService.completeProfile(data);
   }
 }

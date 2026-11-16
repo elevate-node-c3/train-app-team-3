@@ -1,5 +1,4 @@
 services:
-
   # 1. Database (PostgreSQL)
 
   postgres:
@@ -10,6 +9,7 @@ services:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: postgres
+      IDENTITY_DB_NAME: ${IDENTITY_DB_NAME:-identity_db}
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
     volumes:
@@ -18,10 +18,27 @@ services:
     networks:
       - enr-network
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}" ]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-postgres}"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+  postgres-init:
+    image: postgres:16-alpine
+    restart: "no"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      SERVICE_DATABASES: ${SERVICE_DATABASES:-${IDENTITY_DB_NAME:-identity_db}}
+    volumes:
+      - ./infra/postgres/ensure-databases.sh:/usr/local/bin/ensure-databases.sh:ro
+    entrypoint: ["/bin/sh", "/usr/local/bin/ensure-databases.sh"]
+    networks:
+      - enr-network
 
   # 2. Message Broker (RabbitMQ)
 
@@ -33,16 +50,26 @@ services:
       - "${RABBITMQ_PORT:-5672}:5672"
       - "${RABBITMQ_MGMT_PORT:-15672}:15672"
     volumes:
-      - ./infra/rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
-      - ./infra/rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+      - ./infra/rabbitmq/config/definitions.json:/etc/rabbitmq/definitions.json:ro
+      - ./infra/rabbitmq/config/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
       - rabbitmq_data:/var/lib/rabbitmq
     networks:
       - enr-network
     healthcheck:
-      test: [ "CMD", "rabbitmq-diagnostics", "-q", "ping" ]
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
       interval: 10s
       timeout: 5s
       retries: 5
+
+  mailpit:
+    image: axllent/mailpit
+    container_name: enr-mailpit
+    restart: always
+    ports:
+      - "${MAILPIT_SMTP_PORT:-1025}:1025"
+      - "${MAILPIT_UI_PORT:-8025}:8025"
+    networks:
+      - enr-network
 
   # 3. In-Memory Cache (Redis)
 
@@ -94,22 +121,46 @@ services:
       RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
-      JWT_PRIVATE_KEY: ${JWT_PRIVATE_KEY}
-      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY:-secret}
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
-      JWT_ACCESS_EXP: ${JWT_ACCESS_EXP:-15m}
-      JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET}
-      JWT_REFRESH_EXP: ${JWT_REFRESH_EXP:-7d}
+      REDIS_PASSWORD: "guest "
+      JWT_PRIVATE_KEY: "train-app-private-key"
+      JWT_PUBLIC_KEY: "train-app-public-key"
+      JWT_ACCESS_SECRET: "replace-with-a-long-secret"
+      JWT_ACCESS_EXP: "15m"
+      JWT_REFRESH_SECRET: "replace-with-a-long-refresh-secret"
+      JWT_REFRESH_EXP: "7d"
     ports:
       - "50051:50051"
     depends_on:
       postgres:
         condition: service_healthy
+      postgres-init:
+        condition: service_completed_successfully
       rabbitmq:
         condition: service_healthy
       redis:
         condition: service_healthy
+    networks:
+      - enr-network
+
+  notification:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        APP_NAME: notification
+    container_name: enr-notification
+    restart: always
+    environment:
+      NODE_ENV: production
+      RABBITMQ_URL: amqp://${RABBITMQ_USER:-guest}:${RABBITMQ_PASSWORD:-guest}@rabbitmq:5672
+      SMTP_HOST: mailpit
+      SMTP_PORT: 1025
+      MAIL_FROM: ${MAIL_FROM:-no-reply@example.com}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mailpit:
+        condition: service_started
     networks:
       - enr-network
 
@@ -126,8 +177,8 @@ services:
       NODE_ENV: production
       PORT: ${PORT_GATEWAY:-3000}
       IDENTITY_GRPC_URL: identity:50051
-      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY}
-      JWT_ACCESS_SECRET: ${JWT_ACCESS_SECRET}
+      JWT_PUBLIC_KEY: train-app-private-key
+      JWT_ACCESS_SECRET: replace-with-a-long-secret
     ports:
       - "${PORT_GATEWAY:-3000}:${PORT_GATEWAY:-3000}"
     depends_on:

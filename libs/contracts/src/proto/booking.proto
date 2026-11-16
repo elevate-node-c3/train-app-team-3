@@ -113,7 +113,7 @@ message TicketResponse {
 
 message DownloadTicketRequest {
   string ticket_id = 1;
-  string language = 2;
+
 }
 
 message DownloadTicketResponse {

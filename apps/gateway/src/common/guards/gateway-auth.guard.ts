@@ -11,6 +11,7 @@ import { JwtService } from "@nestjs/jwt";
 import { ClientGrpc } from "@nestjs/microservices";
 import { Request } from "express";
 import { lastValueFrom } from "rxjs";
+import { I18nContext, I18nService } from "nestjs-i18n";
 import { IdentityGrpcService } from "../../clients/identity/identity-grpc.interface";
 
 export interface GatewayUser {
@@ -33,6 +34,7 @@ export class GatewayAuthGuard implements CanActivate, OnModuleInit {
     private readonly jwtService: JwtService,
     configService: ConfigService,
     @Inject("IDENTITY_PACKAGE") private readonly identityClient: ClientGrpc,
+    private readonly i18n: I18nService,
   ) {
     this.accessSecret = configService.getOrThrow<string>("JWT_ACCESS_SECRET");
   }
@@ -48,7 +50,7 @@ export class GatewayAuthGuard implements CanActivate, OnModuleInit {
     const [scheme, token] = authorization?.split(" ") ?? [];
 
     if (scheme?.toLowerCase() !== "bearer" || !token) {
-      throw new UnauthorizedException("A bearer access token is required");
+      throw new UnauthorizedException(this.translate("auth.bearerRequired"));
     }
 
     let user: GatewayUser;
@@ -58,7 +60,9 @@ export class GatewayAuthGuard implements CanActivate, OnModuleInit {
         algorithms: ["HS256"],
       });
     } catch (error) {
-      throw new UnauthorizedException("The access token is invalid or expired");
+      throw new UnauthorizedException(
+        this.translate("auth.tokenInvalidOrExpired"),
+      );
     }
 
     if (
@@ -70,7 +74,7 @@ export class GatewayAuthGuard implements CanActivate, OnModuleInit {
         (!Array.isArray(user.roles) ||
           user.roles.some((role) => typeof role !== "string")))
     ) {
-      throw new UnauthorizedException("The access token is invalid");
+      throw new UnauthorizedException(this.translate("auth.tokenInvalid"));
     }
 
     const session = await lastValueFrom(
@@ -80,12 +84,15 @@ export class GatewayAuthGuard implements CanActivate, OnModuleInit {
       }),
     );
     if (!session.active) {
-      throw new UnauthorizedException(
-        "The access token session is no longer active",
-      );
+      throw new UnauthorizedException(this.translate("auth.sessionInactive"));
     }
 
     request.user = user;
     return true;
+  }
+
+  private translate(key: string): string {
+    const language = I18nContext.current()?.lang ?? "ar";
+    return this.i18n.translate(key, { lang: language });
   }
 }

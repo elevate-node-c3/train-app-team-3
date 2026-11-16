@@ -1,30 +1,9 @@
-import { DynamicModule, Module } from '@nestjs/common';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { Global, Module } from '@nestjs/common';
+import { RabbitmqService } from './rabbitmq.service';
 
-export interface MessagingOptions {
-    url: string;
-    queue: string;
-}
-
-@Module({})
-export class MessagingModule {
-    static register(options: MessagingOptions): DynamicModule {
-        return {
-            module: MessagingModule,
-            imports: [
-                ClientsModule.register([
-                    {
-                        name: 'RABBITMQ_CLIENT',
-                        transport: Transport.RMQ,
-                        options: {
-                            urls: [options.url],
-                            queue: options.queue,
-                            queueOptions: { durable: true },
-                        },
-                    },
-                ]),
-            ],
-            exports: [ClientsModule],
-        };
-    }
-}
+@Global()
+@Module({
+  providers: [RabbitmqService],
+  exports: [RabbitmqService],
+})
+export class RabbitmqModule {}

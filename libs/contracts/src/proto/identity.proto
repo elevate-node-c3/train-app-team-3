@@ -22,7 +22,14 @@ package identity;
   rpc GetPassenger (GetPassengerRequest) returns (PassengerResponse);
   rpc UpdatePassenger (UpdatePassengerRequest) returns (PassengerResponse);
   rpc DeletePassenger (DeletePassengerRequest) returns (OperationResponse);
+  
+  // Added from feat/stations-catalog-service
+  rpc Verify (VerifyRequest) returns (VerifyResponse);
 }
+
+// -----------------------------------------------------------------------------
+// Authentication & Profile Messages (HEAD)
+// -----------------------------------------------------------------------------
 
 message RegisterRequest {
   string email = 1;
@@ -172,3 +179,4 @@ message DeletePassengerRequest {
   string passenger_id = 1;
   string user_id = 2;
 }
+

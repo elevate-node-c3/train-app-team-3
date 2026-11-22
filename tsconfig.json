@@ -18,6 +18,7 @@
     "forceConsistentCasingInFileNames": true,
     "paths": {
       "@app/contracts": ["libs/contracts/src"],
+      "@app/contracts/generated/*": ["libs/contracts/src/generated/*"],
       "@app/common": ["libs/common/src"],
       "@app/observability": ["libs/observability/src"],
       "@app/messaging": ["libs/messaging/src"]

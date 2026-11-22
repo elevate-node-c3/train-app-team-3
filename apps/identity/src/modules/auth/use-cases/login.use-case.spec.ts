@@ -67,6 +67,7 @@ describe("LoginUseCase", () => {
       userId: user.id,
       email: user.email,
       deviceInfo: "browser",
+      accessLevel: user.accessLevel,
     });
   });
 

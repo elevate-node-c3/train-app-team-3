@@ -13,9 +13,17 @@ export class GrpcExceptionFilter implements ExceptionFilter {
     catch(exception: any, host: ArgumentsHost) {
         const ctx = host.switchToHttp();
         const response = ctx.getResponse<Response>();
+        const exceptionResponse =
+            typeof exception.getResponse === 'function'
+                ? exception.getResponse()
+                : undefined;
+        const responseBody =
+            exceptionResponse && typeof exceptionResponse === 'object'
+                ? exceptionResponse
+                : undefined;
 
         let httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        let message = exception.details || exception.message ||
+        let message = responseBody?.message || exception.details || exception.message ||
             I18nContext.current()?.translate('auth.internalServerError') ||
             'حدث خطأ داخلي في الخادم';
 
@@ -38,6 +46,9 @@ export class GrpcExceptionFilter implements ExceptionFilter {
             case status.UNIMPLEMENTED:
                 httpStatus = HttpStatus.NOT_IMPLEMENTED;
                 break;
+            case status.UNAVAILABLE:
+              httpStatus = HttpStatus.SERVICE_UNAVAILABLE;
+              break;      
             default:
                 if (exception.status && typeof exception.status === 'number') {
                     httpStatus = exception.status;
@@ -48,6 +59,7 @@ export class GrpcExceptionFilter implements ExceptionFilter {
         response.status(httpStatus).json({
             statusCode: httpStatus,
             message,
+            ...(responseBody?.code && { code: responseBody.code }),
             timestamp: new Date().toISOString(),
         });
     }

@@ -2,6 +2,7 @@ import { TokenService } from "../../../../../../libs/auth/token/jwt.services";
 import { TokenType } from "../../../../../../libs/auth/token/token.interfaces";
 import { SessionService } from "../sessions/session.service";
 import { CreateSessionUseCase } from "./create-session.use-case";
+import { AccessLevel } from "../../users/applicatoin/enums/access-level.enum";
 
 describe("CreateSessionUseCase", () => {
   const tokenService = {
@@ -55,6 +56,7 @@ describe("CreateSessionUseCase", () => {
     expect(payload).toMatchObject({
       sub: "user-id",
       email: "user@example.com",
+      level: AccessLevel.UNVERIFIED,
     });
     expect(typeof payload.sid).toBe("string");
     expect(tokenType).toBe(TokenType.ACCESS);
@@ -69,6 +71,24 @@ describe("CreateSessionUseCase", () => {
       expect.stringContaining('"sid":'),
       expect.any(Number),
     );
+    expect(tokenService.sign.mock.calls[1][0]).toMatchObject({
+      level: AccessLevel.UNVERIFIED,
+    });
+  });
+
+  it("preserves a verified access level in both tokens", async () => {
+    await useCase.execute({
+      userId: "user-id",
+      email: "user@example.com",
+      accessLevel: AccessLevel.VERIFIED,
+    });
+
+    expect(tokenService.sign.mock.calls[0][0]).toMatchObject({
+      level: AccessLevel.VERIFIED,
+    });
+    expect(tokenService.sign.mock.calls[1][0]).toMatchObject({
+      level: AccessLevel.VERIFIED,
+    });
   });
 
   it("does not persist a session if logining the token fails", async () => {

@@ -13,7 +13,7 @@ describe("PassengersController", () => {
     email: "user@example.com",
   };
   it("uses the authenticated user ID instead of accepting it from the form", async () => {
-    const savePassenger = jest.fn().mockReturnValue(
+    const create = jest.fn().mockReturnValue(
       of({
         passengerId: "passenger-id",
         fullName: "Passenger Name",
@@ -22,7 +22,7 @@ describe("PassengersController", () => {
         isSelf: false,
       }),
     );
-    const identityService = { savePassenger };
+    const identityService = { create };
     const client = {
       getService: jest.fn().mockReturnValue(identityService),
     };
@@ -38,7 +38,7 @@ describe("PassengersController", () => {
     });
     await controller.create("en", dto, user);
 
-    expect(savePassenger).toHaveBeenCalledWith(
+    expect(create).toHaveBeenCalledWith(
       {
         passengerId: "",
         fullName: "Passenger Name",

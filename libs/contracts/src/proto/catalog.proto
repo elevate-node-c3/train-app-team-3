@@ -1,18 +1,90 @@
+
 syntax = "proto3";
 
 package catalog;
 
+// ============================================================================
+// Shared
+// ============================================================================
+
+message EmptyRequest {}
+
+message IdRequest {
+  string id = 1;
+}
+
+message DeleteResponse {
+  string message = 1;
+}
+
+message OperationResponse {
+  bool success = 1;
+}
+
+// ============================================================================
+// Catalog & Trips
+// ============================================================================
+
 service CatalogService {
-  rpc SearchStations (SearchStationsRequest) returns (SearchStationsResponse);
-  rpc SearchTrips (SearchTripsRequest) returns (SearchTripsResponse);
-  rpc GetTripStops (GetTripStopsRequest) returns (GetTripStopsResponse);
-  rpc GetRecentSearches (GetRecentSearchesRequest) returns (GetRecentSearchesResponse);
-  rpc SaveRecentSearch (SaveRecentSearchRequest) returns (OperationResponse);
-  rpc QuoteFare (QuoteFareRequest) returns (QuoteFareResponse);
-  rpc PublishTimetable (PublishTimetableRequest) returns (OperationResponse);
-  rpc ChangeFares (ChangeFaresRequest) returns (OperationResponse);
-  rpc DelayTrip (DelayTripRequest) returns (OperationResponse);
-  rpc CancelTrip (CancelTripRequest) returns (OperationResponse);
+  rpc SearchStations(SearchStationsRequest) returns (SearchStationsResponse);
+  rpc SearchTrips(SearchTripsRequest) returns (SearchTripsResponse);
+  rpc GetTripStops(GetTripStopsRequest) returns (GetTripStopsResponse);
+  rpc GetRecentSearches(GetRecentSearchesRequest) returns (GetRecentSearchesResponse);
+  rpc SaveRecentSearch(SaveRecentSearchRequest) returns (OperationResponse);
+  rpc QuoteFare(QuoteFareRequest) returns (QuoteFareResponse);
+  rpc PublishTimetable(PublishTimetableRequest) returns (OperationResponse);
+  rpc ChangeFares(ChangeFaresRequest) returns (OperationResponse);
+  rpc DelayTrip(DelayTripRequest) returns (OperationResponse);
+  rpc CancelTrip(CancelTripRequest) returns (OperationResponse);
+  rpc CreateStation(CreateStationRequest) returns (StationResponse);
+  rpc GetStations(EmptyRequest) returns (GroupedStationListResponse);
+  rpc SearchStationRecords(SearchStationRequest) returns (StationListResponse);
+  rpc UpdateStation(UpdateStationRequest) returns (StationResponse);
+  rpc UpdateAlternativeNames(UpdateAlternativeNamesRequest) returns (StationResponse);
+  rpc UpdateStationStatus(UpdateStationStatusRequest) returns (StationResponse);
+  rpc CreateGovernorate(CreateGovernorateRequest) returns (GovernorateResponse);
+  rpc GetGovernorates(EmptyRequest) returns (GovernorateListResponse);
+  rpc GetGovernorateById(GetGovernorateByIdRequest) returns (GovernorateResponse);
+  rpc UpdateGovernorate(UpdateGovernorateRequest) returns (GovernorateResponse);
+  rpc CreateCity(CreateCityRequest) returns (CityResponse);
+  rpc GetCities(EmptyRequest) returns (CityListResponse);
+  rpc GetCityById(IdRequest) returns (CityResponse);
+  rpc UpdateCity(UpdateCityRequest) returns (CityResponse);
+  rpc CreateTrainType(CreateTrainTypeRequest) returns (TrainTypeResponse);
+  rpc GetTrainTypes(EmptyRequest) returns (TrainTypeListResponse);
+  rpc GetTrainType(IdRequest) returns (TrainTypeResponse);
+  rpc UpdateTrainType(UpdateTrainTypeRequest) returns (TrainTypeResponse);
+  rpc DeleteTrainType(IdRequest) returns (DeleteResponse);
+  rpc CreateTrainClass(CreateTrainClassRequest) returns (TrainClassResponse);
+  rpc GetTrainClasses(EmptyRequest) returns (TrainClassListResponse);
+  rpc GetTrainClass(IdRequest) returns (TrainClassResponse);
+  rpc UpdateTrainClass(UpdateTrainClassRequest) returns (TrainClassResponse);
+  rpc DeleteTrainClass(IdRequest) returns (DeleteResponse);
+  rpc CreateTrain(CreateTrainRequest) returns (TrainResponse);
+  rpc GetTrains(EmptyRequest) returns (TrainListResponse);
+  rpc GetTrain(IdRequest) returns (TrainResponse);
+  rpc UpdateTrain(UpdateTrainRequest) returns (TrainResponse);
+  rpc DeleteTrain(IdRequest) returns (DeleteResponse);
+  rpc CreateCoachLayout(CreateCoachLayoutRequest) returns (CoachLayoutResponse);
+  rpc GetCoachLayouts(EmptyRequest) returns (CoachLayoutListResponse);
+  rpc GetCoachLayout(IdRequest) returns (CoachLayoutResponse);
+  rpc UpdateCoachLayout(UpdateCoachLayoutRequest) returns (CoachLayoutResponse);
+  rpc DeleteCoachLayout(IdRequest) returns (DeleteResponse);
+  rpc CreateCoach(CreateCoachRequest) returns (CoachResponse);
+  rpc GetCoaches(EmptyRequest) returns (CoachListResponse);
+  rpc GetCoach(IdRequest) returns (CoachResponse);
+  rpc UpdateCoach(UpdateCoachRequest) returns (CoachResponse);
+  rpc DeleteCoach(IdRequest) returns (DeleteResponse);
+  rpc CreateTimetable(CreateTimetableRequest) returns (TimetableResponse);
+  rpc GetTimetables(EmptyRequest) returns (TimetableListResponse);
+  rpc GetTimetable(IdRequest) returns (TimetableResponse);
+  rpc UpdateTimetable(UpdateTimetableRequest) returns (TimetableResponse);
+  rpc DeleteTimetable(IdRequest) returns (DeleteResponse);
+  rpc CreateTimetableStop(CreateTimetableStopRequest) returns (TimetableStopResponse);
+  rpc GetTimetableStops(EmptyRequest) returns (TimetableStopListResponse);
+  rpc GetTimetableStop(IdRequest) returns (TimetableStopResponse);
+  rpc UpdateTimetableStop(UpdateTimetableStopRequest) returns (TimetableStopResponse);
+  rpc DeleteTimetableStop(IdRequest) returns (DeleteResponse);
 }
 
 message SearchStationsRequest {
@@ -41,6 +113,7 @@ message SearchTripsRequest {
   int64 maximum_fare_piastres = 8;
   string train_type = 9;
   TripSort sort = 10;
+  optional string language = 11;
 }
 
 enum TripSort {
@@ -67,10 +140,14 @@ message TripResult {
   int32 available_seats = 15;
   int64 fare_piastres = 16;
   bool sold_out = 17;
+  string seat_class_name = 18;
+  string currency_code = 19;
 }
 
 message SearchTripsResponse {
   repeated TripResult trips = 1;
+  repeated string date_strip = 2;
+  string empty_reason = 3;
 }
 
 message GetTripStopsRequest {
@@ -100,8 +177,7 @@ message RecentSearch {
   string train_number = 6;
 }
 
-message GetRecentSearchesRequest {
-}
+message GetRecentSearchesRequest {}
 
 message GetRecentSearchesResponse {
   repeated RecentSearch searches = 1;
@@ -144,6 +220,367 @@ message CancelTripRequest {
   string trip_id = 1;
 }
 
-message OperationResponse {
-  bool success = 1;
+// ============================================================================
+// Stations
+// ============================================================================
+
+message StationResponse {
+  string id = 1;
+  string name = 2;
+  string address = 3;
+  bool is_active = 4;
+  string governorate_id = 5;
+  repeated string alternative_names = 6;
+  string created_at = 7;
+  string updated_at = 8;
+  string city_id = 9;
+  string name_en = 10;
+  string name_ar = 11;
+}
+
+message StationListResponse {
+  repeated StationResponse stations = 1;
+}
+
+message GroupedStationResponse {
+  string id = 1;
+  string name = 2;
+  repeated StationResponse stations = 3;
+}
+
+message GroupedStationListResponse {
+  repeated GroupedStationResponse governorates = 1;
+}
+
+message CreateStationRequest {
+  reserved 1;
+  string address = 2;
+  reserved 3;
+  repeated string alternative_names = 4;
+  string city_id = 5;
+  string name_ar = 6;
+  string name_en = 7;
+}
+
+message UpdateStationRequest {
+  string id = 1;
+  reserved 2;
+  string address = 3;
+  reserved 4;
+  string city_id = 5;
+  optional string name_ar = 6;
+  optional string name_en = 7;
+}
+
+message UpdateAlternativeNamesRequest {
+  string id = 1;
+  repeated string alternative_names = 2;
+}
+
+message UpdateStationStatusRequest {
+  string id = 1;
+  bool is_active = 2;
+}
+
+message SearchStationRequest {
+  string q = 1;
+}
+
+// ============================================================================
+// Governorates
+// ============================================================================
+
+message GovernorateResponse {
+  string id = 1;
+  string name_ar = 2;
+  string created_at = 3;
+  string updated_at = 4;
+  string name_en = 5;
+}
+
+message GovernorateListResponse {
+  repeated GovernorateResponse governorates = 1;
+}
+
+message CreateGovernorateRequest {
+  string name_ar = 1;
+  string name_en = 2;
+}
+
+message GetGovernorateByIdRequest {
+  string id = 1;
+}
+
+message UpdateGovernorateRequest {
+  string id = 1;
+  optional string name_ar = 2;
+  optional string name_en = 3;
+}
+
+// ============================================================================
+// Cities
+// ============================================================================
+
+message CityResponse {
+  string id = 1;
+  string name_ar = 2;
+  string name_en = 3;
+  string governorate_id = 4;
+  string governorate_name_ar = 5;
+  string governorate_name_en = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message CityListResponse {
+  repeated CityResponse cities = 1;
+}
+
+message CreateCityRequest {
+  string name_ar = 1;
+  string name_en = 2;
+  string governorate_id = 3;
+}
+
+message UpdateCityRequest {
+  string id = 1;
+  optional string name_ar = 2;
+  optional string name_en = 3;
+  optional string governorate_id = 4;
+}
+
+// ============================================================================
+// Train Types
+// ============================================================================
+
+message CreateTrainTypeRequest {
+  string name_ar = 1;
+  string name_en = 2;
+}
+
+message UpdateTrainTypeRequest {
+  string id = 1;
+  optional string name_ar = 2;
+  optional string name_en = 3;
+}
+
+message TrainTypeResponse {
+  string id = 1;
+  string name_ar = 2;
+  string name_en = 3;
+}
+
+message TrainTypeListResponse {
+  repeated TrainTypeResponse items = 1;
+}
+
+// ============================================================================
+// Train Classes
+// ============================================================================
+
+message CreateTrainClassRequest {
+  string name_ar = 1;
+  string name_en = 2;
+}
+
+message UpdateTrainClassRequest {
+  string id = 1;
+  optional string name_ar = 2;
+  optional string name_en = 3;
+}
+
+message TrainClassResponse {
+  string id = 1;
+  string name_ar = 2;
+  string name_en = 3;
+}
+
+message TrainClassListResponse {
+  repeated TrainClassResponse items = 1;
+}
+
+// ============================================================================
+// Trains
+// ============================================================================
+
+message CreateTrainRequest {
+  int32 number = 1;
+  string type_of_train_id = 2;
+}
+
+message UpdateTrainRequest {
+  string id = 1;
+  optional int32 number = 2;
+  optional string type_of_train_id = 3;
+}
+
+message TrainTypeRef {
+  string id = 1;
+  string name_ar = 2;
+  string name_en = 3;
+}
+
+message TrainResponse {
+  string id = 1;
+  int32 number = 2;
+  TrainTypeRef type_of_train = 3;
+}
+
+message TrainListResponse {
+  repeated TrainResponse items = 1;
+}
+
+// ============================================================================
+// Coach Layouts
+// ============================================================================
+
+message CreateCoachLayoutRequest {
+  string name_ar = 1;
+  string name_en = 2;
+  string description = 3;
+}
+
+message UpdateCoachLayoutRequest {
+  string id = 1;
+  optional string name_ar = 2;
+  optional string name_en = 3;
+  optional string description = 4;
+}
+
+message CoachLayoutResponse {
+  string id = 1;
+  string name_ar = 2;
+  string name_en = 3;
+  string description = 4;
+}
+
+message CoachLayoutListResponse {
+  repeated CoachLayoutResponse items = 1;
+}
+
+// ============================================================================
+// Coaches
+// ============================================================================
+
+message CreateCoachRequest {
+  int32 coach_number = 1;
+  string train_id = 2;
+  string class_of_train_id = 3;
+  string coach_layout_id = 4;
+}
+
+message UpdateCoachRequest {
+  string id = 1;
+  optional int32 coach_number = 2;
+  optional string train_id = 3;
+  optional string class_of_train_id = 4;
+  optional string coach_layout_id = 5;
+}
+
+message TrainRef {
+  string id = 1;
+  int32 number = 2;
+}
+
+message TrainClassRef {
+  string id = 1;
+  string name_ar = 2;
+  string name_en = 3;
+}
+
+message CoachLayoutRef {
+  string id = 1;
+  string name_ar = 2;
+  string name_en = 3;
+}
+
+message CoachResponse {
+  string id = 1;
+  int32 coach_number = 2;
+  TrainRef train = 3;
+  TrainClassRef class_of_train = 4;
+  CoachLayoutRef coach_layout = 5;
+}
+
+message CoachListResponse {
+  repeated CoachResponse items = 1;
+}
+
+// ============================================================================
+// Timetables
+// ============================================================================
+
+message CreateTimetableRequest {
+  string departure_time = 1;
+  string effective_from = 2;
+  string effective_to = 3;
+  repeated string working_days = 4;
+  bool status = 5;
+  string train_id = 6;
+}
+
+message UpdateTimetableRequest {
+  string id = 1;
+  optional string departure_time = 2;
+  optional string effective_from = 3;
+  optional string effective_to = 4;
+  repeated string working_days = 5;
+  optional bool status = 6;
+  optional string train_id = 7;
+}
+
+message TimetableResponse {
+  string id = 1;
+  string departure_time = 2;
+  string effective_from = 3;
+  string effective_to = 4;
+  repeated string working_days = 5;
+  bool status = 6;
+  TrainRef train = 7;
+}
+
+message TimetableListResponse {
+  repeated TimetableResponse items = 1;
+}
+
+// ============================================================================
+// Timetable Stops
+// ============================================================================
+
+message CreateTimetableStopRequest {
+  optional string arrival_time = 1;
+  optional string departure_time = 2;
+  int32 stop_order = 3;
+  string timetable_id = 4;
+  string station_id = 5;
+}
+
+message UpdateTimetableStopRequest {
+  string id = 1;
+  optional string arrival_time = 2;
+  optional string departure_time = 3;
+  optional int32 stop_order = 4;
+  optional string timetable_id = 5;
+  optional string station_id = 6;
+}
+
+message TimetableRef {
+  string id = 1;
+}
+
+message StationRef {
+  string id = 1;
+}
+
+message TimetableStopResponse {
+  string id = 1;
+  optional string arrival_time = 2;
+  optional string departure_time = 3;
+  int32 stop_order = 4;
+  TimetableRef timetable = 5;
+  StationRef station = 6;
+}
+
+message TimetableStopListResponse {
+  repeated TimetableStopResponse items = 1;
 }

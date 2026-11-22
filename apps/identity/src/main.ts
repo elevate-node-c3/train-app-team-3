@@ -3,11 +3,8 @@ import { MicroserviceOptions, Transport } from "@nestjs/microservices";
 import { ConfigService } from "@nestjs/config";
 import { join } from "path";
 import { AppModule } from "./app.module";
-import { setupDatabase } from "./database/database-setup";
 
 async function bootstrap() {
-  await setupDatabase();
-
   const appContext = await NestFactory.createApplicationContext(AppModule);
   const configService = appContext.get(ConfigService);
 

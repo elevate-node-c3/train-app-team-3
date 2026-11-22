@@ -6,8 +6,8 @@ import {
   VerificationPurpose,
   VerificationCodeIssuedEvent,
 } from '../../../../../libs/contracts/src/verification-code-issued.event';
-import { OutboxEvent } from '../outbox/outbox.entity';
-import { OutboxEncryptionService } from '../outbox/outbox-encryption.service';
+import { OutboxEvent } from '../../../../../libs/outbox/outbox.entity';
+import { OutboxEncryptionService } from '../../../../../libs/outbox/outbox-encryption.service';
 import { VerificationRepository } from './verification.repository';
 
 @Injectable()

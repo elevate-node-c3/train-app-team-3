@@ -13,7 +13,6 @@ export interface VerificationCodeIssuedEvent {
   payload: {
     email: string;
     code: string;
-    language: string;
     purpose: VerificationPurpose;
     expiresAt: string;
   };

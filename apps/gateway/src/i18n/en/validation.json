@@ -1,0 +1,13 @@
+{
+  "invalidEmail": "Please provide a valid email address",
+  "required": "This field is required",
+  "mustBeString": "This field must be a string",
+  "invalidEgyptianPhone": "Please provide a valid Egyptian mobile number",
+  "passwordsMustMatch": "Confirmation must match the password",
+  "otpInvalid": "The code must contain exactly 6 digits",
+  "minLength": "This field is shorter than the minimum length",
+  "maxLength": "This field exceeds the maximum length",
+  "invalidNationalId": "National ID must contain exactly 14 digits",
+  "invalidPassengerType": "Passenger type must be REGULAR",
+  "invalidUuid": "Passenger ID must be a valid UUID"
+}

@@ -15,7 +15,7 @@ export interface RedisLike {
   ttl: (key: string) => Promise<number>;
 }
 
-const OTP_TTL_SECONDS = 300;
+export const OTP_TTL_SECONDS = 300;
 
 @Injectable()
 export class OtpService {

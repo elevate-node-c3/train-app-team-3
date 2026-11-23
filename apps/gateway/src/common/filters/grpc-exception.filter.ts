@@ -4,6 +4,7 @@ import {
     ArgumentsHost,
     HttpStatus,
 } from '@nestjs/common';
+import { I18nContext } from 'nestjs-i18n';
 import { Response } from 'express';
 import { status } from '@grpc/grpc-js';
 
@@ -14,7 +15,9 @@ export class GrpcExceptionFilter implements ExceptionFilter {
         const response = ctx.getResponse<Response>();
 
         let httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-        let message = exception.details || exception.message || 'Internal server error';
+        let message = exception.details || exception.message ||
+            I18nContext.current()?.translate('auth.internalServerError') ||
+            'حدث خطأ داخلي في الخادم';
 
         switch (exception.code) {
             case status.INVALID_ARGUMENT:

@@ -1,12 +1,17 @@
-import { Injectable } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
-import { status } from '@grpc/grpc-js';
-import { RegisterUseCase } from './use-cases/register.use-case';
-import { LoginUseCase } from './use-cases/login.use-case';
-import { LogoutUseCase } from './use-cases/logout.use-case';
-import { RegisterDto } from '../users/applicatoin/dtos/register.dto';
-import { LoginDto } from '../users/applicatoin/dtos/login.dto';
-import { OtpService } from '../../../../../libs/auth/otp/otp.service';
+import { Injectable } from "@nestjs/common";
+import { RegisterUseCase } from "./use-cases/register.use-case";
+import { LoginUseCase } from "./use-cases/login.use-case";
+import { RegisterDto } from "../users/applicatoin/dtos/register.dto";
+import { LoginDto } from "../users/applicatoin/dtos/login.dto";
+import { LogoutUseCase } from "./use-cases/logout.use-case";
+import { ForgetPasswordUseCase } from "./use-cases/forget-password.use-case";
+import { RpcException } from "@nestjs/microservices";
+import { status } from "@grpc/grpc-js";
+import { OtpService } from "../../../../../libs/auth/otp/otp.service";
+import { I18nService } from "nestjs-i18n";
+import { AuthLanguage } from "../../i18n/grpc-language";
+import { CompleteProfileUseCase } from "./use-cases/complete-profile.use-case";
+import { CompleteProfileDto } from "../users/applicatoin/dtos/complete-profile.dto";
 
 @Injectable()
 export class AuthService {
@@ -14,44 +19,58 @@ export class AuthService {
     private readonly registerUseCase: RegisterUseCase,
     private readonly loginUseCase: LoginUseCase,
     private readonly logoutUseCase: LogoutUseCase,
+    private readonly forgetPasswordUseCase: ForgetPasswordUseCase,
     private readonly otpService: OtpService,
+    private readonly i18n: I18nService,
+    private readonly completeProfileUseCase: CompleteProfileUseCase,
   ) {}
 
-  async register(dto: RegisterDto) {
-    return this.registerUseCase.execute(dto);
+  async register(dto: RegisterDto, language: AuthLanguage = "ar") {
+    return this.registerUseCase.execute(dto, language);
   }
 
-  async login(dto: LoginDto) {
-    return this.loginUseCase.execute(dto);
+  async login(dto: LoginDto, language: AuthLanguage = "ar") {
+    return this.loginUseCase.execute(dto, language);
   }
 
-  async logout(input: { userId: string; sessionId: string }) {
-    return this.logoutUseCase.execute(input);
+  async logout(
+    input: { userId: string; sessionId: string },
+    language: AuthLanguage = "ar",
+  ) {
+    return this.logoutUseCase.execute(input, language);
   }
 
   async validateSession(input: { userId: string; sessionId: string }) {
     return { active: await this.logoutUseCase.isActive(input) };
   }
 
-  async forgotPassword(input: { email: string; userId: string }) {
-    await this.otpService.create(input.userId, 'forgot-password');
-    return { success: true };
+  async forgotPassword(email: string, _language: AuthLanguage = "ar") {
+    return this.forgetPasswordUseCase.execute(email);
   }
 
-  async verifyOtp(input: { email: string; otp: string; userId: string }) {
+  async verifyOtp(
+    input: { email: string; otp: string; userId: string },
+    language: AuthLanguage = "ar",
+  ) {
     const valid = await this.otpService.verifyUserOtp(
       input.userId,
-      'forgot-password',
+      "forgot-password",
       input.otp,
     );
 
     if (!valid) {
       throw new RpcException({
         code: status.PERMISSION_DENIED,
-        message: 'The OTP is invalid or expired',
+        message: this.i18n.translate("auth.otpInvalidOrExpired", {
+          lang: language,
+        }),
       });
     }
 
     return { success: true };
+  }
+
+  async completeProfile(dto: CompleteProfileDto) {
+    return this.completeProfileUseCase.execute(dto);
   }
 }

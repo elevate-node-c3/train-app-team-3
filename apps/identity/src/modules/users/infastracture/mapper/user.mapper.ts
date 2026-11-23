@@ -8,9 +8,16 @@ export class UserMapper {
       ormEntity.email,
       ormEntity.passwordHash,
       true,
-      false,
+      ormEntity.isVerified,
       ormEntity.createdAt,
       ormEntity.updatedAt,
+      ormEntity.lang,
+      ormEntity.fullName,
+      ormEntity.nationalId,
+      ormEntity.phone,
+      ormEntity.profileType,
+      ormEntity.nationality,
+      ormEntity.isProfileCompleted,
     );
   }
 
@@ -19,6 +26,14 @@ export class UserMapper {
     ormEntity.id = domainUser.id;
     ormEntity.email = domainUser.email;
     ormEntity.passwordHash = domainUser.getPasswordHash();
+    ormEntity.lang = domainUser.lang;
+    ormEntity.isVerified = domainUser.isVerified;
+    ormEntity.fullName = domainUser.fullName;
+    ormEntity.nationalId = domainUser.nationalId;
+    ormEntity.phone = domainUser.phone;
+    ormEntity.profileType = domainUser.profileType;
+    ormEntity.nationality = domainUser.nationality;
+    ormEntity.isProfileCompleted = domainUser.isProfileCompleted;
     ormEntity.createdAt = domainUser.createdAt;
     ormEntity.updatedAt = domainUser.updatedAt;
     return ormEntity;

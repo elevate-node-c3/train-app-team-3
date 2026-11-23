@@ -1,0 +1,11 @@
+{
+  "userNotFound": "The authenticated user was not found",
+  "selfPassenger": "You cannot add yourself as a passenger because your account already represents you",
+  "nationalIdBelongsToUser": "This national ID belongs to an existing user account",
+  "duplicatePassenger": "This passenger already exists in your passenger list",
+  "notFound": "Passenger not found",
+  "invalidType": "Unsupported passenger type",
+  "invalidFullName": "Passenger name is required and must be at most 100 characters",
+  "invalidNationalId": "National ID must contain exactly 14 digits",
+  "limitReached": "You cannot add more than 10 passengers"
+}

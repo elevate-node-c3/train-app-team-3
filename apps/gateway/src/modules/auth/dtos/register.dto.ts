@@ -2,11 +2,14 @@ import {
   IsEmail,
   IsNotEmpty,
   IsString,
+  MaxLength,
+  MinLength,
   ValidationArguments,
   ValidatorConstraint,
   ValidatorConstraintInterface,
   Validate,
 } from "class-validator";
+import { i18nValidationMessage } from "nestjs-i18n";
 
 @ValidatorConstraint({ name: "matchesPassword", async: false })
 class MatchesPasswordConstraint implements ValidatorConstraintInterface {
@@ -15,22 +18,28 @@ class MatchesPasswordConstraint implements ValidatorConstraintInterface {
     return confirmPassword === password;
   }
 
-  defaultMessage(): string {
-    return "confirmPassword must match password";
+  defaultMessage(args: ValidationArguments): string {
+    return i18nValidationMessage("validation.passwordsMustMatch")(args);
   }
 }
 
 export class RegisterDto {
-  @IsEmail()
-  @IsNotEmpty()
+  @IsEmail({}, { message: i18nValidationMessage("validation.invalidEmail") })
+  @IsNotEmpty({ message: i18nValidationMessage("validation.required") })
+  @MinLength(5, { message: i18nValidationMessage("validation.minLength") })
+  @MaxLength(254, { message: i18nValidationMessage("validation.maxLength") })
   email!: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: i18nValidationMessage("validation.mustBeString") })
+  @IsNotEmpty({ message: i18nValidationMessage("validation.required") })
+  @MinLength(8, { message: i18nValidationMessage("validation.minLength") })
+  @MaxLength(72, { message: i18nValidationMessage("validation.maxLength") })
   password!: string;
 
-  @IsString()
-  @IsNotEmpty()
+  @IsString({ message: i18nValidationMessage("validation.mustBeString") })
+  @IsNotEmpty({ message: i18nValidationMessage("validation.required") })
+  @MinLength(8, { message: i18nValidationMessage("validation.minLength") })
+  @MaxLength(72, { message: i18nValidationMessage("validation.maxLength") })
   @Validate(MatchesPasswordConstraint)
   confirmPassword!: string;
 }

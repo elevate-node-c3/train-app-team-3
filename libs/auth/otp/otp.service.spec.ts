@@ -1,5 +1,4 @@
-import Redis from "ioredis";
-import { OtpService } from "./otp.service";
+import { OtpService, RedisLike } from "./otp.service";
 
 describe("OtpService", () => {
   const transaction = {
@@ -7,18 +6,14 @@ describe("OtpService", () => {
     del: jest.fn(),
     exec: jest.fn(),
   };
-  const redis = {
-    multi: jest.fn(() => ({
-      set: jest.fn(),
-      del: jest.fn(),
-      exec: jest.fn().mockResolvedValue([[null, "OK"], [null, 1]]),
-    })),
+  const redis: RedisLike = {
+    multi: jest.fn(),
     eval: jest.fn(),
     del: jest.fn(),
-    get: jest.fn(),
     set: jest.fn(),
+    get: jest.fn(),
     ttl: jest.fn(),
-  } as unknown as Redis;
+  };
 
   let service: OtpService;
 
@@ -34,8 +29,8 @@ describe("OtpService", () => {
     service = new OtpService(redis);
   });
 
-  it("generates a zero-padded numeric code of the requested length", async () => {
-    await expect(service.generate(6)).resolves.toMatch(/^\d{6}$/);
+  it("generates a zero-padded numeric code of the requested length", () => {
+    expect(service.generate(6)).toMatch(/^\d{6}$/);
   });
 
   it("stores the code with a TTL and clears previous attempts", async () => {

@@ -1,15 +1,4 @@
-هذا النزاع (Merge Conflict) ناتج عن دمج فرعين في ملف بروتوكول البافرز (Protobuf) الخاص بخدمة الهوية (`identity`):
 
-1. **الفرع الأساسي (HEAD):** يحتوي على نظام المصادقة المتكامل بالكامل (التسجيل، تسجيل الدخول، الجلسات، كلمة المرور، الملف الشخصي، وإدارة الركاب).
-2. **فرع الميزة (`feat/stations-catalog-service`):** يحتوي على دالة تحقق مبسطة (`Verify`).
-
-ولأن فرع `HEAD` يحتوي على النظام الأكبر والأشمل، فقد قمت بدمج الخدمتين بحيث يتم الاحتفاظ بكل ميزات المصادقة وإضافة دالة `Verify` (مع رسائلها الخاصة) لتجنب أي فقدان للبيانات أو كسر للكود.
-
----
-
-### الملف الكامل بعد حل النزاع:
-
-```protobuf
 syntax = "proto3";
 
 package identity;
@@ -19,6 +8,7 @@ package identity;
 // -----------------------------------------------------------------------------
 
 service IdentityService {
+ service IdentityService {
   rpc Register (RegisterRequest) returns (RegisterResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
   rpc Logout (LogoutRequest) returns (OperationResponse);
@@ -34,7 +24,9 @@ service IdentityService {
   rpc GetProfile (GetProfileRequest) returns (ProfileResponse);
   rpc CompleteProfile (CompleteProfileRequest) returns (ProfileResponse);
   rpc ListPassengers (ListPassengersRequest) returns (ListPassengersResponse);
-  rpc SavePassenger (SavePassengerRequest) returns (PassengerResponse);
+  rpc create (SavePassengerRequest) returns (PassengerResponse);
+  rpc GetPassenger (GetPassengerRequest) returns (PassengerResponse);
+  rpc UpdatePassenger (UpdatePassengerRequest) returns (PassengerResponse);
   rpc DeletePassenger (DeletePassengerRequest) returns (OperationResponse);
   
   // Added from feat/stations-catalog-service
@@ -79,7 +71,7 @@ message LogoutRequest {
 
 message ForgotPasswordRequest {
   string email = 1;
-  string userId = 2;
+ 
 }
 
 message VerifyOtpRequest {
@@ -137,8 +129,11 @@ message GetProfileRequest {
 
 message CompleteProfileRequest {
   string full_name = 1;
-  string egyptian_mobile_number = 2;
+  string phone = 2;
   string national_id = 3;
+  string profile_type = 4;
+  string nationality = 5;
+  string email = 6;
 }
 
 message ProfileResponse {
@@ -150,6 +145,7 @@ message ProfileResponse {
 }
 
 message ListPassengersRequest {
+  string user_id = 1;
 }
 
 message SavePassengerRequest {
@@ -157,6 +153,7 @@ message SavePassengerRequest {
   string full_name = 2;
   string national_id = 3;
   PassengerType type = 4;
+  string user_id = 5;
 }
 
 message PassengerResponse {
@@ -167,12 +164,26 @@ message PassengerResponse {
   bool is_self = 5;
 }
 
+message GetPassengerRequest {
+  string passenger_id = 1;
+  string user_id = 2;
+}
+
+message UpdatePassengerRequest {
+  string passenger_id = 1;
+  string user_id = 2;
+  string full_name = 3;
+  string national_id = 4;
+  PassengerType type = 5;
+}
+
 message ListPassengersResponse {
   repeated PassengerResponse passengers = 1;
 }
 
 message DeletePassengerRequest {
   string passenger_id = 1;
+  string user_id = 2;
 }
 
 enum PassengerType {

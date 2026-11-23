@@ -9,6 +9,7 @@ import {
 export interface CreateUserInput {
   email: string;
   passwordHash: string;
+  lang: string;
 }
 
 @Injectable()
@@ -26,6 +27,17 @@ export class UsersService {
     return this.usersRepository.findById(id);
   }
 
+  async isNationalIdUsed(
+    nationalId: string,
+    exceptUserId: string,
+  ): Promise<boolean> {
+    return this.usersRepository.isNationalIdUsed(nationalId, exceptUserId);
+  }
+
+  async isPhoneUsed(phone: string, exceptUserId: string): Promise<boolean> {
+    return this.usersRepository.isPhoneUsed(phone, exceptUserId);
+  }
+
   async create(userData: CreateUserInput): Promise<User> {
     const now = new Date();
     const user = new User(
@@ -36,8 +48,13 @@ export class UsersService {
       false,
       now,
       now,
+      userData.lang,
     );
     await this.usersRepository.save(user);
     return user;
+  }
+
+  async save(user: User): Promise<void> {
+    await this.usersRepository.save(user);
   }
 }

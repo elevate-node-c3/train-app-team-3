@@ -1,0 +1,5 @@
+{
+  "date": "{value, date, medium}",
+  "number": "{value, number}",
+  "currency": "{value, number, ::currency/EGP}"
+}

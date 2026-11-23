@@ -22,11 +22,17 @@ describe("CreateSessionUseCase", () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    tokenService.sign.mockResolvedValue({
+    tokenService.sign
+      .mockResolvedValueOnce({
       token: "signed-access-token",
       jti: "jti",
       expiresAt,
-    });
+      })
+      .mockResolvedValueOnce({
+        token: "signed-refresh-token",
+        jti: "refresh-jti",
+        expiresAt,
+      });
     sessionService.create.mockResolvedValue(undefined);
     cacheService.set.mockResolvedValue("OK");
   });
@@ -38,7 +44,10 @@ describe("CreateSessionUseCase", () => {
         email: "user@example.com",
         deviceInfo: "browser",
       }),
-    ).resolves.toEqual({ accessToken: "signed-access-token" });
+    ).resolves.toEqual({
+      accessToken: "signed-access-token",
+      refreshToken: "signed-refresh-token",
+    });
 
     const [payload, tokenType] = tokenService.sign.mock.calls[0];
     const [session] = sessionService.create.mock.calls[0];
@@ -63,6 +72,7 @@ describe("CreateSessionUseCase", () => {
   });
 
   it("does not persist a session if logining the token fails", async () => {
+    tokenService.sign.mockReset();
     tokenService.sign.mockRejectedValue(new Error("logining failed"));
 
     await expect(

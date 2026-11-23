@@ -1,7 +1,13 @@
+
 syntax = "proto3";
 
 package identity;
 
+// -----------------------------------------------------------------------------
+// Services
+// -----------------------------------------------------------------------------
+
+service IdentityService {
  service IdentityService {
   rpc Register (RegisterRequest) returns (RegisterResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
@@ -22,7 +28,14 @@ package identity;
   rpc GetPassenger (GetPassengerRequest) returns (PassengerResponse);
   rpc UpdatePassenger (UpdatePassengerRequest) returns (PassengerResponse);
   rpc DeletePassenger (DeletePassengerRequest) returns (OperationResponse);
+  
+  // Added from feat/stations-catalog-service
+  rpc Verify (VerifyRequest) returns (VerifyResponse);
 }
+
+// -----------------------------------------------------------------------------
+// Authentication & Profile Messages (HEAD)
+// -----------------------------------------------------------------------------
 
 message RegisterRequest {
   string email = 1;
@@ -172,3 +185,24 @@ message DeletePassengerRequest {
   string passenger_id = 1;
   string user_id = 2;
 }
+
+enum PassengerType {
+  PASSENGER_TYPE_UNSPECIFIED = 0;
+  PASSENGER_TYPE_REGULAR = 1;
+}
+
+// -----------------------------------------------------------------------------
+// Feature Verification Messages (feat/stations-catalog-service)
+// -----------------------------------------------------------------------------
+
+message VerifyRequest {
+  string email = 1;
+  string code = 2;
+  string purpose = 3;
+}
+
+message VerifyResponse {
+  bool verified = 1;
+}
+
+```

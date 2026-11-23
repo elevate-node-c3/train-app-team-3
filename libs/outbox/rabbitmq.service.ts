@@ -1,13 +1,11 @@
 import { Injectable, OnModuleDestroy } from '@nestjs/common';
 import { connect, ChannelModel, ConfirmChannel } from 'amqplib';
+import { EVENTS_EXCHANGE, EVENT_QUEUES } from './event-topology';
 
 @Injectable()
 export class RabbitMQService implements OnModuleDestroy {
   private connection?: ChannelModel;
   private channel?: ConfirmChannel;
-
-  private readonly exchangeName = 'app.events';
-  private readonly routingKey = 'verification-code-issued';
 
   private async ensureConnection() {
     if (this.channel) return;
@@ -18,24 +16,27 @@ export class RabbitMQService implements OnModuleDestroy {
 
     this.channel = await this.connection.createConfirmChannel();
 
-    await this.channel.assertExchange(
-      this.exchangeName,
-      'topic',
-      { durable: true },
-    );
+    await this.channel.assertExchange(EVENTS_EXCHANGE, 'topic', { durable: true });
+
+    for (const { queue, routingKeys } of EVENT_QUEUES) {
+      await this.channel.assertQueue(queue, { durable: true });
+      for (const key of routingKeys) {
+        await this.channel.bindQueue(queue, EVENTS_EXCHANGE, key);
+      }
+    }
   }
 
-  async publishEvent(payload: unknown) {
+  async publishEvent(routingKey: string, payload: unknown) {
     try {
       await this.ensureConnection();
 
       await new Promise<void>((resolve, reject) => {
         this.channel!.publish(
-          this.exchangeName,
-          this.routingKey,
+          EVENTS_EXCHANGE,
+          routingKey,
           Buffer.from(JSON.stringify(payload)),
           { persistent: true, contentType: 'application/json' },
-          (error) => error ? reject(error) : resolve(),
+          (error) => (error ? reject(error) : resolve()),
         );
       });
     } catch (error) {

@@ -3,7 +3,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { VerificationCode } from './verification.entity';
 import { VerificationService } from './verification.service';
 import { VerificationController } from './verification.controller';
-import { OutboxEvent } from '../outbox/outbox.entity';
+import { OutboxEvent } from '../../../../../libs/outbox/outbox.entity';
 import { VerificationRepository } from './verification.repository';
 
 

@@ -1,7 +1,19 @@
+<<<<<<< HEAD
+=======
+
+>>>>>>> 8389a1345db1888c79488b31b9d1183334dc763d
 syntax = "proto3";
 
 package identity;
 
+<<<<<<< HEAD
+=======
+// -----------------------------------------------------------------------------
+// Services
+// -----------------------------------------------------------------------------
+
+service IdentityService {
+>>>>>>> 8389a1345db1888c79488b31b9d1183334dc763d
  service IdentityService {
   rpc Register (RegisterRequest) returns (RegisterResponse);
   rpc Login (LoginRequest) returns (LoginResponse);
@@ -180,3 +192,26 @@ message DeletePassengerRequest {
   string user_id = 2;
 }
 
+<<<<<<< HEAD
+=======
+enum PassengerType {
+  PASSENGER_TYPE_UNSPECIFIED = 0;
+  PASSENGER_TYPE_REGULAR = 1;
+}
+
+// -----------------------------------------------------------------------------
+// Feature Verification Messages (feat/stations-catalog-service)
+// -----------------------------------------------------------------------------
+
+message VerifyRequest {
+  string email = 1;
+  string code = 2;
+  string purpose = 3;
+}
+
+message VerifyResponse {
+  bool verified = 1;
+}
+
+```
+>>>>>>> 8389a1345db1888c79488b31b9d1183334dc763d

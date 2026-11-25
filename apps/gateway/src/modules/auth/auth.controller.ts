@@ -31,25 +31,6 @@ export class AuthController implements OnModuleInit {
     @Inject("IDENTITY_PACKAGE") private readonly client: ClientGrpc,
     private readonly i18n: I18nService,
   ) {}
-interface VerifyBody {
-    email: string;
-    code: string;
-    purpose: string;
-}
-
-interface IdentityGrpcService {
-    register(data: SignUpDto): Observable<{
-        id: string;
-        email: string;
-        accessToken: string;
-    }>;
-
-    verify(data: VerifyBody): Observable<{ verified: boolean }>;
-}
-
-@Controller('auth')
-export class AuthController implements OnModuleInit {
-    private identityService:IdentityGrpcService;
 
   onModuleInit() {
     this.identityService =
@@ -171,10 +152,4 @@ export class AuthController implements OnModuleInit {
     metadata.set("accept-language", language);
     return metadata;
   }
-}
-
-    @Post('verify')
-    async verify(@Body() body: VerifyBody) {
-        return await lastValueFrom(this.identityService.verify(body));
-    }
 }

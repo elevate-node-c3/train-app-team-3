@@ -1,40 +1,33 @@
 import {
   BadRequestException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { DataSource } from 'typeorm';
-import { randomUUID } from 'crypto';
-import { Timetable } from '../timetable/timetable.entity';
-import { DatedTrip, DatedTripStatus } from './dated-trip.entity';
-import { DatedTripRepository } from './dated-trip.repository';
-import { CreateDatedTripDto } from './dto/create-dated-trip.dto';
-import { UpdateDatedTripDto } from './dto/update-dated-trip.dto';
+import { CreateDatedTripDto } from './application/dtos/create-dated-trip.dto';
+import { UpdateDatedTripDto } from './application/dtos/update-dated-trip.dto';
 import { TripGenerationService } from '../trip-generation/trip-generation.service';
-import { OutboxEncryptionService } from 'libs/outbox/outbox-encryption.service';
-import { OutboxEvent } from 'libs/outbox/outbox.entity';
-import { CATALOG_ROUTING_KEYS, TripWithdrawnEvent } from '../../events/catalog.events';
+import { DatedTripStatus } from './domain/entities/dated-trip.entity';
+import {
+  DATED_TRIP_REPOSITORY,
+  DatedTripRepository,
+} from './domain/repositories/dated-trip.repository';
 
 @Injectable()
 export class DatedTripService {
   constructor(
+    @Inject(DATED_TRIP_REPOSITORY)
     private readonly tripRepository: DatedTripRepository,
-    private readonly dataSource: DataSource,
     private readonly tripGeneration: TripGenerationService,
-    private readonly encryption: OutboxEncryptionService,
   ) {}
 
   async create(dto: CreateDatedTripDto) {
-    const timetable = await this.dataSource.getRepository(Timetable).findOne({
-      where: { id: dto.timetableId },
-      relations: { train: true },
-    });
-
-    if (!timetable) {
+    const trainId = await this.tripRepository.findTimetableTrainId(dto.timetableId);
+    if (!trainId) {
       throw new NotFoundException('Timetable not found');
     }
 
-    if (timetable.train.id !== dto.trainId) {
+    if (trainId !== dto.trainId) {
       throw new BadRequestException('Timetable does not belong to this train');
     }
 
@@ -72,43 +65,7 @@ export class DatedTripService {
 
   /** Marks the trip withdrawn and announces it in the same transaction. Safe to call twice. */
   async withdraw(id: string) {
-    await this.dataSource.transaction(async (manager) => {
-      const locked = await manager.findOne(DatedTrip, {
-        where: { id },
-        lock: { mode: 'pessimistic_write' },
-      });
-      if (!locked) throw new NotFoundException('Dated trip not found');
-      if (locked.status === DatedTripStatus.CANCELLED) return;
-
-      const trip = await manager.findOne(DatedTrip, {
-        where: { id },
-        relations: { train: true },
-      });
-      if (!trip) throw new NotFoundException('Dated trip not found');
-
-      await manager.update(DatedTrip, { id }, { status: DatedTripStatus.CANCELLED });
-
-      const eventId = randomUUID();
-      const payload: TripWithdrawnEvent = {
-        version: 1,
-        eventId,
-        eventType: 'trip-withdrawn',
-        occurredAt: new Date().toISOString(),
-        tripId: trip.id,
-        trainId: trip.train.id,
-        serviceDate: String(trip.serviceDate).slice(0, 10),
-      };
-
-      const outboxRepo = manager.getRepository(OutboxEvent);
-      await outboxRepo.save(
-        outboxRepo.create({
-          eventId,
-          routingKey: CATALOG_ROUTING_KEYS.TRIP_WITHDRAWN,
-          payload: this.encryption.encryptPayload(payload),
-          sentAt: null,
-        }),
-      );
-    });
+    await this.tripRepository.withdraw(id);
   }
 
   async remove(id: string) {
@@ -124,7 +81,7 @@ export class DatedTripService {
       );
     }
 
-    await this.tripRepository.remove(trip);
+    await this.tripRepository.delete(id);
 
     return { message: 'Dated trip deleted successfully' };
   }

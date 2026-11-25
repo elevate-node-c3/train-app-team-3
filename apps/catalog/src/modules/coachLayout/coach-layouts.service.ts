@@ -1,18 +1,25 @@
 import {
+  Inject,
   Injectable,
   NotFoundException,
   BadRequestException,
 } from '@nestjs/common';
-import { LayoutSeatRepository } from './layout-seat.repository';
-import { CreateCoachLayoutDto } from './dto/create-coach-layout.dto';
-import { UpdateCoachLayoutDto } from './dto/update-coach-layout.dto';
-import { CoachLayoutRepository } from './coach-layouts.repository';
-import { validateLayoutSeats } from './layout-adjacency';
+import { CreateCoachLayoutDto } from './application/dtos/create-coach-layout.dto';
+import { UpdateCoachLayoutDto } from './application/dtos/update-coach-layout.dto';
+import {
+  COACH_LAYOUT_REPOSITORY,
+  CoachLayoutRepository,
+  LAYOUT_SEAT_REPOSITORY,
+  LayoutSeatRepository,
+} from './domain/repositories/coach-layout.repository';
+import { validateLayoutSeats } from './domain/policies/layout-adjacency';
 
 @Injectable()
 export class CoachLayoutService {
   constructor(
+    @Inject(COACH_LAYOUT_REPOSITORY)
     private readonly layoutRepository: CoachLayoutRepository,
+    @Inject(LAYOUT_SEAT_REPOSITORY)
     private readonly seatRepository: LayoutSeatRepository,
   ) {}
 
@@ -69,7 +76,15 @@ export class CoachLayoutService {
 
     if (seats !== undefined) this.assertValidSeats(seats);
 
-    Object.assign(layout, layoutData);
+    if (layoutData.name_ar !== undefined) {
+      layout.name_ar = layoutData.name_ar;
+    }
+    if (layoutData.name_en !== undefined) {
+      layout.name_en = layoutData.name_en;
+    }
+    if (layoutData.description !== undefined) {
+      layout.description = layoutData.description;
+    }
     await this.layoutRepository.save(layout);
 
     if (seats !== undefined) {
@@ -93,7 +108,7 @@ export class CoachLayoutService {
       );
     }
 
-    await this.layoutRepository.remove(layout);
+    await this.layoutRepository.remove(id);
 
     return { message: 'Coach layout deleted successfully' };
   }

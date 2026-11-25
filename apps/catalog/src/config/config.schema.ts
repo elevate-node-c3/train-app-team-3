@@ -2,6 +2,7 @@ import * as Joi from 'joi';
 
 export const configValidationSchema = Joi.object({
   CATALOG_PORT: Joi.number().default(50052),
+  INVENTORY_GRPC_URL: Joi.string().default('localhost:50053'),
 
   CATALOG_DB_HOST: Joi.string().required(),
   CATALOG_DB_PORT: Joi.number().default(5432),

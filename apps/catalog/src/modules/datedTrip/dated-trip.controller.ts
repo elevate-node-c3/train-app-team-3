@@ -9,8 +9,8 @@ import {
   Post,
 } from '@nestjs/common';
 import { DatedTripService } from './dated-trip.service';
-import { CreateDatedTripDto } from './dto/create-dated-trip.dto';
-import { UpdateDatedTripDto } from './dto/update-dated-trip.dto';
+import { CreateDatedTripDto } from './application/dtos/create-dated-trip.dto';
+import { UpdateDatedTripDto } from './application/dtos/update-dated-trip.dto';
 
 @Controller('dated-trips')
 export class DatedTripController {

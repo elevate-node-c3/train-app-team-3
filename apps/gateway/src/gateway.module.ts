@@ -4,9 +4,9 @@ import configuration from "./config/config";
 import { configValidationSchema } from "./config/config.schema";
 import { AuthModule } from "./modules/auth/auth.module";
 import { RateLimitModule } from "./common/rate.limit/rate.limit.module";
-import { CatalogModule } from './modules/Catalog/catalog.module';
 import { GatewayI18nModule } from "./i18n/i18n.module";
 import { PassengersModule } from "./modules/passengers/passengers.module";
+import { CatalogModule } from "./modules/catalog/catalog.module";
 
 @Module({
   imports: [

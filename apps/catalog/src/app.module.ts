@@ -7,6 +7,7 @@ import catalogConfig from './config/config';
 import { configValidationSchema } from './config/config.schema';
 import { TrainsModule } from './modules/train/trains.module';
 import { GovernoratesModule } from './modules/governorates/governorates.module';
+import { CitiesModule } from './modules/cities/cities.module';
 import { TrainTypesModule } from './modules/trainType/train-types.module';
 import { TrainClassesModule } from './modules/trainClass/train-classes.module';
 import { CoachLayoutModule } from './modules/coachLayout/coach-layouts.module';
@@ -17,6 +18,7 @@ import { StationsModule } from './modules/stations/stations.module';
 import { FareModule } from './modules/fare/fare.module';
 import { DatedTripModule } from './modules/datedTrip/dated-trip.module';
 import { TripGenerationModule } from './modules/trip-generation/trip-generation.module';
+import { TripSearchModule } from './modules/trip-search/trip-search.module';
 
 @Module({
   imports: [
@@ -34,6 +36,7 @@ import { TripGenerationModule } from './modules/trip-generation/trip-generation.
     DatabaseModule,
     StationsModule,
     GovernoratesModule,
+    CitiesModule,
     TrainsModule,
     TrainTypesModule,
     TrainClassesModule,
@@ -44,6 +47,7 @@ import { TripGenerationModule } from './modules/trip-generation/trip-generation.
     TimetableStopsModule,
     DatedTripModule,
     TripGenerationModule,
+    TripSearchModule,
   ],
 })
 export class AppModule {}

@@ -1,15 +1,25 @@
 
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateStationDto } from './dto/create-station.dto';
-import { UpdateStationDto } from './dto/update-station.dto';
-import { StationsRepository } from './stations.repository';
-import { CacheService } from 'libs/cache/src';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
+import { CreateStationDto } from './application/dtos/create-station.dto';
+import { UpdateStationDto } from './application/dtos/update-station.dto';
+import { CacheService } from '../../../../../libs/cache/src';
+import { City } from '../cities/domain/entities/city.entity';
+import { CitiesService } from '../cities/cities.service';
+import { Station } from './domain/entities/station.entity';
+import {
+  STATION_REPOSITORY,
+  GroupedStations,
+  StationRepository,
+} from './domain/repositories/station.repository';
 
 @Injectable()
 export class StationsService {
   constructor(
-    private readonly repo: StationsRepository,
+    @Inject(STATION_REPOSITORY)
+    private readonly repo: StationRepository,
     private readonly cache: CacheService,
+    private readonly cities: CitiesService,
   ) {}
 
   private generateKey(id: string) {
@@ -29,34 +39,62 @@ export class StationsService {
     const station = await this.repo.findById(id);
     if (!station) throw new NotFoundException('Station not found');
 
-    await this.repo.updateStatus(id, status);
+    station.isActive = status;
+    station.updatedAt = new Date();
+    const updatedStation = await this.repo.save(station);
     await this.invalidateCache(id);
 
-    return this.repo.findById(id);
+    return updatedStation;
   }
 
   async updateAlternativeNames(id: string, names: string[]) {
     const station = await this.repo.findById(id);
     if (!station) throw new NotFoundException('Station not found');
 
-    await this.repo.updateAlternativeNames(id, names);
+    station.alternativeNames = names;
+    station.updatedAt = new Date();
+    const updatedStation = await this.repo.save(station);
     await this.invalidateCache(id);
 
-    return this.repo.findById(id);
+    return updatedStation;
   }
 
   async updateStation(id: string, data: UpdateStationDto) {
     const station = await this.repo.findById(id);
     if (!station) throw new NotFoundException('Station not found');
 
-    await this.repo.updateStation(id, data);
+    const city = data.cityId
+      ? await this.validateCity(data.cityId)
+      : station.city;
+    station.name_ar = data.name_ar ?? station.name_ar;
+    station.name_en = data.name_en ?? station.name_en;
+    station.address = data.address ?? station.address;
+    station.cityId = city.id;
+    station.city = city;
+    station.updatedAt = new Date();
+    const updatedStation = await this.repo.save(station);
     await this.invalidateCache(id);
 
-    return this.repo.findById(id);
+    return updatedStation;
   }
 
   async createStation(data: CreateStationDto) {
-    const newStation = await this.repo.create(data);
+    const city = await this.validateCity(data.cityId);
+    const now = new Date();
+    const newStation = await this.repo.save(
+      new Station(
+        randomUUID(),
+        data.name_ar,
+        data.name_en,
+        data.address,
+        data.isActive ?? true,
+        city.id,
+        data.alternativeNames ?? [],
+        now,
+        now,
+        city,
+      ),
+    );
 
     await this.cache.set(
       this.generateKey(newStation.id),
@@ -69,12 +107,16 @@ export class StationsService {
     return newStation;
   }
 
+  private validateCity(cityId: string): Promise<City> {
+    return this.cities.findById(cityId);
+  }
+
   async findByName(name: string) {
     const normalizedName = name.trim().toLowerCase();
     const key = `station:search:${normalizedName}`;
 
-    const cachedStation = await this.cache.get(key);
-    if (cachedStation) return JSON.parse(cachedStation);
+    const cachedStations = await this.cache.get<Station[]>(key);
+    if (cachedStations) return cachedStations;
 
     const station = await this.repo.findByName(normalizedName);
 
@@ -86,10 +128,10 @@ export class StationsService {
   async getAllStation() {
     const key = 'station:grouped';
 
-    const cachedStations = await this.cache.get(key);
-    if (cachedStations) return JSON.parse(cachedStations);
+    const cachedStations = await this.cache.get<GroupedStations[]>(key);
+    if (cachedStations) return cachedStations;
 
-    const stations = await this.repo.getAllGroupedByGovernorate();
+    const stations = await this.repo.findAllGroupedByGovernorate();
 
     await this.cache.set(key, JSON.stringify(stations), 300);
 

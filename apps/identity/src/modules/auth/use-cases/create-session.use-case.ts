@@ -10,6 +10,7 @@ export interface CreateSessionInput {
   userId: string;
   email: string;
   deviceInfo?: string | null;
+  accessLevel?: AccessLevel;
 }
 
 @Injectable()
@@ -24,12 +25,13 @@ export class CreateSessionUseCase {
     input: CreateSessionInput,
   ): Promise<{ accessToken: string; refreshToken: string }> {
     const sessionId = randomUUID();
+    const accessLevel = input.accessLevel ?? AccessLevel.UNVERIFIED;
     const signedAccessToken = await this.tokenService.sign(
       {
         sub: input.userId,
         email: input.email,
         sid: sessionId,
-        level: AccessLevel.UNVERIFIED,
+        level: accessLevel,
       },
       TokenType.ACCESS,
     );
@@ -38,7 +40,7 @@ export class CreateSessionUseCase {
         sub: input.userId,
         email: input.email,
         sid: sessionId,
-        level: AccessLevel.UNVERIFIED,
+        level: accessLevel,
       },
       TokenType.REFRESH,
     );

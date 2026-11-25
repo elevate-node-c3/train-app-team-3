@@ -1,7 +1,13 @@
 import { Injectable, Inject, OnModuleDestroy } from "@nestjs/common";
 import Redis from "ioredis";
 
-export type CacheValue = string | number | boolean | Record<string, unknown> | unknown[] | null;
+export type CacheValue =
+  | string
+  | number
+  | boolean
+  | Record<string, unknown>
+  | unknown[]
+  | null;
 
 @Injectable()
 export class CacheService implements OnModuleDestroy {
@@ -20,12 +26,21 @@ export class CacheService implements OnModuleDestroy {
     }
   }
 
-  async set(key: string, value: CacheValue, ttlSeconds?: number): Promise<"OK"> {
+  async set(
+    key: string,
+    value: CacheValue,
+    ttlSeconds?: number,
+  ): Promise<"OK"> {
     const stringValue =
       typeof value === "string" ? value : JSON.stringify(value ?? "");
 
     if (typeof ttlSeconds === "number" && ttlSeconds >= 0) {
-      return this.redis.set(key, stringValue, "EX", Math.max(1, Math.ceil(ttlSeconds)));
+      return this.redis.set(
+        key,
+        stringValue,
+        "EX",
+        Math.max(1, Math.ceil(ttlSeconds)),
+      );
     }
 
     return this.redis.set(key, stringValue);
@@ -35,8 +50,9 @@ export class CacheService implements OnModuleDestroy {
     return this.redis.del(key);
   }
 
-  async delByPattern(pattern: string): Promise<void> {
+  async delByPattern(pattern: string): Promise<number> {
     let cursor = '0';
+    let deleted = 0;
 
     do {
       const [nextCursor, keys] = await this.redis.scan(
@@ -44,15 +60,15 @@ export class CacheService implements OnModuleDestroy {
         'MATCH',
         pattern,
         'COUNT',
-        100
+        100,
       );
-
-      cursor = nextCursor;
-
       if (keys.length > 0) {
-        await this.redis.del(...keys);
+        deleted += await this.redis.del(...keys);
       }
+      cursor = nextCursor;
     } while (cursor !== '0');
+
+    return deleted;
   }
 
   async getTTL(key: string): Promise<number> {

@@ -5,6 +5,7 @@ import { IdentityClientModule } from '../../clients/identity/identity-client.mod
 import { AuthController } from './auth.controller';
 import { GatewayAuthGuard } from '../../common/guards/gateway-auth.guard';
 import { RolesGuard } from '../../common/guards/roles.guard';
+import { VerifiedSearchGuard } from '../../common/guards/verified-search.guard';
 
 @Module({
     imports: [
@@ -18,7 +19,7 @@ import { RolesGuard } from '../../common/guards/roles.guard';
         }),
     ],
     controllers: [AuthController],
-    providers: [GatewayAuthGuard, RolesGuard],
-    exports: [GatewayAuthGuard],
+    providers: [GatewayAuthGuard, VerifiedSearchGuard, RolesGuard],
+    exports: [GatewayAuthGuard, VerifiedSearchGuard],
 })
 export class AuthModule { }

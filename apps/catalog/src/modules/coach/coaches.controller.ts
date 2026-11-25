@@ -1,43 +1,63 @@
 
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
+import type {
+  CoachListResponse,
+  CoachResponse,
+  CreateCoachRequest,
+  DeleteResponse,
+  EmptyRequest,
+  IdRequest,
+  UpdateCoachRequest,
+} from '@app/contracts/generated/catalog/messages.grpc.interfaces';
+import {
+  toCatalogApplicationData,
+  toCatalogGrpcMessage,
+} from '../../../../../libs/contracts/src/catalog-message.mapper';
+import { requireGrpcFields } from '../../grpc/require-grpc-fields';
 import { CoachesService } from './coaches.service';
-import { CreateCoachDto } from './dto/create-coach.dto';
-import { UpdateCoachDto } from './dto/update-coach.dto';
-
-interface CoachId {
-  id: string;
-}
-
-type UpdateCoachRequest = CoachId & UpdateCoachDto;
 
 @Controller()
 export class CoachesController {
   constructor(private readonly coachesService: CoachesService) {}
 
-  @GrpcMethod('CoachService', 'CreateCoach')
-  createCoach(data: CreateCoachDto) {
-    return this.coachesService.create(data);
+  @GrpcMethod('CatalogService', 'CreateCoach')
+  async createCoach(data: CreateCoachRequest): Promise<CoachResponse> {
+    requireGrpcFields(
+      data,
+      'coachNumber',
+      'trainId',
+      'classOfTrainId',
+      'coachLayoutId',
+    );
+    return toCatalogGrpcMessage(
+      await this.coachesService.create(toCatalogApplicationData(data)),
+    );
   }
 
-  @GrpcMethod('CoachService', 'GetCoaches')
-  getCoaches() {
-    return this.coachesService.findAll();
+  @GrpcMethod('CatalogService', 'GetCoaches')
+  async getCoaches(_data: EmptyRequest): Promise<CoachListResponse> {
+    return toCatalogGrpcMessage({ items: await this.coachesService.findAll() });
   }
 
-  @GrpcMethod('CoachService', 'GetCoach')
-  getCoach(data: CoachId) {
-    return this.coachesService.findOne(data.id);
+  @GrpcMethod('CatalogService', 'GetCoach')
+  async getCoach(data: IdRequest): Promise<CoachResponse> {
+    requireGrpcFields(data, 'id');
+    return toCatalogGrpcMessage(await this.coachesService.findOne(data.id));
   }
 
-  @GrpcMethod('CoachService', 'UpdateCoach')
-  updateCoach(data: UpdateCoachRequest) {
+  @GrpcMethod('CatalogService', 'UpdateCoach')
+  async updateCoach(data: UpdateCoachRequest): Promise<CoachResponse> {
+    requireGrpcFields(data, 'id');
     const { id, ...dto } = data;
-    return this.coachesService.update(id, dto);
+    return toCatalogGrpcMessage(
+      await this.coachesService.update(id, toCatalogApplicationData(dto)),
+    );
   }
 
-  @GrpcMethod('CoachService', 'DeleteCoach')
-  deleteCoach(data: CoachId) {
-    return this.coachesService.remove(data.id);
+  @GrpcMethod('CatalogService', 'DeleteCoach')
+  async deleteCoach(data: IdRequest): Promise<DeleteResponse> {
+    requireGrpcFields(data, 'id');
+    return toCatalogGrpcMessage(await this.coachesService.remove(data.id));
   }
 }

@@ -7,8 +7,8 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { CreateFareDto } from './dto/create-fare.dto';
-import { UpdateFareDto } from './dto/update-fare.dto';
+import { CreateFareDto } from './application/dtos/create-fare.dto';
+import { UpdateFareDto } from './application/dtos/update-fare.dto';
 import { FareService } from './fare.service';
 
 @Controller('fares')

@@ -1,16 +1,20 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { OutboxModule } from 'libs/outbox/outbox.module';
-import { Timetable } from './timetable.entity';
+import { TimetableOrmEntity } from './infrastructure/entities/timetable.typeorm.entity';
 import { TimetablesController } from './timetables.controller';
 import { TimetablesService } from './timetables.service';
-import { TimetablesRepository } from './timetables.repository';
+import { TIMETABLE_REPOSITORY } from './domain/repositories/timetable.repository';
+import { TypeOrmTimetableRepository } from './infrastructure/repositories/timetables.typeorm.repository';
 import { TripGenerationModule } from '../trip-generation/trip-generation.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Timetable]), OutboxModule, TripGenerationModule],
+  imports: [TypeOrmModule.forFeature([TimetableOrmEntity]), OutboxModule, TripGenerationModule],
   controllers: [TimetablesController],
-  providers: [TimetablesService, TimetablesRepository],
-  exports: [TimetablesService, TimetablesRepository],
+  providers: [
+    { provide: TIMETABLE_REPOSITORY, useClass: TypeOrmTimetableRepository },
+    TimetablesService,
+  ],
+  exports: [TimetablesService],
 })
 export class TimetablesModule {}

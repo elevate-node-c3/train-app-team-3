@@ -1,43 +1,85 @@
 
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
+import type {
+  CreateTimetableStopRequest,
+  DeleteResponse,
+  EmptyRequest,
+  IdRequest,
+  TimetableStopListResponse,
+  TimetableStopResponse,
+  UpdateTimetableStopRequest,
+} from '@app/contracts/generated/catalog/messages.grpc.interfaces';
+import {
+  toCatalogApplicationData,
+  toCatalogGrpcMessage,
+} from '../../../../../libs/contracts/src/catalog-message.mapper';
+import { requireGrpcFields } from '../../grpc/require-grpc-fields';
 import { TimetableStopsService } from './timetable-stops.service';
-import { CreateTimetableStopDto } from './dto/create-timetable-stop.dto';
-import { UpdateTimetableStopDto } from './dto/update-timetable-stop.dto';
-
-interface TimetableStopId {
-  id: string;
-}
-
-type UpdateTimetableStopRequest = TimetableStopId & UpdateTimetableStopDto;
+import { TimetableStop } from './domain/entities/timetable-stop.entity';
 
 @Controller()
 export class TimetableStopsController {
   constructor(private readonly timetableStopsService: TimetableStopsService) {}
 
-  @GrpcMethod('TimetableStopService', 'CreateTimetableStop')
-  createTimetableStop(data: CreateTimetableStopDto) {
-    return this.timetableStopsService.create(data);
+  private toResponse(stop: TimetableStop): TimetableStopResponse {
+    return {
+      id: stop.id,
+      ...(stop.arrivalTime !== null && { arrivalTime: stop.arrivalTime }),
+      ...(stop.departureTime !== null && {
+        departureTime: stop.departureTime,
+      }),
+      stopOrder: stop.stopOrder,
+      timetable: { id: stop.timeTable.id },
+      station: { id: stop.station.id },
+    };
   }
 
-  @GrpcMethod('TimetableStopService', 'GetTimetableStops')
-  getTimetableStops() {
-    return this.timetableStopsService.findAll();
+  @GrpcMethod('CatalogService', 'CreateTimetableStop')
+  async createTimetableStop(
+    data: CreateTimetableStopRequest,
+  ): Promise<TimetableStopResponse> {
+    requireGrpcFields(data, 'stopOrder', 'timetableId', 'stationId');
+    return this.toResponse(
+      await this.timetableStopsService.create(toCatalogApplicationData(data)),
+    );
   }
 
-  @GrpcMethod('TimetableStopService', 'GetTimetableStop')
-  getTimetableStop(data: TimetableStopId) {
-    return this.timetableStopsService.findOne(data.id);
+  @GrpcMethod('CatalogService', 'GetTimetableStops')
+  async getTimetableStops(
+    _data: EmptyRequest,
+  ): Promise<TimetableStopListResponse> {
+    const stops = await this.timetableStopsService.findAll();
+    return {
+      items: stops.map((stop) => this.toResponse(stop)),
+    };
   }
 
-  @GrpcMethod('TimetableStopService', 'UpdateTimetableStop')
-  updateTimetableStop(data: UpdateTimetableStopRequest) {
+  @GrpcMethod('CatalogService', 'GetTimetableStop')
+  async getTimetableStop(data: IdRequest): Promise<TimetableStopResponse> {
+    requireGrpcFields(data, 'id');
+    return this.toResponse(await this.timetableStopsService.findOne(data.id));
+  }
+
+  @GrpcMethod('CatalogService', 'UpdateTimetableStop')
+  async updateTimetableStop(
+    data: UpdateTimetableStopRequest,
+  ): Promise<TimetableStopResponse> {
+    requireGrpcFields(data, 'id');
     const { id, ...dto } = data;
-    return this.timetableStopsService.update(id, dto);
+    return this.toResponse(
+      await this.timetableStopsService.update(
+        id,
+        toCatalogApplicationData(dto),
+      ),
+    );
   }
 
-  @GrpcMethod('TimetableStopService', 'DeleteTimetableStop')
-  deleteTimetableStop(data: TimetableStopId) {
-    return this.timetableStopsService.remove(data.id);
+  @GrpcMethod('CatalogService', 'DeleteTimetableStop')
+  async deleteTimetableStop(data: IdRequest): Promise<DeleteResponse> {
+    requireGrpcFields(data, 'id');
+    return toCatalogGrpcMessage(
+      await this.timetableStopsService.remove(data.id),
+    );
   }
 }

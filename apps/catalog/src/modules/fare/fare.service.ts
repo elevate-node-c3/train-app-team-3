@@ -1,16 +1,24 @@
 import {
   BadRequestException,
   ConflictException,
+  Inject,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { FareRepository } from './fare.repository';
-import { CreateFareDto } from './dto/create-fare.dto';
-import { UpdateFareDto } from './dto/update-fare.dto';
+import { CreateFareDto } from './application/dtos/create-fare.dto';
+import { UpdateFareDto } from './application/dtos/update-fare.dto';
+import { Fare } from './domain/entities/fare.entity';
+import {
+  FARE_REPOSITORY,
+  FareRepository,
+} from './domain/repositories/fare.repository';
 
 @Injectable()
 export class FareService {
-  constructor(private readonly fareRepository: FareRepository) {}
+  constructor(
+    @Inject(FARE_REPOSITORY)
+    private readonly fareRepository: FareRepository,
+  ) {}
 
   /** Adds a fare version taking effect now. Earlier versions stay, so history is answerable. */
   async create(dto: CreateFareDto) {
@@ -29,15 +37,19 @@ export class FareService {
       throw new ConflictException('This fare is already the current one');
     }
 
+    const now = new Date();
     return this.fareRepository.save(
-      this.fareRepository.create({
-        priceInPiasters: dto.priceInPiasters,
-        effectiveFrom: new Date(),
-        train: { id: dto.trainId },
-        trainClass: { id: dto.trainClassId },
-        originStation: { id: dto.originStationId },
-        destinationStation: { id: dto.destinationStationId },
-      }),
+      new Fare(
+        null,
+        dto.priceInPiasters,
+        now,
+        { id: dto.trainId },
+        { id: dto.trainClassId },
+        { id: dto.originStationId },
+        { id: dto.destinationStationId },
+        now,
+        now,
+      ),
     );
   }
 

@@ -40,6 +40,7 @@ export class LoginUseCase {
       userId: user.id,
       email: user.email,
       deviceInfo: dto.deviceInfo ?? null,
+      accessLevel: user.accessLevel,
     });
     return {
       id: user.id,

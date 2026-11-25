@@ -28,6 +28,7 @@ message OperationResponse {
 service CatalogService {
   rpc SearchStations(SearchStationsRequest) returns (SearchStationsResponse);
   rpc SearchTrips(SearchTripsRequest) returns (SearchTripsResponse);
+  rpc SearchReturnTrips(SearchReturnTripsRequest) returns (SearchTripsResponse);
   rpc GetTripStops(GetTripStopsRequest) returns (GetTripStopsResponse);
   rpc GetRecentSearches(GetRecentSearchesRequest) returns (GetRecentSearchesResponse);
   rpc SaveRecentSearch(SaveRecentSearchRequest) returns (OperationResponse);
@@ -36,6 +37,55 @@ service CatalogService {
   rpc ChangeFares(ChangeFaresRequest) returns (OperationResponse);
   rpc DelayTrip(DelayTripRequest) returns (OperationResponse);
   rpc CancelTrip(CancelTripRequest) returns (OperationResponse);
+  rpc CreateStation(CreateStationRequest) returns (StationResponse);
+  rpc GetStations(EmptyRequest) returns (GroupedStationListResponse);
+  rpc SearchStationRecords(SearchStationRequest) returns (StationListResponse);
+  rpc UpdateStation(UpdateStationRequest) returns (StationResponse);
+  rpc UpdateAlternativeNames(UpdateAlternativeNamesRequest) returns (StationResponse);
+  rpc UpdateStationStatus(UpdateStationStatusRequest) returns (StationResponse);
+  rpc CreateGovernorate(CreateGovernorateRequest) returns (GovernorateResponse);
+  rpc GetGovernorates(EmptyRequest) returns (GovernorateListResponse);
+  rpc GetGovernorateById(GetGovernorateByIdRequest) returns (GovernorateResponse);
+  rpc UpdateGovernorate(UpdateGovernorateRequest) returns (GovernorateResponse);
+  rpc CreateCity(CreateCityRequest) returns (CityResponse);
+  rpc GetCities(EmptyRequest) returns (CityListResponse);
+  rpc GetCityById(IdRequest) returns (CityResponse);
+  rpc UpdateCity(UpdateCityRequest) returns (CityResponse);
+  rpc CreateTrainType(CreateTrainTypeRequest) returns (TrainTypeResponse);
+  rpc GetTrainTypes(EmptyRequest) returns (TrainTypeListResponse);
+  rpc GetTrainType(IdRequest) returns (TrainTypeResponse);
+  rpc UpdateTrainType(UpdateTrainTypeRequest) returns (TrainTypeResponse);
+  rpc DeleteTrainType(IdRequest) returns (DeleteResponse);
+  rpc CreateTrainClass(CreateTrainClassRequest) returns (TrainClassResponse);
+  rpc GetTrainClasses(EmptyRequest) returns (TrainClassListResponse);
+  rpc GetTrainClass(IdRequest) returns (TrainClassResponse);
+  rpc UpdateTrainClass(UpdateTrainClassRequest) returns (TrainClassResponse);
+  rpc DeleteTrainClass(IdRequest) returns (DeleteResponse);
+  rpc CreateTrain(CreateTrainRequest) returns (TrainResponse);
+  rpc GetTrains(EmptyRequest) returns (TrainListResponse);
+  rpc GetTrain(IdRequest) returns (TrainResponse);
+  rpc UpdateTrain(UpdateTrainRequest) returns (TrainResponse);
+  rpc DeleteTrain(IdRequest) returns (DeleteResponse);
+  rpc CreateCoachLayout(CreateCoachLayoutRequest) returns (CoachLayoutResponse);
+  rpc GetCoachLayouts(EmptyRequest) returns (CoachLayoutListResponse);
+  rpc GetCoachLayout(IdRequest) returns (CoachLayoutResponse);
+  rpc UpdateCoachLayout(UpdateCoachLayoutRequest) returns (CoachLayoutResponse);
+  rpc DeleteCoachLayout(IdRequest) returns (DeleteResponse);
+  rpc CreateCoach(CreateCoachRequest) returns (CoachResponse);
+  rpc GetCoaches(EmptyRequest) returns (CoachListResponse);
+  rpc GetCoach(IdRequest) returns (CoachResponse);
+  rpc UpdateCoach(UpdateCoachRequest) returns (CoachResponse);
+  rpc DeleteCoach(IdRequest) returns (DeleteResponse);
+  rpc CreateTimetable(CreateTimetableRequest) returns (TimetableResponse);
+  rpc GetTimetables(EmptyRequest) returns (TimetableListResponse);
+  rpc GetTimetable(IdRequest) returns (TimetableResponse);
+  rpc UpdateTimetable(UpdateTimetableRequest) returns (TimetableResponse);
+  rpc DeleteTimetable(IdRequest) returns (DeleteResponse);
+  rpc CreateTimetableStop(CreateTimetableStopRequest) returns (TimetableStopResponse);
+  rpc GetTimetableStops(EmptyRequest) returns (TimetableStopListResponse);
+  rpc GetTimetableStop(IdRequest) returns (TimetableStopResponse);
+  rpc UpdateTimetableStop(UpdateTimetableStopRequest) returns (TimetableStopResponse);
+  rpc DeleteTimetableStop(IdRequest) returns (DeleteResponse);
 }
 
 message SearchStationsRequest {
@@ -64,6 +114,13 @@ message SearchTripsRequest {
   int64 maximum_fare_piastres = 8;
   string train_type = 9;
   TripSort sort = 10;
+  optional string language = 11;
+  // Set only for a round trip. Validated against the departure date and the booking window.
+  optional string return_date = 12;
+  // Set by the gateway from the signed-in traveller. Never taken from the public query.
+  optional string traveller_id = 13;
+  // One or more train types. train_type remains for a single value.
+  repeated string train_types = 14;
 }
 
 enum TripSort {
@@ -90,16 +147,50 @@ message TripResult {
   int32 available_seats = 15;
   int64 fare_piastres = 16;
   bool sold_out = 17;
+  string seat_class_name = 18;
+  string currency_code = 19;
+}
+
+message TrainTypeOption {
+  string id = 1;
+  string name = 2;
+}
+
+// Built from that list's unfiltered results, so a client never offers a filter that cannot match.
+message FilterOptions {
+  repeated TrainTypeOption train_types = 1;
+  int64 minimum_fare_piastres = 2;
+  int64 maximum_fare_piastres = 3;
 }
 
 message SearchTripsResponse {
   repeated TripResult trips = 1;
+  repeated string date_strip = 2;
+  string empty_reason = 3;
+  FilterOptions filter_options = 4;
+}
+
+// The return list for one chosen outbound trip. Catalog reads that trip's arrival itself.
+message SearchReturnTripsRequest {
+  string outbound_trip_id = 1;
+  string origin_station_id = 2;
+  string destination_station_id = 3;
+  string return_date = 4;
+  string seat_class_id = 5;
+  string departure_time_from = 6;
+  string departure_time_to = 7;
+  int64 maximum_fare_piastres = 8;
+  repeated string train_types = 9;
+  TripSort sort = 10;
+  optional string language = 11;
+  optional string traveller_id = 12;
 }
 
 message GetTripStopsRequest {
   string trip_id = 1;
   string origin_station_id = 2;
   string destination_station_id = 3;
+  optional string language = 4;
 }
 
 message TripStop {
@@ -108,6 +199,8 @@ message TripStop {
   string station_name_ar = 3;
   string arrival_at = 4;
   string departure_at = 5;
+  // Cairo calendar date, present only when it differs from the boarding date.
+  optional string local_date = 6;
 }
 
 message GetTripStopsResponse {
@@ -121,9 +214,17 @@ message RecentSearch {
   string return_date = 4;
   string seat_class_id = 5;
   string train_number = 6;
+  string origin_station_name = 7;
+  string destination_station_name = 8;
+  bool round_trip = 9;
+  // True when the departure date has passed and the dates were omitted.
+  bool dates_omitted = 10;
 }
 
-message GetRecentSearchesRequest {}
+message GetRecentSearchesRequest {
+  string traveller_id = 1;
+  optional string language = 2;
+}
 
 message GetRecentSearchesResponse {
   repeated RecentSearch searches = 1;
@@ -170,15 +271,6 @@ message CancelTripRequest {
 // Stations
 // ============================================================================
 
-service StationService {
-  rpc CreateStation(CreateStationRequest) returns (StationResponse);
-  rpc GetStations(EmptyRequest) returns (GroupedStationListResponse);
-  rpc SearchStations(SearchStationRequest) returns (StationListResponse);
-  rpc UpdateStation(UpdateStationRequest) returns (StationResponse);
-  rpc UpdateAlternativeNames(UpdateAlternativeNamesRequest) returns (StationResponse);
-  rpc UpdateStationStatus(UpdateStationStatusRequest) returns (StationResponse);
-}
-
 message StationResponse {
   string id = 1;
   string name = 2;
@@ -188,6 +280,9 @@ message StationResponse {
   repeated string alternative_names = 6;
   string created_at = 7;
   string updated_at = 8;
+  string city_id = 9;
+  string name_en = 10;
+  string name_ar = 11;
 }
 
 message StationListResponse {
@@ -205,17 +300,23 @@ message GroupedStationListResponse {
 }
 
 message CreateStationRequest {
-  string name = 1;
+  reserved 1;
   string address = 2;
-  string governorate_id = 3;
+  reserved 3;
   repeated string alternative_names = 4;
+  string city_id = 5;
+  string name_ar = 6;
+  string name_en = 7;
 }
 
 message UpdateStationRequest {
   string id = 1;
-  string name = 2;
+  reserved 2;
   string address = 3;
-  string governorate_id = 4;
+  reserved 4;
+  string city_id = 5;
+  optional string name_ar = 6;
+  optional string name_en = 7;
 }
 
 message UpdateAlternativeNamesRequest {
@@ -236,18 +337,12 @@ message SearchStationRequest {
 // Governorates
 // ============================================================================
 
-service GovernorateService {
-  rpc CreateGovernorate(CreateGovernorateRequest) returns (GovernorateResponse);
-  rpc GetGovernorates(EmptyRequest) returns (GovernorateListResponse);
-  rpc GetGovernorateById(GetGovernorateByIdRequest) returns (GovernorateResponse);
-  rpc UpdateGovernorate(UpdateGovernorateRequest) returns (GovernorateResponse);
-}
-
 message GovernorateResponse {
   string id = 1;
-  string name = 2;
+  string name_ar = 2;
   string created_at = 3;
   string updated_at = 4;
+  string name_en = 5;
 }
 
 message GovernorateListResponse {
@@ -255,7 +350,8 @@ message GovernorateListResponse {
 }
 
 message CreateGovernorateRequest {
-  string name = 1;
+  string name_ar = 1;
+  string name_en = 2;
 }
 
 message GetGovernorateByIdRequest {
@@ -264,20 +360,45 @@ message GetGovernorateByIdRequest {
 
 message UpdateGovernorateRequest {
   string id = 1;
-  string name = 2;
+  optional string name_ar = 2;
+  optional string name_en = 3;
+}
+
+// ============================================================================
+// Cities
+// ============================================================================
+
+message CityResponse {
+  string id = 1;
+  string name_ar = 2;
+  string name_en = 3;
+  string governorate_id = 4;
+  string governorate_name_ar = 5;
+  string governorate_name_en = 6;
+  string created_at = 7;
+  string updated_at = 8;
+}
+
+message CityListResponse {
+  repeated CityResponse cities = 1;
+}
+
+message CreateCityRequest {
+  string name_ar = 1;
+  string name_en = 2;
+  string governorate_id = 3;
+}
+
+message UpdateCityRequest {
+  string id = 1;
+  optional string name_ar = 2;
+  optional string name_en = 3;
+  optional string governorate_id = 4;
 }
 
 // ============================================================================
 // Train Types
 // ============================================================================
-
-service TrainTypeService {
-  rpc CreateTrainType(CreateTrainTypeRequest) returns (TrainTypeResponse);
-  rpc GetTrainTypes(EmptyRequest) returns (TrainTypeListResponse);
-  rpc GetTrainType(IdRequest) returns (TrainTypeResponse);
-  rpc UpdateTrainType(UpdateTrainTypeRequest) returns (TrainTypeResponse);
-  rpc DeleteTrainType(IdRequest) returns (DeleteResponse);
-}
 
 message CreateTrainTypeRequest {
   string name_ar = 1;
@@ -304,14 +425,6 @@ message TrainTypeListResponse {
 // Train Classes
 // ============================================================================
 
-service TrainClassService {
-  rpc CreateTrainClass(CreateTrainClassRequest) returns (TrainClassResponse);
-  rpc GetTrainClasses(EmptyRequest) returns (TrainClassListResponse);
-  rpc GetTrainClass(IdRequest) returns (TrainClassResponse);
-  rpc UpdateTrainClass(UpdateTrainClassRequest) returns (TrainClassResponse);
-  rpc DeleteTrainClass(IdRequest) returns (DeleteResponse);
-}
-
 message CreateTrainClassRequest {
   string name_ar = 1;
   string name_en = 2;
@@ -336,14 +449,6 @@ message TrainClassListResponse {
 // ============================================================================
 // Trains
 // ============================================================================
-
-service TrainService {
-  rpc CreateTrain(CreateTrainRequest) returns (TrainResponse);
-  rpc GetTrains(EmptyRequest) returns (TrainListResponse);
-  rpc GetTrain(IdRequest) returns (TrainResponse);
-  rpc UpdateTrain(UpdateTrainRequest) returns (TrainResponse);
-  rpc DeleteTrain(IdRequest) returns (DeleteResponse);
-}
 
 message CreateTrainRequest {
   int32 number = 1;
@@ -376,14 +481,6 @@ message TrainListResponse {
 // Coach Layouts
 // ============================================================================
 
-service CoachLayoutService {
-  rpc CreateCoachLayout(CreateCoachLayoutRequest) returns (CoachLayoutResponse);
-  rpc GetCoachLayouts(EmptyRequest) returns (CoachLayoutListResponse);
-  rpc GetCoachLayout(IdRequest) returns (CoachLayoutResponse);
-  rpc UpdateCoachLayout(UpdateCoachLayoutRequest) returns (CoachLayoutResponse);
-  rpc DeleteCoachLayout(IdRequest) returns (DeleteResponse);
-}
-
 message CreateCoachLayoutRequest {
   string name_ar = 1;
   string name_en = 2;
@@ -411,14 +508,6 @@ message CoachLayoutListResponse {
 // ============================================================================
 // Coaches
 // ============================================================================
-
-service CoachService {
-  rpc CreateCoach(CreateCoachRequest) returns (CoachResponse);
-  rpc GetCoaches(EmptyRequest) returns (CoachListResponse);
-  rpc GetCoach(IdRequest) returns (CoachResponse);
-  rpc UpdateCoach(UpdateCoachRequest) returns (CoachResponse);
-  rpc DeleteCoach(IdRequest) returns (DeleteResponse);
-}
 
 message CreateCoachRequest {
   int32 coach_number = 1;
@@ -468,14 +557,6 @@ message CoachListResponse {
 // Timetables
 // ============================================================================
 
-service TimetableService {
-  rpc CreateTimetable(CreateTimetableRequest) returns (TimetableResponse);
-  rpc GetTimetables(EmptyRequest) returns (TimetableListResponse);
-  rpc GetTimetable(IdRequest) returns (TimetableResponse);
-  rpc UpdateTimetable(UpdateTimetableRequest) returns (TimetableResponse);
-  rpc DeleteTimetable(IdRequest) returns (DeleteResponse);
-}
-
 message CreateTimetableRequest {
   string departure_time = 1;
   string effective_from = 2;
@@ -512,14 +593,6 @@ message TimetableListResponse {
 // ============================================================================
 // Timetable Stops
 // ============================================================================
-
-service TimetableStopService {
-  rpc CreateTimetableStop(CreateTimetableStopRequest) returns (TimetableStopResponse);
-  rpc GetTimetableStops(EmptyRequest) returns (TimetableStopListResponse);
-  rpc GetTimetableStop(IdRequest) returns (TimetableStopResponse);
-  rpc UpdateTimetableStop(UpdateTimetableStopRequest) returns (TimetableStopResponse);
-  rpc DeleteTimetableStop(IdRequest) returns (DeleteResponse);
-}
 
 message CreateTimetableStopRequest {
   optional string arrival_time = 1;

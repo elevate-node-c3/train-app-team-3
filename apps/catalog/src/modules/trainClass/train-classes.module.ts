@@ -1,14 +1,18 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ClassesOfTrains } from './train-class.entity';
+import { ClassesOfTrainsOrmEntity } from './infrastructure/entities/train-class.typeorm.entity';
 import { TrainClassesController } from './train-classes.controller';
 import { TrainClassesService } from './train-classes.service';
-import { TrainClassesRepository } from './train-classes.repository';
+import { TRAIN_CLASS_REPOSITORY } from './domain/repositories/train-class.repository';
+import { TypeOrmTrainClassRepository } from './infrastructure/repositories/train-classes.typeorm.repository';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([ClassesOfTrains])],
+  imports: [TypeOrmModule.forFeature([ClassesOfTrainsOrmEntity])],
   controllers: [TrainClassesController],
-  providers: [TrainClassesService, TrainClassesRepository],
-  exports: [TrainClassesService, TrainClassesRepository],
+  providers: [
+    { provide: TRAIN_CLASS_REPOSITORY, useClass: TypeOrmTrainClassRepository },
+    TrainClassesService,
+  ],
+  exports: [TrainClassesService],
 })
 export class TrainClassesModule {}

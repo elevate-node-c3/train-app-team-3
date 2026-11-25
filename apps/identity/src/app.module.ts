@@ -1,14 +1,3 @@
-import { Module } from '@nestjs/common';
-import { ConfigModule } from '@nestjs/config';
-import configuration from './config/config';
-import { configValidationSchema } from './config/config.schema';
-import { DatabaseModule } from './database/database.module';
-import { UsersModule } from './modules/users/users.module';
-import { AuthModule } from './modules/auth/auth.module';
-import { AppConfigModule } from './config/config.module';
-import { CacheModule } from '../../../libs/cache/src/cache.module';
-import { VerificationModule } from './modules/verification/verification.module';
-import { OutboxModule } from '../../../libs/outbox/outbox.module';
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import configuration from "./config/config";
@@ -21,7 +10,7 @@ import { CacheModule } from "../../../libs/cache/src/cache.module";
 import { IdentityI18nModule } from "./i18n/i18n.module";
 import { PassengersModule } from "./modules/passengers/passengers.module";
 import { VerificationModule } from "./modules/verification/verification.module";
-import { OutboxModule } from "./modules/outbox/outbox.module";
+import { OutboxModule } from "libs/outbox/outbox.module";
 
 @Module({
   imports: [

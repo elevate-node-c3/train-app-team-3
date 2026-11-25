@@ -1,47 +1,87 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
+import type {
+  DeleteResponse,
+  EmptyRequest,
+  IdRequest,
+  OperationResponse,
+  PublishTimetableRequest,
+  TimetableListResponse,
+  TimetableResponse,
+  UpdateTimetableRequest,
+  CreateTimetableRequest,
+} from '@app/contracts/generated/catalog/messages.grpc.interfaces';
+import {
+  toCatalogApplicationData,
+  toCatalogGrpcMessage,
+} from '../../../../../libs/contracts/src/catalog-message.mapper';
+import { requireGrpcFields } from '../../grpc/require-grpc-fields';
 import { TimetablesService } from './timetables.service';
-import { CreateTimetableDto } from './dto/create-timetable.dto';
-import { UpdateTimetableDto } from './dto/update-timetable.dto';
-
-interface TimetableId {
-  id: string;
-}
-
-type UpdateTimetableRequest = TimetableId & UpdateTimetableDto;
 
 @Controller()
 export class TimetablesController {
   constructor(private readonly timetablesService: TimetablesService) {}
 
-  @GrpcMethod('TimetableService', 'CreateTimetable')
-  createTimetable(data: CreateTimetableDto) {
-    return this.timetablesService.create(data);
+  @GrpcMethod('CatalogService', 'CreateTimetable')
+  async createTimetable(
+    data: CreateTimetableRequest,
+  ): Promise<TimetableResponse> {
+    requireGrpcFields(
+      data,
+      'departureTime',
+      'effectiveFrom',
+      'effectiveTo',
+      'workingDays',
+      'status',
+      'trainId',
+    );
+    return toCatalogGrpcMessage(
+      await this.timetablesService.create(toCatalogApplicationData(data)),
+    );
   }
 
-  @GrpcMethod('TimetableService', 'GetTimetables')
-  getTimetables() {
-    return this.timetablesService.findAll();
+  @GrpcMethod('CatalogService', 'GetTimetables')
+  async getTimetables(_data: EmptyRequest): Promise<TimetableListResponse> {
+    return toCatalogGrpcMessage({
+      items: await this.timetablesService.findAll(),
+    });
   }
 
-  @GrpcMethod('TimetableService', 'GetTimetable')
-  getTimetable(data: TimetableId) {
-    return this.timetablesService.findOne(data.id);
+  @GrpcMethod('CatalogService', 'GetTimetable')
+  async getTimetable(data: IdRequest): Promise<TimetableResponse> {
+    requireGrpcFields(data, 'id');
+    return toCatalogGrpcMessage(
+      await this.timetablesService.findOne(data.id),
+    );
   }
 
-  @GrpcMethod('TimetableService', 'UpdateTimetable')
-  updateTimetable(data: UpdateTimetableRequest) {
+  @GrpcMethod('CatalogService', 'UpdateTimetable')
+  async updateTimetable(
+    data: UpdateTimetableRequest,
+  ): Promise<TimetableResponse> {
+    requireGrpcFields(data, 'id');
     const { id, ...dto } = data;
-    return this.timetablesService.update(id, dto);
+    return toCatalogGrpcMessage(
+      await this.timetablesService.update(
+        id,
+        toCatalogApplicationData(dto),
+      ),
+    );
   }
 
-  @GrpcMethod('TimetableService', 'DeleteTimetable')
-  deleteTimetable(data: TimetableId) {
-    return this.timetablesService.remove(data.id);
+  @GrpcMethod('CatalogService', 'DeleteTimetable')
+  async deleteTimetable(data: IdRequest): Promise<DeleteResponse> {
+    requireGrpcFields(data, 'id');
+    return toCatalogGrpcMessage(
+      await this.timetablesService.remove(data.id),
+    );
   }
 
   @GrpcMethod('CatalogService', 'PublishTimetable')
-  async publishTimetable(data: { timetableId: string }) {
+  async publishTimetable(
+    data: PublishTimetableRequest,
+  ): Promise<OperationResponse> {
+    requireGrpcFields(data, 'timetableId');
     await this.timetablesService.publish(data.timetableId);
     return { success: true };
   }

@@ -1,42 +1,56 @@
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
+import type {
+  CreateTrainRequest,
+  DeleteResponse,
+  EmptyRequest,
+  IdRequest,
+  TrainListResponse,
+  TrainResponse,
+  UpdateTrainRequest,
+} from '@app/contracts/generated/catalog/messages.grpc.interfaces';
+import {
+  toCatalogApplicationData,
+  toCatalogGrpcMessage,
+} from '../../../../../libs/contracts/src/catalog-message.mapper';
+import { requireGrpcFields } from '../../grpc/require-grpc-fields';
 import { TrainsService } from './trains.service';
-import { CreateTrainDto } from './dto/create-train.dto';
-import { UpdateTrainDto } from './dto/update-train.dto';
-
-interface TrainId {
-  id: string;
-}
-
-type UpdateTrainRequest = TrainId & UpdateTrainDto;
 
 @Controller()
 export class TrainsController {
   constructor(private readonly trainsService: TrainsService) {}
 
-  @GrpcMethod('TrainService', 'CreateTrain')
-  createTrain(data: CreateTrainDto) {
-    return this.trainsService.create(data);
+  @GrpcMethod('CatalogService', 'CreateTrain')
+  async createTrain(data: CreateTrainRequest): Promise<TrainResponse> {
+    requireGrpcFields(data, 'number', 'typeOfTrainId');
+    return toCatalogGrpcMessage(
+      await this.trainsService.create(toCatalogApplicationData(data)),
+    );
   }
 
-  @GrpcMethod('TrainService', 'GetTrains')
-  getTrains() {
-    return this.trainsService.findAll();
+  @GrpcMethod('CatalogService', 'GetTrains')
+  async getTrains(_data: EmptyRequest): Promise<TrainListResponse> {
+    return toCatalogGrpcMessage({ items: await this.trainsService.findAll() });
   }
 
-  @GrpcMethod('TrainService', 'GetTrain')
-  getTrain(data: TrainId) {
-    return this.trainsService.findOne(data.id);
+  @GrpcMethod('CatalogService', 'GetTrain')
+  async getTrain(data: IdRequest): Promise<TrainResponse> {
+    requireGrpcFields(data, 'id');
+    return toCatalogGrpcMessage(await this.trainsService.findOne(data.id));
   }
 
-  @GrpcMethod('TrainService', 'UpdateTrain')
-  updateTrain(data: UpdateTrainRequest) {
+  @GrpcMethod('CatalogService', 'UpdateTrain')
+  async updateTrain(data: UpdateTrainRequest): Promise<TrainResponse> {
+    requireGrpcFields(data, 'id');
     const { id, ...dto } = data;
-    return this.trainsService.update(id, dto);
+    return toCatalogGrpcMessage(
+      await this.trainsService.update(id, toCatalogApplicationData(dto)),
+    );
   }
 
-  @GrpcMethod('TrainService', 'DeleteTrain')
-  deleteTrain(data: TrainId) {
-    return this.trainsService.remove(data.id);
+  @GrpcMethod('CatalogService', 'DeleteTrain')
+  async deleteTrain(data: IdRequest): Promise<DeleteResponse> {
+    requireGrpcFields(data, 'id');
+    return toCatalogGrpcMessage(await this.trainsService.remove(data.id));
   }
 }

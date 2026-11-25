@@ -1,15 +1,33 @@
-
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { CoachesRepository } from './coaches.repository';
-import { CreateCoachDto } from './dto/create-coach.dto';
-import { UpdateCoachDto } from './dto/update-coach.dto';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
+import { CreateCoachDto } from './application/dtos/create-coach.dto';
+import { UpdateCoachDto } from './application/dtos/update-coach.dto';
+import { Coach } from './domain/entities/coach.entity';
+import {
+  COACH_REPOSITORY,
+  CoachRepository,
+} from './domain/repositories/coach.repository';
 
 @Injectable()
 export class CoachesService {
-  constructor(private readonly coachesRepository: CoachesRepository) {}
+  constructor(
+    @Inject(COACH_REPOSITORY)
+    private readonly coachesRepository: CoachRepository,
+  ) {}
 
   create(dto: CreateCoachDto) {
-    return this.coachesRepository.create(dto);
+    const now = new Date();
+    return this.coachesRepository.create(
+      new Coach(
+        randomUUID(),
+        dto.coachNumber,
+        { id: dto.trainId },
+        { id: dto.classOfTrainId },
+        { id: dto.coachLayoutId },
+        now,
+        now,
+      ),
+    );
   }
 
   findAll() {
@@ -27,8 +45,18 @@ export class CoachesService {
   }
 
   async update(id: string, dto: UpdateCoachDto) {
-    await this.findOne(id);
-    return this.coachesRepository.update(id, dto);
+    const coach = await this.findOne(id);
+    coach.coachNumber = dto.coachNumber ?? coach.coachNumber;
+    if (dto.trainId) coach.train = { id: dto.trainId };
+    if (dto.classOfTrainId) coach.classOfTrain = { id: dto.classOfTrainId };
+    if (dto.coachLayoutId) coach.coachLayout = { id: dto.coachLayoutId };
+
+    const updatedCoach = await this.coachesRepository.update(coach);
+    if (!updatedCoach) {
+      throw new NotFoundException('Coach not found');
+    }
+
+    return updatedCoach;
   }
 
   async remove(id: string) {

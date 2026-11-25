@@ -26,6 +26,18 @@ export interface IdentityCompleteProfileResponse {
   complete: boolean;
 }
 
+export interface PassengerResponse {
+  passengerId: string;
+  fullName: string;
+  nationalId: string;
+  type: number;
+  isSelf: boolean;
+}
+
+export interface ListPassengersResponse {
+  passengers: PassengerResponse[];
+}
+
 export interface IdentityGrpcService {
   register(
     data: RegisterDto,
@@ -69,4 +81,36 @@ export interface IdentityGrpcService {
     },
     metadata?: Metadata,
   ): Observable<IdentityCompleteProfileResponse>;
+  create(
+    data: {
+      passengerId: string;
+      fullName: string;
+      nationalId: string;
+      type: number;
+      userId: string;
+    },
+    metadata?: Metadata,
+  ): Observable<PassengerResponse>;
+  listPassengers(
+    data: { userId: string },
+    metadata?: Metadata,
+  ): Observable<ListPassengersResponse>;
+  getPassenger(
+    data: { passengerId: string; userId: string },
+    metadata?: Metadata,
+  ): Observable<PassengerResponse>;
+  updatePassenger(
+    data: {
+      passengerId: string;
+      userId: string;
+      fullName: string;
+      nationalId: string;
+      type: number;
+    },
+    metadata?: Metadata,
+  ): Observable<PassengerResponse>;
+  deletePassenger(
+    data: { passengerId: string; userId: string },
+    metadata?: Metadata,
+  ): Observable<IdentityOperationResponse>;
 }

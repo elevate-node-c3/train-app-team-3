@@ -1,25 +1,20 @@
-import { BadRequestException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { DataSource } from 'typeorm';
-import { randomUUID } from 'crypto';
-import { TimetablesRepository } from './timetables.repository';
-import { CreateTimetableDto } from './dto/create-timetable.dto';
-import { UpdateTimetableDto } from './dto/update-timetable.dto';
-import { Timetable } from './timetable.entity';
+import { BadRequestException, Inject, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { CreateTimetableDto } from './application/dtos/create-timetable.dto';
+import { UpdateTimetableDto } from './application/dtos/update-timetable.dto';
 import { TripGenerationService } from '../trip-generation/trip-generation.service';
-import { loadPublishingInputs } from '../trip-generation/publishing-inputs';
-import { OutboxEncryptionService } from 'libs/outbox/outbox-encryption.service';
-import { OutboxEvent } from 'libs/outbox/outbox.entity';
-import { CATALOG_ROUTING_KEYS, TimetablePublishedEvent } from '../../events/catalog.events';
+import {
+  TIMETABLE_REPOSITORY,
+  TimetableRepository,
+} from './domain/repositories/timetable.repository';
 
 @Injectable()
 export class TimetablesService {
   private readonly logger = new Logger(TimetablesService.name);
 
   constructor(
-    private readonly timetablesRepository: TimetablesRepository,
-    private readonly dataSource: DataSource,
+    @Inject(TIMETABLE_REPOSITORY)
+    private readonly timetablesRepository: TimetableRepository,
     private readonly tripGeneration: TripGenerationService,
-    private readonly encryption: OutboxEncryptionService,
   ) {}
 
   create(dto: CreateTimetableDto) {
@@ -42,7 +37,12 @@ export class TimetablesService {
 
   async update(id: string, dto: UpdateTimetableDto) {
     await this.findOne(id);
-    return this.timetablesRepository.update(id, dto);
+    const timetable = await this.timetablesRepository.update(id, dto);
+    if (!timetable) {
+      throw new NotFoundException('Timetable not found');
+    }
+
+    return timetable;
   }
 
   async remove(id: string) {
@@ -71,41 +71,7 @@ export class TimetablesService {
       throw new BadRequestException('Timetable is inactive');
     }
 
-    await this.dataSource.transaction(async (manager) => {
-      const locked = await manager.findOne(Timetable, {
-        where: { id },
-        lock: { mode: 'pessimistic_write' },
-      });
-      if (!locked) throw new NotFoundException('Timetable not found');
-
-      await loadPublishingInputs(manager, timetable);
-
-      const version = locked.version + 1;
-      await manager.update(Timetable, { id }, { publishedAt: new Date(), version });
-
-      const eventId = randomUUID();
-      const payload: TimetablePublishedEvent = {
-        version: 1,
-        eventId,
-        eventType: 'timetable-published',
-        occurredAt: new Date().toISOString(),
-        timetableId: id,
-        trainId: timetable.train.id,
-        timetableVersion: version,
-        effectiveFrom: String(timetable.effectiveFrom).slice(0, 10),
-        effectiveTo: String(timetable.effectiveTo).slice(0, 10),
-      };
-
-      const outboxRepo = manager.getRepository(OutboxEvent);
-      await outboxRepo.save(
-        outboxRepo.create({
-          eventId,
-          routingKey: CATALOG_ROUTING_KEYS.TIMETABLE_PUBLISHED,
-          payload: this.encryption.encryptPayload(payload),
-          sentAt: null,
-        }),
-      );
-    });
+    await this.timetablesRepository.publish(id);
 
     const summary = await this.tripGeneration.generateWindow(id);
 

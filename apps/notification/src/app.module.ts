@@ -1,7 +1,7 @@
 import { Module } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { NotificationI18nModule } from "./i18n/i18n.module";
-import { MailerModule } from "./modules/mailer/mailer.module";
+import { MailerModule } from "./modules/mailer.module";
 import { VerificationCodeIssuedConsumer } from "./modules/mailer/verification-code-issued.consumer";
 
 @Module({

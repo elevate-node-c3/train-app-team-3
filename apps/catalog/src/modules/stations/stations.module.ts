@@ -1,18 +1,21 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { Station } from './stations.entity';
+import { StationOrmEntity } from './infrastructure/entities/stations.typeorm.entity';
 import { StationsController } from './stations.controller';
-import { StationsRepository } from './stations.repository';
+import { STATION_REPOSITORY } from './domain/repositories/station.repository';
+import { TypeOrmStationRepository } from './infrastructure/repositories/stations.typeorm.repository';
 import { StationsService } from './stations.service';
+import { CitiesModule } from '../cities/cities.module';
 
 @Module({
-  imports:[
-    TypeOrmModule.forFeature([Station]),
+  imports: [
+    TypeOrmModule.forFeature([StationOrmEntity]),
+    CitiesModule,
   ],
-  controllers:[StationsController],
-  providers:[
-    StationsRepository,
-    StationsService
-  ]
+  controllers: [StationsController],
+  providers: [
+    { provide: STATION_REPOSITORY, useClass: TypeOrmStationRepository },
+    StationsService,
+  ],
 })
-export class StationsModule { }
+export class StationsModule {}

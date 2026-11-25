@@ -1,12 +1,18 @@
 
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { TimetableStopsRepository } from './timetable-stops.repository';
-import { CreateTimetableStopDto } from './dto/create-timetable-stop.dto';
-import { UpdateTimetableStopDto } from './dto/update-timetable-stop.dto';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { CreateTimetableStopDto } from './application/dtos/create-timetable-stop.dto';
+import { UpdateTimetableStopDto } from './application/dtos/update-timetable-stop.dto';
+import {
+  TIMETABLE_STOP_REPOSITORY,
+  TimetableStopRepository,
+} from './domain/repositories/timetable-stop.repository';
 
 @Injectable()
 export class TimetableStopsService {
-  constructor(private readonly timetableStopsRepository: TimetableStopsRepository) {}
+  constructor(
+    @Inject(TIMETABLE_STOP_REPOSITORY)
+    private readonly timetableStopsRepository: TimetableStopRepository,
+  ) {}
 
   create(dto: CreateTimetableStopDto) {
     return this.timetableStopsRepository.create(dto);
@@ -28,7 +34,12 @@ export class TimetableStopsService {
 
   async update(id: string, dto: UpdateTimetableStopDto) {
     await this.findOne(id);
-    return this.timetableStopsRepository.update(id, dto);
+    const updatedStop = await this.timetableStopsRepository.update(id, dto);
+    if (!updatedStop) {
+      throw new NotFoundException('Timetable stop not found');
+    }
+
+    return updatedStop;
   }
 
   async remove(id: string) {

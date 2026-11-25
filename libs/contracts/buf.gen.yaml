@@ -1,0 +1,11 @@
+version: v2
+plugins:
+  - local:
+      - node
+      - node_modules/ts-proto/protoc-gen-ts_proto
+    out: libs/contracts/src/generated
+    opt:
+      - nestJs=true
+      - addGrpcMetadata=true
+      - forceLong=number
+      - useOptionals=all

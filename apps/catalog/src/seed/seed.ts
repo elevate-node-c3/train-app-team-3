@@ -2,18 +2,19 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { DataSource } from 'typeorm';
 import { AppModule } from '../app.module';
-import { Governorate } from '../modules/governorates/governorates.entity';
-import { Station } from '../modules/stations/stations.entity';
-import { TypeOfTrain } from '../modules/trainType/train-type.entity';
-import { ClassesOfTrains } from '../modules/trainClass/train-class.entity';
-import { Train } from '../modules/train/train.entity';
-import { SeatSide } from '../modules/coachLayout/layout-seat.entity';
+import { GovernorateOrmEntity } from '../modules/governorates/infrastructure/entities/governorates.typeorm.entity';
+import { CityOrmEntity } from '../modules/cities/infrastructure/entities/city.typeorm.entity';
+import { StationOrmEntity } from '../modules/stations/infrastructure/entities/stations.typeorm.entity';
+import { TypeOfTrainOrmEntity } from '../modules/trainType/infrastructure/entities/train-type.typeorm.entity';
+import { ClassesOfTrainsOrmEntity } from '../modules/trainClass/infrastructure/entities/train-class.typeorm.entity';
+import { TrainOrmEntity } from '../modules/train/infrastructure/entities/train.typeorm.entity';
+import { SeatSide } from '../modules/coachLayout/domain/entities/layout-seat.entity';
 import { CoachLayoutService } from '../modules/coachLayout/coach-layouts.service';
 import { CoachesService } from '../modules/coach/coaches.service';
 import { FareService } from '../modules/fare/fare.service';
 import { TimetablesService } from '../modules/timetable/timetables.service';
 import { TimetableStopsService } from '../modules/timetableStops/timetable-stops.service';
-import { addDays, cairoDateOf } from '../modules/trip-generation/cairo-time';
+import { addDays, cairoDateOf } from '../modules/trip-generation/domain/policies/cairo-time';
 
 const ALL_DAYS = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 
@@ -23,12 +24,29 @@ const GOVERNORATES: [string, string][] = [
   ['Assiut', 'أسيوط'], ['Sohag', 'سوهاج'], ['Luxor', 'الأقصر'], ['Aswan', 'أسوان'],
 ];
 
+const CITIES: Record<string, [string, string, string]> = {
+  cairo: ['Cairo', 'القاهرة', 'Cairo'],
+  banha: ['Banha', 'بنها', 'Qalyubia'],
+  tanta: ['Tanta', 'طنطا', 'Gharbia'],
+  kafrelzayat: ['Kafr El Zayat', 'كفر الزيات', 'Gharbia'],
+  damanhour: ['Damanhour', 'دمنهور', 'Beheira'],
+  alexandria: ['Alexandria', 'الإسكندرية', 'Alexandria'],
+  giza: ['Giza', 'الجيزة', 'Giza'],
+  benisuef: ['Beni Suef', 'بني سويف', 'Beni Suef'],
+  minya: ['Minya', 'المنيا', 'Minya'],
+  assiut: ['Assiut', 'أسيوط', 'Assiut'],
+  sohag: ['Sohag', 'سوهاج', 'Sohag'],
+  luxor: ['Luxor', 'الأقصر', 'Luxor'],
+  aswan: ['Aswan', 'أسوان', 'Aswan'],
+};
+
 // key -> [English, Arabic, governorate (English), km from Ramsis along its line]
 const STATIONS: Record<string, [string, string, string, number]> = {
   ramsis: ['Ramsis Station', 'محطة رمسيس', 'Cairo', 0],
   banha: ['Banha', 'بنها', 'Qalyubia', 47],
   tanta: ['Tanta', 'طنطا', 'Gharbia', 90],
-  damnhour: ['Damnhour', 'دمنهور', 'Beheira', 140],
+  kafrelzayat: ['Kafr El Zayat', 'كفر الزيات', 'Gharbia', 110],
+  damanhour: ['Damanhour', 'دمنهور', 'Beheira', 140],
   sidigaber: ['Sidi Gaber', 'سيدي جابر', 'Alexandria', 205],
   elraml: ['El Raml Station', 'محطة الرمل', 'Alexandria', 208],
   giza: ['Giza', 'الجيزة', 'Giza', 12],
@@ -38,6 +56,23 @@ const STATIONS: Record<string, [string, string, string, number]> = {
   sohag: ['Sohag', 'سوهاج', 'Sohag', 467],
   luxor: ['Luxor', 'الأقصر', 'Luxor', 670],
   aswan: ['Aswan', 'أسوان', 'Aswan', 879],
+};
+
+const STATION_CITIES: Record<string, string> = {
+  ramsis: 'cairo',
+  banha: 'banha',
+  tanta: 'tanta',
+  kafrelzayat: 'kafrelzayat',
+  damanhour: 'damanhour',
+  sidigaber: 'alexandria',
+  elraml: 'alexandria',
+  giza: 'giza',
+  benisuef: 'benisuef',
+  minya: 'minya',
+  assiut: 'assiut',
+  sohag: 'sohag',
+  luxor: 'luxor',
+  aswan: 'aswan',
 };
 
 const TRAIN_TYPES: Record<string, [string, string]> = {
@@ -90,14 +125,16 @@ const TRAINS: TrainDef[] = [
     coaches: ['first', 'first', 'secondAc', 'secondAc', 'secondAc'],
     stops: [
       ['ramsis', null, '19:30'], ['banha', '20:15', '20:18'], ['tanta', '20:55', '20:58'],
-      ['damnhour', '21:45', '21:48'], ['sidigaber', '22:40', '22:43'], ['elraml', '23:00', null],
+      ['kafrelzayat', '21:15', '21:18'], ['damanhour', '21:45', '21:48'],
+      ['sidigaber', '22:40', '22:43'], ['elraml', '23:00', null],
     ],
   },
   {
     number: 917, type: 'Spanish', days: ALL_DAYS,
     coaches: ['first', 'secondAc', 'secondAc', 'secondAc'],
     stops: [
-      ['elraml', null, '12:30'], ['sidigaber', '12:37', '12:40'], ['damnhour', '13:45', '13:48'],
+      ['elraml', null, '12:30'], ['sidigaber', '12:37', '12:40'], ['damanhour', '13:45', '13:48'],
+      ['kafrelzayat', '14:15', '14:18'],
       ['tanta', '14:50', '14:53'], ['banha', '15:30', '15:33'], ['ramsis', '16:00', null],
     ],
   },
@@ -136,11 +173,12 @@ async function seed() {
   const timetables = get(TimetablesService);
   const timetableStops = get(TimetableStopsService);
 
-  const governorateRepo = dataSource.getRepository(Governorate);
-  const stationRepo = dataSource.getRepository(Station);
-  const typeRepo = dataSource.getRepository(TypeOfTrain);
-  const classRepo = dataSource.getRepository(ClassesOfTrains);
-  const trainRepo = dataSource.getRepository(Train);
+  const governorateRepo = dataSource.getRepository(GovernorateOrmEntity);
+  const cityRepo = dataSource.getRepository(CityOrmEntity);
+  const stationRepo = dataSource.getRepository(StationOrmEntity);
+  const typeRepo = dataSource.getRepository(TypeOfTrainOrmEntity);
+  const classRepo = dataSource.getRepository(ClassesOfTrainsOrmEntity);
+  const trainRepo = dataSource.getRepository(TrainOrmEntity);
 
   const governorateIds: Record<string, string> = {};
   for (const [en, ar] of GOVERNORATES) {
@@ -148,13 +186,41 @@ async function seed() {
     governorateIds[en] = row.id;
   }
 
-  const stationIds: Record<string, string> = {};
-  for (const [key, [en, ar, governorate]] of Object.entries(STATIONS)) {
+  const cityIds: Record<string, string> = {};
+  for (const [key, [name_en, name_ar, governorate]] of Object.entries(CITIES)) {
     const row =
-      (await stationRepo.findOneBy({ name_en: en })) ??
-      (await stationRepo.save(
-        stationRepo.create({ name_en: en, name_ar: ar, address: en, isActive: true, governorateId: governorateIds[governorate], alternativeNames: [] }),
+      (await cityRepo.findOneBy({
+        name_en,
+        governorateId: governorateIds[governorate],
+      })) ??
+      (await cityRepo.save(
+        cityRepo.create({
+          name_en,
+          name_ar,
+          governorateId: governorateIds[governorate],
+        }),
       ));
+    cityIds[key] = row.id;
+  }
+
+  const stationIds: Record<string, string> = {};
+  for (const [key, [en, ar]] of Object.entries(STATIONS)) {
+    const existing =
+      (await stationRepo.findOneBy({ name_en: en })) ??
+      (key === 'damanhour'
+        ? await stationRepo.findOneBy({ name_en: 'Damnhour' })
+        : null);
+    const row = await stationRepo.save(
+      stationRepo.create({
+        ...(existing ?? {}),
+        name_en: en,
+        name_ar: ar,
+        address: en,
+        isActive: true,
+        cityId: cityIds[STATION_CITIES[key]],
+        alternativeNames: existing?.alternativeNames ?? [],
+      }),
+    );
     stationIds[key] = row.id;
   }
 

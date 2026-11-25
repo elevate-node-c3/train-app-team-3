@@ -1,8 +1,21 @@
 
 import { Controller } from '@nestjs/common';
 import { GrpcMethod } from '@nestjs/microservices';
+import type {
+  CreateGovernorateRequest,
+  EmptyRequest,
+  GetGovernorateByIdRequest,
+  GovernorateListResponse,
+  GovernorateResponse,
+  UpdateGovernorateRequest,
+} from '@app/contracts/generated/catalog/messages.grpc.interfaces';
+import {
+  toCatalogApplicationData,
+  toCatalogGrpcMessage,
+} from '../../../../../libs/contracts/src/catalog-message.mapper';
+import { requireGrpcFields } from '../../grpc/require-grpc-fields';
 import { GovernoratesService } from './governorates.service';
-import { Governorate } from './governorates.entity';
+import { Governorate } from './domain/entities/governorate.entity';
 
 @Controller()
 export class GovernoratesController {
@@ -11,35 +24,55 @@ export class GovernoratesController {
   private toResponse(governorate: Governorate) {
     return {
       id: governorate.id,
-      name: governorate.name,
+      name_ar: governorate.name_ar,
+      name_en: governorate.name_en,
       createdAt: governorate.createdAt.toISOString(),
       updatedAt: governorate.updatedAt.toISOString(),
     };
   }
 
-  @GrpcMethod('GovernorateService', 'CreateGovernorate')
-  async createGovernorate(data: { name: string }) {
-    const governorate = await this.governoratesService.create(data);
-    return this.toResponse(governorate);
+  @GrpcMethod('CatalogService', 'CreateGovernorate')
+  async createGovernorate(
+    data: CreateGovernorateRequest,
+  ): Promise<GovernorateResponse> {
+    requireGrpcFields(data, 'nameAr', 'nameEn');
+    const governorate = await this.governoratesService.create(
+      toCatalogApplicationData(data),
+    );
+    return toCatalogGrpcMessage(this.toResponse(governorate));
   }
 
-  @GrpcMethod('GovernorateService', 'GetGovernorates')
-  async getGovernorates() {
+  @GrpcMethod('CatalogService', 'GetGovernorates')
+  async getGovernorates(
+    _data: EmptyRequest,
+  ): Promise<GovernorateListResponse> {
     const governorates = await this.governoratesService.findAll();
-    return { governorates: governorates.map((governorate) => this.toResponse(governorate)) };
-  }
-
-  @GrpcMethod('GovernorateService', 'GetGovernorateById')
-  async getGovernorateById(data: { id: string }) {
-    const governorate = await this.governoratesService.findById(data.id);
-    return this.toResponse(governorate);
-  }
-
-  @GrpcMethod('GovernorateService', 'UpdateGovernorate')
-  async updateGovernorate(data: { id: string; name: string }) {
-    const governorate = await this.governoratesService.update(data.id, {
-      name: data.name,
+    return toCatalogGrpcMessage({
+      governorates: governorates.map((governorate) =>
+        this.toResponse(governorate),
+      ),
     });
-    return this.toResponse(governorate);
+  }
+
+  @GrpcMethod('CatalogService', 'GetGovernorateById')
+  async getGovernorateById(
+    data: GetGovernorateByIdRequest,
+  ): Promise<GovernorateResponse> {
+    requireGrpcFields(data, 'id');
+    const governorate = await this.governoratesService.findById(data.id);
+    return toCatalogGrpcMessage(this.toResponse(governorate));
+  }
+
+  @GrpcMethod('CatalogService', 'UpdateGovernorate')
+  async updateGovernorate(
+    data: UpdateGovernorateRequest,
+  ): Promise<GovernorateResponse> {
+    requireGrpcFields(data, 'id');
+    const { id, ...update } = data;
+    const governorate = await this.governoratesService.update(
+      id,
+      toCatalogApplicationData(update),
+    );
+    return toCatalogGrpcMessage(this.toResponse(governorate));
   }
 }

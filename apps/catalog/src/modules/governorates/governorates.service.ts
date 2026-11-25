@@ -3,16 +3,23 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  Inject,
 } from '@nestjs/common';
-import { CreateGovernorateDto } from './dto/create-governorate.dto';
-import { UpdateGovernorateDto } from './dto/update-governorate.dto';
-import { GovernoratesRepository } from './governorates.repository';
-import { CacheService } from 'libs/cache/src';
+import { randomUUID } from 'crypto';
+import { CreateGovernorateDto } from './application/dtos/create-governorate.dto';
+import { UpdateGovernorateDto } from './application/dtos/update-governorate.dto';
+import { CacheService } from '../../../../../libs/cache/src';
+import { Governorate } from './domain/entities/governorate.entity';
+import {
+  GOVERNORATE_REPOSITORY,
+  GovernorateRepository,
+} from './domain/repositories/governorate.repository';
 
 @Injectable()
 export class GovernoratesService {
   constructor(
-    private readonly repo: GovernoratesRepository,
+    @Inject(GOVERNORATE_REPOSITORY)
+    private readonly repo: GovernorateRepository,
     private readonly cache: CacheService,
   ) {}
 
@@ -34,13 +41,23 @@ export class GovernoratesService {
   }
 
   async create(data: CreateGovernorateDto) {
-    const governorate = await this.findByName(data.name);
-
-    if (governorate) {
+    if (
+      (await this.repo.findByName(data.name_ar)) ||
+      (await this.repo.findByName(data.name_en))
+    ) {
       throw new ConflictException('Governorate already exists');
     }
 
-    const newGovernorate = await this.repo.create(data);
+    const now = new Date();
+    const newGovernorate = await this.repo.save(
+      new Governorate(
+        randomUUID(),
+        data.name_ar,
+        data.name_en,
+        now,
+        now,
+      ),
+    );
 
     await this.cache.set(
       this.generateKey(newGovernorate.id),
@@ -56,10 +73,10 @@ export class GovernoratesService {
   async findAll() {
     const key = 'governorates:all';
 
-    const cachedGovernorates = await this.cache.get(key);
+    const cachedGovernorates = await this.cache.get<Governorate[]>(key);
 
     if (cachedGovernorates) {
-      return JSON.parse(cachedGovernorates);
+      return cachedGovernorates;
     }
 
     const governorates = await this.repo.findAll();
@@ -73,10 +90,10 @@ export class GovernoratesService {
     const normalizedName = this.normalizeName(name);
     const key = `governorates:search:${normalizedName}`;
 
-    const cachedGovernorate = await this.cache.get(key);
+    const cachedGovernorate = await this.cache.get<Governorate>(key);
 
     if (cachedGovernorate) {
-      return JSON.parse(cachedGovernorate);
+      return cachedGovernorate;
     }
 
     const governorate = await this.repo.findByName(normalizedName);
@@ -89,10 +106,10 @@ export class GovernoratesService {
   async findById(id: string) {
     const key = this.generateKey(id);
 
-    const cachedGovernorate = await this.cache.get(key);
+    const cachedGovernorate = await this.cache.get<Governorate>(key);
 
     if (cachedGovernorate) {
-      return JSON.parse(cachedGovernorate);
+      return cachedGovernorate;
     }
 
     const governorate = await this.repo.findById(id);
@@ -109,15 +126,20 @@ export class GovernoratesService {
   async update(id: string, dto: UpdateGovernorateDto) {
     await this.findById(id);
 
-    if (dto.name) {
-      const existingGovernorate = await this.findByName(dto.name);
+    const governorate = await this.findById(id);
 
+    for (const name of [dto.name_ar, dto.name_en]) {
+      if (!name) continue;
+      const existingGovernorate = await this.findByName(name);
       if (existingGovernorate && existingGovernorate.id !== id) {
         throw new ConflictException('Governorate already exists');
       }
     }
 
-    await this.repo.update(id, dto);
+    governorate.name_ar = dto.name_ar ?? governorate.name_ar;
+    governorate.name_en = dto.name_en ?? governorate.name_en;
+    governorate.updatedAt = new Date();
+    await this.repo.save(governorate);
 
     await this.invalidateCache(id);
 

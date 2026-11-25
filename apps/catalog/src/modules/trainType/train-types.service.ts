@@ -1,14 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { TrainTypesRepository } from './train-types.repository';
-import { CreateTrainTypeDto } from './dto/create-train-type.dto';
-import { UpdateTrainTypeDto } from './dto/update-train-type.dto';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
+import { CreateTrainTypeDto } from './application/dtos/create-train-type.dto';
+import { UpdateTrainTypeDto } from './application/dtos/update-train-type.dto';
+import { TrainType } from './domain/entities/train-type.entity';
+import {
+  TRAIN_TYPE_REPOSITORY,
+  TrainTypeRepository,
+} from './domain/repositories/train-type.repository';
 
 @Injectable()
 export class TrainTypesService {
-  constructor(private readonly repository: TrainTypesRepository) {}
+  constructor(
+    @Inject(TRAIN_TYPE_REPOSITORY)
+    private readonly repository: TrainTypeRepository,
+  ) {}
 
   create(dto: CreateTrainTypeDto) {
-    return this.repository.create(dto);
+    const now = new Date();
+    return this.repository.save(
+      new TrainType(randomUUID(), dto.name_ar, dto.name_en, now, now),
+    );
   }
 
   findAll() {
@@ -16,7 +27,7 @@ export class TrainTypesService {
   }
 
   async findOne(id: string) {
-    const trainType = await this.repository.findOne(id);
+    const trainType = await this.repository.findById(id);
 
     if (!trainType) {
       throw new NotFoundException('Train type not found');
@@ -26,17 +37,16 @@ export class TrainTypesService {
   }
 
   async update(id: string, dto: UpdateTrainTypeDto) {
-    const trainType = await this.repository.update(id, dto);
-
-    if (!trainType) {
-      throw new NotFoundException('Train type not found');
-    }
-
+    const trainType = await this.findOne(id);
+    trainType.name_ar = dto.name_ar ?? trainType.name_ar;
+    trainType.name_en = dto.name_en ?? trainType.name_en;
+    trainType.updatedAt = new Date();
+    await this.repository.save(trainType);
     return trainType;
   }
 
   async remove(id: string) {
-    const deleted = await this.repository.remove(id);
+    const deleted = await this.repository.delete(id);
 
     if (!deleted) {
       throw new NotFoundException('Train type not found');

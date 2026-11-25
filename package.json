@@ -5,6 +5,7 @@
   "scripts": {
     "build": "npm run check:boundaries && nest build gateway && nest build identity",
     "check:boundaries": "node scripts/check-boundaries.js",
+    "proto:generate:catalog": "buf generate libs/contracts/src/proto/catalog.proto --template libs/contracts/buf.gen.yaml",
     "start:dev:gateway": "nest start gateway --watch",
     "start:dev:identity": "nest start identity --watch",
     "test": "jest",
@@ -50,6 +51,7 @@
     "typeorm": "^0.3.20"
   },
   "devDependencies": {
+    "@bufbuild/buf": "^1.75.0",
     "@nestjs/cli": "^10.4.5",
     "@nestjs/schematics": "^10.1.4",
     "@nestjs/testing": "^10.4.0",
@@ -65,6 +67,7 @@
     "ts-jest": "^29.2.5",
     "ts-loader": "^9.5.1",
     "ts-node": "^10.9.2",
+    "ts-proto": "^2.23.5",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.5.0"
   },

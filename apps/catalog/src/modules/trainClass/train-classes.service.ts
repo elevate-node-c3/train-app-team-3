@@ -1,14 +1,25 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { TrainClassesRepository } from './train-classes.repository';
-import { CreateTrainClassDto } from './dto/create-train-class.dto';
-import { UpdateTrainClassDto } from './dto/update-train-class.dto';
+import { Inject, Injectable, NotFoundException } from '@nestjs/common';
+import { randomUUID } from 'crypto';
+import { CreateTrainClassDto } from './application/dtos/create-train-class.dto';
+import { UpdateTrainClassDto } from './application/dtos/update-train-class.dto';
+import { TrainClass } from './domain/entities/train-class.entity';
+import {
+  TRAIN_CLASS_REPOSITORY,
+  TrainClassRepository,
+} from './domain/repositories/train-class.repository';
 
 @Injectable()
 export class TrainClassesService {
-  constructor(private readonly repository: TrainClassesRepository) {}
+  constructor(
+    @Inject(TRAIN_CLASS_REPOSITORY)
+    private readonly repository: TrainClassRepository,
+  ) {}
 
   create(dto: CreateTrainClassDto) {
-    return this.repository.create(dto);
+    const now = new Date();
+    return this.repository.save(
+      new TrainClass(randomUUID(), dto.name_ar, dto.name_en, now, now),
+    );
   }
 
   findAll() {
@@ -16,7 +27,7 @@ export class TrainClassesService {
   }
 
   async findOne(id: string) {
-    const trainClass = await this.repository.findOne(id);
+    const trainClass = await this.repository.findById(id);
 
     if (!trainClass) {
       throw new NotFoundException('Train class not found');
@@ -26,17 +37,16 @@ export class TrainClassesService {
   }
 
   async update(id: string, dto: UpdateTrainClassDto) {
-    const trainClass = await this.repository.update(id, dto);
-
-    if (!trainClass) {
-      throw new NotFoundException('Train class not found');
-    }
-
+    const trainClass = await this.findOne(id);
+    trainClass.name_ar = dto.name_ar ?? trainClass.name_ar;
+    trainClass.name_en = dto.name_en ?? trainClass.name_en;
+    trainClass.updatedAt = new Date();
+    await this.repository.save(trainClass);
     return trainClass;
   }
 
   async remove(id: string) {
-    const deleted = await this.repository.remove(id);
+    const deleted = await this.repository.delete(id);
 
     if (!deleted) {
       throw new NotFoundException('Train class not found');

@@ -61,7 +61,19 @@ export interface SearchTripsRequest {
   maximumFarePiastres?: number | undefined;
   trainType?: string | undefined;
   sort?: TripSort | undefined;
-  language?: string | undefined;
+  language?:
+    | string
+    | undefined;
+  /** Set only for a round trip. Validated against the departure date and the booking window. */
+  returnDate?:
+    | string
+    | undefined;
+  /** Set by the gateway from the signed-in traveller. Never taken from the public query. */
+  travellerId?:
+    | string
+    | undefined;
+  /** One or more train types. train_type remains for a single value. */
+  trainTypes?: string[] | undefined;
 }
 
 export interface TripResult {
@@ -86,16 +98,46 @@ export interface TripResult {
   currencyCode?: string | undefined;
 }
 
+export interface TrainTypeOption {
+  id?: string | undefined;
+  name?: string | undefined;
+}
+
+/** Built from that list's unfiltered results, so a client never offers a filter that cannot match. */
+export interface FilterOptions {
+  trainTypes?: TrainTypeOption[] | undefined;
+  minimumFarePiastres?: number | undefined;
+  maximumFarePiastres?: number | undefined;
+}
+
 export interface SearchTripsResponse {
   trips?: TripResult[] | undefined;
   dateStrip?: string[] | undefined;
   emptyReason?: string | undefined;
+  filterOptions?: FilterOptions | undefined;
+}
+
+/** The return list for one chosen outbound trip. Catalog reads that trip's arrival itself. */
+export interface SearchReturnTripsRequest {
+  outboundTripId?: string | undefined;
+  originStationId?: string | undefined;
+  destinationStationId?: string | undefined;
+  returnDate?: string | undefined;
+  seatClassId?: string | undefined;
+  departureTimeFrom?: string | undefined;
+  departureTimeTo?: string | undefined;
+  maximumFarePiastres?: number | undefined;
+  trainTypes?: string[] | undefined;
+  sort?: TripSort | undefined;
+  language?: string | undefined;
+  travellerId?: string | undefined;
 }
 
 export interface GetTripStopsRequest {
   tripId?: string | undefined;
   originStationId?: string | undefined;
   destinationStationId?: string | undefined;
+  language?: string | undefined;
 }
 
 export interface TripStop {
@@ -103,7 +145,11 @@ export interface TripStop {
   stationNameEn?: string | undefined;
   stationNameAr?: string | undefined;
   arrivalAt?: string | undefined;
-  departureAt?: string | undefined;
+  departureAt?:
+    | string
+    | undefined;
+  /** Cairo calendar date, present only when it differs from the boarding date. */
+  localDate?: string | undefined;
 }
 
 export interface GetTripStopsResponse {
@@ -117,9 +163,18 @@ export interface RecentSearch {
   returnDate?: string | undefined;
   seatClassId?: string | undefined;
   trainNumber?: string | undefined;
+  originStationName?: string | undefined;
+  destinationStationName?: string | undefined;
+  roundTrip?:
+    | boolean
+    | undefined;
+  /** True when the departure date has passed and the dates were omitted. */
+  datesOmitted?: boolean | undefined;
 }
 
 export interface GetRecentSearchesRequest {
+  travellerId?: string | undefined;
+  language?: string | undefined;
 }
 
 export interface GetRecentSearchesResponse {
@@ -491,6 +546,8 @@ export interface CatalogServiceClient {
 
   searchTrips(request: SearchTripsRequest, metadata?: Metadata): Observable<SearchTripsResponse>;
 
+  searchReturnTrips(request: SearchReturnTripsRequest, metadata?: Metadata): Observable<SearchTripsResponse>;
+
   getTripStops(request: GetTripStopsRequest, metadata?: Metadata): Observable<GetTripStopsResponse>;
 
   getRecentSearches(request: GetRecentSearchesRequest, metadata?: Metadata): Observable<GetRecentSearchesResponse>;
@@ -614,6 +671,11 @@ export interface CatalogServiceController {
 
   searchTrips(
     request: SearchTripsRequest,
+    metadata?: Metadata,
+  ): Promise<SearchTripsResponse> | Observable<SearchTripsResponse> | SearchTripsResponse;
+
+  searchReturnTrips(
+    request: SearchReturnTripsRequest,
     metadata?: Metadata,
   ): Promise<SearchTripsResponse> | Observable<SearchTripsResponse> | SearchTripsResponse;
 
@@ -899,6 +961,7 @@ export function CatalogServiceControllerMethods() {
     const grpcMethods: string[] = [
       "searchStations",
       "searchTrips",
+      "searchReturnTrips",
       "getTripStops",
       "getRecentSearches",
       "saveRecentSearch",

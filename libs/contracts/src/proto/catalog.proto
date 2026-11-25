@@ -28,6 +28,7 @@ message OperationResponse {
 service CatalogService {
   rpc SearchStations(SearchStationsRequest) returns (SearchStationsResponse);
   rpc SearchTrips(SearchTripsRequest) returns (SearchTripsResponse);
+  rpc SearchReturnTrips(SearchReturnTripsRequest) returns (SearchTripsResponse);
   rpc GetTripStops(GetTripStopsRequest) returns (GetTripStopsResponse);
   rpc GetRecentSearches(GetRecentSearchesRequest) returns (GetRecentSearchesResponse);
   rpc SaveRecentSearch(SaveRecentSearchRequest) returns (OperationResponse);
@@ -114,6 +115,12 @@ message SearchTripsRequest {
   string train_type = 9;
   TripSort sort = 10;
   optional string language = 11;
+  // Set only for a round trip. Validated against the departure date and the booking window.
+  optional string return_date = 12;
+  // Set by the gateway from the signed-in traveller. Never taken from the public query.
+  optional string traveller_id = 13;
+  // One or more train types. train_type remains for a single value.
+  repeated string train_types = 14;
 }
 
 enum TripSort {
@@ -144,16 +151,46 @@ message TripResult {
   string currency_code = 19;
 }
 
+message TrainTypeOption {
+  string id = 1;
+  string name = 2;
+}
+
+// Built from that list's unfiltered results, so a client never offers a filter that cannot match.
+message FilterOptions {
+  repeated TrainTypeOption train_types = 1;
+  int64 minimum_fare_piastres = 2;
+  int64 maximum_fare_piastres = 3;
+}
+
 message SearchTripsResponse {
   repeated TripResult trips = 1;
   repeated string date_strip = 2;
   string empty_reason = 3;
+  FilterOptions filter_options = 4;
+}
+
+// The return list for one chosen outbound trip. Catalog reads that trip's arrival itself.
+message SearchReturnTripsRequest {
+  string outbound_trip_id = 1;
+  string origin_station_id = 2;
+  string destination_station_id = 3;
+  string return_date = 4;
+  string seat_class_id = 5;
+  string departure_time_from = 6;
+  string departure_time_to = 7;
+  int64 maximum_fare_piastres = 8;
+  repeated string train_types = 9;
+  TripSort sort = 10;
+  optional string language = 11;
+  optional string traveller_id = 12;
 }
 
 message GetTripStopsRequest {
   string trip_id = 1;
   string origin_station_id = 2;
   string destination_station_id = 3;
+  optional string language = 4;
 }
 
 message TripStop {
@@ -162,6 +199,8 @@ message TripStop {
   string station_name_ar = 3;
   string arrival_at = 4;
   string departure_at = 5;
+  // Cairo calendar date, present only when it differs from the boarding date.
+  optional string local_date = 6;
 }
 
 message GetTripStopsResponse {
@@ -175,9 +214,17 @@ message RecentSearch {
   string return_date = 4;
   string seat_class_id = 5;
   string train_number = 6;
+  string origin_station_name = 7;
+  string destination_station_name = 8;
+  bool round_trip = 9;
+  // True when the departure date has passed and the dates were omitted.
+  bool dates_omitted = 10;
 }
 
-message GetRecentSearchesRequest {}
+message GetRecentSearchesRequest {
+  string traveller_id = 1;
+  optional string language = 2;
+}
 
 message GetRecentSearchesResponse {
   repeated RecentSearch searches = 1;
